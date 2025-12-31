@@ -1,0 +1,30 @@
+{
+    "blocklist": [
+        "Lensa",
+        "Dice",
+        "Jobot",
+        "TekWissen",
+        "CyberCoders",
+        "Robert Half",
+        "Insight Global",
+        "TEKsystems",
+        "Motion Recruitment",
+        "Workbridge Associates",
+        "Aquent",
+        "Kforce",
+        "Apex Systems",
+        "CorTech",
+        "Collabera",
+        "Teksystems",
+        "Kelly Services",
+        "Randstad",
+        "Modis",
+        "Adecco"
+    ],
+    "patterns": [
+        ".*[Rr]ecruiting.*",
+        ".*[Ss]taffing.*",
+        ".*[Cc]onsulting.*"
+    ],
+    "notes": "This list contains known HR/staffing firms and recruiting companies. Additional companies may be added automatically via LLM detection."
+}

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+
+# dotenv secret file
+.env
+
+# Logs
+logs/
+
+# Byte-compiled / optimized / DLL files
+*.pyc
