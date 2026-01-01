@@ -32,6 +32,66 @@ pixi -C project_config install
    - `data/roles.json` (roles + locations + filters)
    - `data/company_blocklist.json` (optional blocklist)
 
+## Gmail Email Notifications Setup
+
+To receive email alerts when jobs are matched, you need to set up Gmail App Passwords:
+
+### Step 1: Enable 2-Factor Authentication
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security)
+2. Navigate to **2-Step Verification**
+3. Follow the prompts to enable 2FA (required for app passwords)
+
+### Step 2: Create App Password
+1. Visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+   - Or: Google Account → Security → 2-Step Verification → App passwords (at bottom)
+2. Select app: **Mail**
+3. Select device: **Other (Custom name)** → enter "Job Scraper"
+4. Click **Generate**
+5. Google will display a 16-character password (e.g., `abcd efgh ijkl mnop`)
+6. **Copy this immediately** - you won't see it again!
+
+### Step 3: Update `.env` File
+Add these lines to your `.env`:
+```
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=yourapppasswordhere
+EMAIL_FROM=your-email@gmail.com
+EMAIL_TO=your-email@gmail.com
+ENABLE_EMAIL_NOTIFICATIONS=true
+```
+
+**Notes:**
+- Use the 16-character app password (remove spaces) in `SMTP_PASSWORD`
+- Do NOT use your regular Gmail password
+- Set `ENABLE_EMAIL_NOTIFICATIONS=false` to disable emails
+
+## Resume Management
+
+### Adding Your Resume
+1. Save your resume as a Word document (`.docx` format, NOT `.doc`)
+2. Copy it to: `D:\Projects\Job List\job_scraper\data\resume.docx`
+   ```powershell
+   Copy-Item "C:\Path\To\Your\Resume.docx" "D:\Projects\Job List\job_scraper\data\resume.docx"
+   ```
+3. Verify extraction works:
+   ```powershell
+   pixi -C project_config run python ../scripts/test_resume_extraction.py
+   ```
+
+### Updating Your Resume
+When you need to update your resume:
+1. Save your updated resume as `.docx`
+2. Simply **replace** the file at `data/resume.docx`
+3. No need to restart the application - the resume is loaded fresh each time during the matching phase
+
+**Tips:**
+- Use Microsoft Word or Google Docs (download as .docx)
+- The system extracts text from both paragraphs and tables
+- Ensure your resume has actual text content (not just images or text boxes)
+- Alternative path: Set `RESUME_PATH` in `.env` to point to a different location
+
 ## Run
 ```powershell
 # Single pass over configured roles

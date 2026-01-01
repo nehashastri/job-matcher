@@ -244,3 +244,331 @@ Seismic Expert with verification
 [2026-01-01 16:07:33] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
 [2026-01-01 16:07:33] [INFO] [GENERAL] 
 No change in viewed job count.
+[2026-01-01 16:10:32] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:10:32] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:10:32] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:10:32] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:10:32] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:10:32] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:10:42] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:10:42] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:10:42] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:10:42] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:10:47] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:10:49] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:10:49] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:10:49] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:11:01] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:11:15] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:11:15] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:11:15] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:11:17] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:11:17] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:11:17] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:11:17] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:11:17] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:11:17] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:11:17] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:11:17] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:11:17] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:11:17] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:11:17] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:11:17] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:11:17] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:11:17] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:11:17] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:11:17] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:11:17] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:11:20] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:11:20] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:11:20] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:11:20] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:11:20] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:11:20] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:11:21] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:11:21] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:11:21] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:11:21] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:11:21] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:11:21] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:11:21] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:11:21] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:11:21] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:11:21] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:11:21] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:11:21] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:11:21] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:11:21] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:11:21] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:11:21] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:11:21] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:13:06] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:13:06] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:13:06] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:13:06] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:13:06] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:13:06] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:13:17] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:13:17] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:13:17] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:13:17] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:13:22] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:13:24] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:13:24] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:13:24] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:13:35] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:13:49] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:13:49] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:13:49] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:13:50] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:13:50] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:13:50] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:13:50] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:13:50] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:13:50] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:13:50] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:13:50] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:13:50] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:13:50] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:13:50] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:13:50] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:13:50] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:13:50] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:13:50] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:13:50] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:13:50] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:13:54] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:13:54] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:13:54] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:13:54] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:13:54] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:13:54] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:13:55] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:13:55] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:13:55] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:13:55] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:13:55] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:13:55] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:13:55] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:13:55] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:13:55] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:13:55] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:13:55] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:13:55] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:13:55] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:13:55] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:13:55] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:13:55] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:13:55] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:14:19] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:14:19] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:14:19] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:14:19] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:14:19] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:14:19] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:14:28] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:14:28] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:14:28] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:14:28] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:14:33] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:14:36] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:14:36] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:14:36] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:14:47] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:15:01] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:15:01] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:15:01] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:15:03] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:15:03] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:15:03] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:15:03] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:15:03] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:15:03] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:15:03] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:15:03] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:15:03] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:15:03] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:15:03] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:15:03] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:15:03] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:15:03] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:15:03] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:15:03] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:15:03] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:15:06] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:15:06] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:15:06] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:15:06] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:15:06] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:15:06] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:15:08] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:15:08] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:15:08] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:15:08] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:15:08] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:15:08] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:15:08] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:15:08] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:15:08] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:15:08] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:15:08] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:15:08] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:15:08] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:15:08] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:15:08] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:15:08] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:15:08] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:26:52] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:26:52] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:26:52] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:26:52] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:26:52] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:26:52] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:27:03] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:27:03] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:27:03] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:27:03] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:27:08] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:27:10] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:27:10] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:27:10] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:27:21] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:27:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:27:35] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:27:35] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:27:37] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:27:37] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:27:37] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:27:37] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:27:37] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:27:37] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:27:37] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:27:37] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:27:37] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:27:37] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:27:37] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:27:37] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:27:37] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:27:37] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:27:37] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:27:37] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:27:37] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:27:40] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:27:40] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:27:40] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:27:40] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:27:40] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:27:40] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:27:41] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:27:41] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:27:41] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:27:41] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:27:41] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:27:41] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:27:41] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:27:41] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:27:41] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:27:41] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:27:41] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:27:41] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:27:41] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:27:41] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:27:41] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:27:41] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:27:41] [INFO] [GENERAL] 
+No change in viewed job count.
