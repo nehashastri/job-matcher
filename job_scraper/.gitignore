@@ -10,6 +10,11 @@ env/
 # dotenv secret file
 .env
 
+# Personal artifacts
+data/resume.docx
+data/preferences.txt
+data/*.xlsx
+
 # Logs
 logs/
 

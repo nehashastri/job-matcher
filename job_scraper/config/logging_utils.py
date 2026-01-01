@@ -180,7 +180,7 @@ def log_job_decision(
     )
 
 
-def get_logger(name: str, structured: bool = True) -> Any:
+def get_logger(name: str, structured: bool = False) -> Any:
     """
     Get a logger for a specific module
 

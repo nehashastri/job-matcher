@@ -1,122 +1,75 @@
-# Job Scraper (LinkedIn Only)
+# LinkedIn Job Scraper
 
-Automated LinkedIn job scraper with comprehensive filtering, LLM matching, and Windows notifications.
+Automation for finding LinkedIn roles, filtering, LLM-based matching against your resume, and notifying when a good match appears.
 
-**Workflow:** Filter LinkedIn jobs (past 24h, Internship/Entry/Associate, US, unviewed, <100 applicants, visa sponsorship) → LLM match ≥8/10 → Find people in similar roles at company → Save to Excel → Windows notification.
+## What it does
+- Scrape LinkedIn search results for configured roles and locations (Selenium, Chrome).
+- Skip already viewed jobs and apply company blocklist/HR-company rejection.
+- Optional sponsorship filter and LLM match scoring with configurable threshold.
+- Persist accepted jobs to CSV/XLSX and send email alerts.
+- (Future) People search + connection requests after a job is accepted.
 
-## Features
-- ✅ **LinkedIn scraping** with Selenium (Chrome required)
-- ✅ **Smart filtering:**
-  - Posted in past 24 hours
-  - Experience level: Internship, Entry, Associate
-  - Location: United States
-  - Skips already "Viewed" jobs
-  - <100 applicants
-  - Open to visa sponsorship/international candidates
-- ✅ **LLM matching** (OpenAI) against your resume + preferences (≥8/10)
-- ✅ **Company people search** - Finds people with similar roles at matched companies (US-based)
-- ✅ **Excel export** - Saves jobs and people info to spreadsheet
-- ✅ **Windows toast notifications** - No emails, local notifications only
-- ✅ **Continuous loop** - Runs all day with custom interval
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design and [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for phased delivery.
 
 ## Requirements
-- Windows 10/11, Python 3.10+, Chrome installed
+- Windows 10/11, Chrome installed
+- Pixi (uses `project_config/pixi.toml`)
 - OpenAI API key
 - LinkedIn credentials
 
-## Quick Start
+## Quick start
 ```powershell
 cd "d:\Projects\Job List\job_scraper"
-py -3.10 -m venv ..\.venv310
-..\.venv310\Scripts\Activate.ps1
-pip install -r requirements.txt
+pixi -C project_config install
+Copy-Item project_config/.env.template .env
 ```
 
-Create `.env`:
+Fill `.env` (template lists all keys):
 ```
 OPENAI_API_KEY=your_key
-OPENAI_MODEL=gpt-4o-mini
-JOB_MATCH_THRESHOLD=8
-RESUME_PATH=./data/resume.pdf
-PREFERENCES_PATH=./data/preferences.txt
+OPENAI_MODEL=gpt-4o-mini               # first-pass scoring model
+OPENAI_MODEL_RERANK=gpt-4o             # stronger model for second-pass rerank (optional)
+JOB_MATCH_THRESHOLD=8                  # accept when score >= threshold
+JOB_MATCH_RERANK_BAND=1.0              # rerank when first-pass score is within this band of the threshold
 LINKEDIN_EMAIL=you@example.com
 LINKEDIN_PASSWORD=your_pw
+POLL_INTERVAL_MINUTES=30
 ```
 
-Place files:
-- `data/resume.pdf`
-- `data/preferences.txt`
+Place your resume at `data/master_resume.docx` (full text used; no truncation) and adjust `data/roles.json` + `data/company_blocklist.json` as needed.
 
-## Commands
+## Run
 ```powershell
-# Scrape once
-python job_finder.py scrape
+# Single scrape for configured roles
+pixi -C project_config run scrape
 
-# Continuous loop (default 30 min intervals)
-python job_finder.py loop
-
-# Custom interval (e.g., every 60 minutes)
-python job_finder.py loop --interval 60
-
-# Show jobs
-python job_finder.py show_jobs
+# Continuous loop (polling interval from .env)
+pixi -C project_config run loop
 ```
 
 ## Outputs
-- `data/jobs.csv` - All matched jobs with details
-- `data/jobs.xlsx` - Excel export of matched jobs
-- `data/linkedin_connections.csv` - People found at companies (not connection requests - just saved for reference)
-- `logs/job_finder.log` - Full execution log
+- data/jobs.csv and data/jobs.xlsx for accepted jobs
+- data/linkedin_connections.csv and data/linkedin_connections.xlsx for saved contacts
+- data/company_blocklist.json and data/roles.json for inputs
+- logs/job_finder.log (daily rotated) for execution logs
+- Rerank config: `OPENAI_MODEL_RERANK` and `JOB_MATCH_RERANK_BAND` control second-pass scoring cost/accuracy
 
-## 📊 Data Storage
+## Project map
+- Code: see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for the folder layout.
+- Setup details: [SETUP.md](SETUP.md).
+- Test plan: phases and scenarios live in [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md).
 
-### jobs.csv / jobs.xlsx
-Columns: Title, Company, Location, Job URL, Source, Applicants, Posted Date, Scraped Date, Match Score, Viewed, Saved, Applied
-
-### linkedin_connections.csv
-Columns: Name, Title, Company, Profile URL, Role, Country, Message Sent, Status
-
-People are saved for reference only - no automatic connection requests sent.
-
-## 📝 Logging
-
-Logs are written to `logs/job_finder.log` with:
-- Timestamp for each action
-- Log level (INFO, DEBUG, ERROR)
-- Component name (scraper.linkedin, etc.)
-- Emoji indicators for quick scanning
+## Testing
+Run the automated suite after installing dependencies:
 ```powershell
-# Real-time tail
-Get-Content logs/job_finder.log -Tail 50 -Wait
+# Using pixi task
+pixi -C project_config run test
 
-# Full log
-type logs/job_finder.log
-
-# Search logs
-Select-String "error" logs/job_finder.log
+# Or directly
+pixi run python -m pytest
 ```
 
-## 🤝 Contributing
-
-To add a new job portal:
-1. Create `scrapers/newportal_scraper.py`
-2. Extend `BaseScraper`
-3. Implement `scrape(max_applicants)` method
-4. Add to `JobFinder.scrapers` list
-5. Add credentials to `.env.example` if needed
-
-## 📄 License
-
-Private project - personal use only
-
-## ✅ Checklist for Running
-
-- [ ] Python 3.8+ installed
-- [ ] Virtual environment created and activated
-- [ ] Requirements installed (`pip install -r requirements.txt`)
-- [ ] Chrome/Chromium installed (or Selenium Manager auto-downloads)
-- [ ] `.env` configured with credentials
-- [ ] Gmail app password generated (if using email)
-- [ ] Test run completed (`python job_finder.py scrape`)
-- [ ] Received test emails (if configured)
-- [ ] Excel file created at `data/jobs.xlsx`
+## Links
+- Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
+- Implementation plan & tests: [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)
+- Agent notes: [COPILOT.md](COPILOT.md)

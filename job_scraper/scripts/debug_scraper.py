@@ -6,7 +6,8 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT_DIR))
 
 from auth.linkedin_auth import LinkedInAuth
 from auth.session_manager import SessionManager
@@ -39,10 +40,11 @@ try:
 
     time.sleep(10)  # Wait for page to load
 
-    # Save the HTML
+    # Save the HTML near this script to avoid polluting root
     html = driver.page_source
-    Path("debug_page.html").write_text(html, encoding="utf-8")
-    print("Saved page HTML to debug_page.html")
+    output_path = Path(__file__).resolve().parent / "debug_page.html"
+    output_path.write_text(html, encoding="utf-8")
+    print(f"Saved page HTML to {output_path}")
 
     # Find job cards
     from selenium.webdriver.common.by import By

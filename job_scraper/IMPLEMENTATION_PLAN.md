@@ -83,8 +83,11 @@
 **Deliverables**:
 - `src/filtering/blocklist.py`: load blocklist, match company names (exact & regex)
 - `src/matching/hr_checker.py`: LLM call to detect HR/staffing companies; return JSON decision
-- Auto-add rejected HR companies to blocklist file
-- Logging: blocklist hits, HR check decisions
+- Config flag `REJECT_HR_COMPANIES` (default true). When false, skip HR rejection path.
+- Invalid/failed LLM response defaults to **accept** (no rejection, no blocklist add).
+- Auto-add rejected HR companies to blocklist file when HR rejection is enabled.
+- Logging: every rejection reason, blocklist hits, HR check decisions (cleanly logged). Rejected jobs stop the pipeline and do **not** flow downstream.
+- Storage: only persist jobs that are accepted **after scoring** and only after connection requests have been successfully sent (store the job and the successful connection attempts). All rejections are cleanly logged with reason and stop the pipeline.
 
 **Dependencies**: Phase 0 (config/LLM), Phase 2 (job details).
 
@@ -93,9 +96,10 @@
 **Test Use Cases** (to be approved):
 - Load blocklist; match exact company name
 - Match company via regex pattern (e.g., `*recruiter*`)
-- LLM HR check: company is HR firm → reject & auto-add
+- LLM HR check: company is HR firm → reject & auto-add (when `REJECT_HR_COMPANIES` true)
 - LLM HR check: company is not HR firm → accept
-- Invalid JSON from LLM → log error, assume reject
+- LLM HR check: `REJECT_HR_COMPANIES` false → skip HR rejection path (accept)
+- Invalid JSON from LLM → log error, assume **accept** (no blocklist add)
 
 ---
 
@@ -122,7 +126,7 @@
 **Goal**: Score job fit against master resume; accept if score ≥ threshold.
 
 **Deliverables**:
-- `src/matching/resume_loader.py`: extract text from `data/master_resume.pdf` via pypdf
+- `src/matching/resume_loader.py`: extract text from `data/master_resume.docx` via python-docx
 - `src/matching/match_scorer.py`: LLM call with resume, preferences, job details; return JSON score (0–10) and verdict
 - Threshold check (default 8); configurable via `.env` or config
 - Logging: match score, reasoning, verdict
@@ -136,8 +140,7 @@
 - LLM match scoring: high-fit job → score 8–10, accept
 - LLM match scoring: low-fit job → score 0–5, reject
 - LLM match scoring: medium-fit job → score 6–7, reject (below default threshold 8)
-- Custom threshold 7 → job with score 7 is accepted
-- Invalid JSON from LLM → log error, reject job
+- Invalid JSON from LLM → log error, accept job
 
 ---
 
@@ -145,20 +148,22 @@
 **Goal**: Store matched jobs in CSV; support query and updates.
 
 **Deliverables**:
-- `src/storage/matched_jobs_store.py`: append matched jobs to CSV and JSON
+- `src/storage/matched_jobs_store.py`: append matched jobs to CSV/XLSX (`data/jobs.csv`, `data/jobs.xlsx`)
+- `src/storage/matched_jobs_store.py`: append saved contacts to CSV/XLSX (`data/linkedin_connections.csv`, `data/linkedin_connections.xlsx`)
 - `src/storage/blocklist_store.py`: read/write company blocklist
-- Data format: job_id, title, company, location, remote, seniority, posted_time, job_url, match_score, matched_at, connections_sent, email_sent
-- Append mode (no duplicates expected, but log on duplicate job_id)
+- Data format (jobs): ID, Title, Company, Location, Job URL, Source, Applicants, Posted Date, Scraped Date, Match Score, Viewed, Saved, Applied, Emailed
+- Data format (connections): Date, Name, Title, LinkedIn URL, Role Searched, Country, Message Sent, Status
+- Append mode (no duplicates expected, but log on duplicate job ID)
 
 **Dependencies**: Phase 0 (config), Phases 2–5 (job data).
 
 **Duration**: 1–2 days.
 
-**Test Use Cases** (to be approved):
+**Test Use Cases**:
 - Append matched job to empty CSV; verify header and single row
-- Append second matched job; verify appended
+- Append second matched job; verify appended to CSV and optionally to XLSX when dependency installed
 - Load matched jobs from CSV; verify data integrity
-- Append to JSON; verify valid JSON format
+- Append a saved contact to `linkedin_connections.csv`; verify header and row
 - Update blocklist; verify company appended
 - Read blocklist; verify all companies present
 

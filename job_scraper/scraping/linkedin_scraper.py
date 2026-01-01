@@ -19,6 +19,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
+from config.config import get_config
+from filtering.blocklist import Blocklist
+from matching.hr_checker import HRChecker
+
 from .base_scraper import BaseScraper
 
 logger = logging.getLogger(__name__)
@@ -35,6 +39,13 @@ class LinkedInScraper(BaseScraper):
         self.driver = None
         self.authenticated = False
         self.wait = None
+
+        # Config-driven components
+        self.config = get_config()
+        self.blocklist = Blocklist(config=self.config, logger=self.logger)
+        self.hr_checker = HRChecker(
+            config=self.config, blocklist=self.blocklist, logger=self.logger
+        )
 
         if self.user_email and self.user_password:
             self.logger.info(f"🔐 LinkedIn credentials found: {self.user_email}")
@@ -236,6 +247,7 @@ class LinkedInScraper(BaseScraper):
                     self.logger.info(
                         f"    [SCRAPED JOB] {json.dumps(job, ensure_ascii=False, indent=2)}"
                     )
+                    company_name = (job.get("company") or "").strip()
                     applicants = job.get("applicant_count", 0)
                     if applicants > max_applicants:
                         self.logger.info(
@@ -245,6 +257,26 @@ class LinkedInScraper(BaseScraper):
                         self._safe_back_to_results(search_url)
                         continue
                     description = job.get("description", "")
+
+                    # Blocklist gate
+                    if company_name and self.blocklist.is_blocked(company_name):
+                        self.logger.info(
+                            f"    ❌ Rejected: {company_name} blocked (no downstream processing)"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+
+                    # HR check (configurable)
+                    hr_result = self.hr_checker.check(company_name, description=description)
+                    if hr_result.get("is_hr_company"):
+                        self.logger.info(
+                            f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+
                     if not self._check_visa_sponsorship(description):
                         self.logger.info("    ❌ Skipped: Explicitly states no sponsorship")
                         self._close_extra_tabs()

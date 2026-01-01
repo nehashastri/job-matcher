@@ -5,7 +5,7 @@ description = "LinkedIn job scraper with LLM matching and Windows notifications"
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
-readme = "README.md"
+readme = "../ARCHITECTURE.md"
 requires-python = ">=3.10,<3.13"
 license = {text = "MIT"}
 
@@ -36,14 +36,14 @@ dev = [
 ]
 
 [project.scripts]
-job-scraper = "job_finder:cli"
+job-scraper = "app.job_finder:cli"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["../tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -56,7 +56,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["job_scraper", "config", "scrapers"]
+source = ["../app", "../auth", "../scraping", "../matching", "../filtering", "../networking", "../notifications", "../scheduler", "../storage_pkg", "../config"]
 omit = ["*/tests/*", "*/__pycache__/*", "*/venv/*"]
 
 [tool.coverage.report]
@@ -75,7 +75,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501"]  # Line too long (handled by formatter)
+ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -85,7 +85,7 @@ disallow_untyped_defs = false
 ignore_missing_imports = true
 explicit_package_bases = true
 namespace_packages = true
-exclude = ["scrapers/", "storage.py"]
+exclude = ["../scrapers/", "../storage.py"]
 
 [tool.black]
 line-length = 100

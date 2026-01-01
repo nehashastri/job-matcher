@@ -27,7 +27,7 @@ def mock_env(monkeypatch):
         "JOB_MATCH_THRESHOLD": "8",
         "LINKEDIN_EMAIL": "test@example.com",
         "LINKEDIN_PASSWORD": "test_password",
-        "RESUME_PATH": "./data/resume.pdf",
+        "RESUME_PATH": "./data/resume.docx",
         "ROLES_PATH": "./data/roles.json",
         "BLOCKLIST_PATH": "./data/company_blocklist.json",
         "SCRAPE_INTERVAL_MINUTES": "30",
@@ -38,6 +38,7 @@ def mock_env(monkeypatch):
         "MAX_APPLICANTS": "100",
         "REQUIRES_SPONSORSHIP": "true",
         "SKIP_VIEWED_JOBS": "true",
+        "REJECT_HR_COMPANIES": "true",
         "LOG_LEVEL": "INFO",
     }
 
@@ -102,7 +103,7 @@ def mock_blocklist_json(temp_dir):
 @pytest.fixture
 def mock_resume_file(temp_dir):
     """Create a mock resume PDF file"""
-    resume_path = temp_dir / "resume.pdf"
+    resume_path = temp_dir / "resume.docx"
     resume_path.write_text("Mock resume content")
     return resume_path
 
@@ -111,5 +112,7 @@ def mock_resume_file(temp_dir):
 def mock_preferences_file(temp_dir):
     """Create a mock preferences file"""
     preferences_path = temp_dir / "preferences.txt"
-    preferences_path.write_text("Looking for Python backend roles\nRemote work preferred")
+    preferences_path.write_text(
+        "Looking for Python backend roles\nRemote work preferred"
+    )
     return preferences_path

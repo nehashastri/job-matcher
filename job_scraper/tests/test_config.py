@@ -24,6 +24,7 @@ class TestConfigLoading:
         assert config.max_applicants == 100
         assert config.requires_sponsorship is True
         assert config.skip_viewed_jobs is True
+        assert config.reject_hr_companies is True
 
     def test_config_loads_roles_json(self, mock_env, mock_roles_json, monkeypatch):
         """Test that Config loads roles from JSON file"""
@@ -37,7 +38,9 @@ class TestConfigLoading:
         assert config.roles[1]["enabled"] is False
         assert config.search_settings["date_posted"] == "r86400"
 
-    def test_config_loads_blocklist_json(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_config_loads_blocklist_json(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         """Test that Config loads blocklist from JSON file"""
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
@@ -88,7 +91,7 @@ class TestConfigValidation:
 
     def test_validate_missing_files(self, mock_env, monkeypatch):
         """Test validation fails when required files are missing"""
-        monkeypatch.setenv("RESUME_PATH", "./nonexistent_resume.pdf")
+        monkeypatch.setenv("RESUME_PATH", "./nonexistent_resume.docx")
 
         config = Config()
         errors = config.validate()
@@ -107,7 +110,12 @@ class TestConfigValidation:
         assert any("must be between 0 and 10" in err for err in errors)
 
     def test_validate_success(
-        self, mock_env, mock_roles_json, mock_resume_file, mock_preferences_file, monkeypatch
+        self,
+        mock_env,
+        mock_roles_json,
+        mock_resume_file,
+        mock_preferences_file,
+        monkeypatch,
     ):
         """Test validation succeeds with all required fields"""
         monkeypatch.setenv("ROLES_PATH", str(mock_roles_json))
@@ -133,7 +141,9 @@ class TestConfigMethods:
         assert len(enabled_roles) == 1
         assert enabled_roles[0]["title"] == "Software Engineer"
 
-    def test_add_to_blocklist(self, mock_env, mock_blocklist_json, monkeypatch, temp_dir):
+    def test_add_to_blocklist(
+        self, mock_env, mock_blocklist_json, monkeypatch, temp_dir
+    ):
         """Test adding a company to the blocklist"""
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
 
@@ -151,7 +161,9 @@ class TestConfigMethods:
             data = json.load(f)
             assert "NewCompany" in data["blocklist"]
 
-    def test_add_duplicate_to_blocklist(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_add_duplicate_to_blocklist(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         """Test adding a duplicate company to the blocklist"""
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
 

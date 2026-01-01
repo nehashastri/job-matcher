@@ -8,9 +8,8 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-
-from selenium.webdriver.common.by import By
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT_DIR))
 
 from auth.linkedin_auth import LinkedInAuth
 from auth.session_manager import SessionManager
@@ -18,6 +17,7 @@ from config.config import Config
 from config.logging_utils import get_logger
 from scraping.job_list_scraper import JobListScraper
 from scraping.search_builder import LinkedInSearchBuilder
+from selenium.webdriver.common.by import By
 
 logger = get_logger(__name__)
 
@@ -57,13 +57,17 @@ try:
         viewed_icon = "✓" if job["is_viewed"] else "○"
         indicator = job.get("viewed_indicator", "none")
         logger.info(f"{i}. {viewed_icon} {job['title'][:50]}")
-        logger.info(f"   ID: {job['job_id']}, Viewed: {job['is_viewed']}, Indicator: {indicator}")
+        logger.info(
+            f"   ID: {job['job_id']}, Viewed: {job['is_viewed']}, Indicator: {indicator}"
+        )
 
     # Click on the first job to mark it as viewed
     if jobs_before:
         first_job_id = jobs_before[0]["job_id"]
         logger.info("\n" + "=" * 80)
-        logger.info(f"CLICKING on first job (ID: {first_job_id}) to mark it as viewed...")
+        logger.info(
+            f"CLICKING on first job (ID: {first_job_id}) to mark it as viewed..."
+        )
         logger.info("=" * 80)
 
         try:
@@ -103,7 +107,9 @@ try:
                         logger.info(f"  Removed: {removed}")
 
                 if aria_before != aria_after:
-                    logger.info(f"\n✓ ARIA-CURRENT CHANGED: {aria_before} -> {aria_after}")
+                    logger.info(
+                        f"\n✓ ARIA-CURRENT CHANGED: {aria_before} -> {aria_after}"
+                    )
 
         except Exception as e:
             logger.error(f"Error clicking job: {e}")
@@ -121,13 +127,17 @@ try:
         indicator = job.get("viewed_indicator", "none")
 
         # Check if this job's status changed
-        before_job = next((j for j in jobs_before if j["job_id"] == job["job_id"]), None)
+        before_job = next(
+            (j for j in jobs_before if j["job_id"] == job["job_id"]), None
+        )
         status_changed = ""
         if before_job and before_job["is_viewed"] != job["is_viewed"]:
             status_changed = " ← STATUS CHANGED!"
 
         logger.info(f"{i}. {viewed_icon} {job['title'][:50]}{status_changed}")
-        logger.info(f"   ID: {job['job_id']}, Viewed: {job['is_viewed']}, Indicator: {indicator}")
+        logger.info(
+            f"   ID: {job['job_id']}, Viewed: {job['is_viewed']}, Indicator: {indicator}"
+        )
 
     # Summary
     logger.info("\n" + "=" * 80)
@@ -145,7 +155,9 @@ try:
             f"\n✓ Successfully detected {viewed_after - viewed_before} newly viewed job(s)!"
         )
     elif viewed_after == viewed_before == 0:
-        logger.warning("\n⚠ No viewed jobs detected. LinkedIn may use a different indicator.")
+        logger.warning(
+            "\n⚠ No viewed jobs detected. LinkedIn may use a different indicator."
+        )
         logger.info("Check the classes changes logged above.")
     else:
         logger.info("\nNo change in viewed job count.")
