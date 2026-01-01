@@ -1,322 +1,246 @@
-[2025-12-30 21:23:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:23:47] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:23:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:23:47] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:23:47] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:23:47] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:24:11] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:24:11] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:24:11] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:24:11] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:24:16] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:24:18] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:24:19] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:24:19] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:27] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:27] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:25:27] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:27] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:25:27] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:25:27] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:25:40] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:25:40] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:25:40] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:25:40] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:25:45] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:25:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:47] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:25:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:55] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:55] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:25:55] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:25:55] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:25:55] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:25:55] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:26:07] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:26:07] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:26:07] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:26:07] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:26:12] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:26:15] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:26:15] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:26:15] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:27:04] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:27:04] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:27:04] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:27:04] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:27:04] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:27:04] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:27:14] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:27:14] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:27:14] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:27:14] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:27:19] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:27:21] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:27:21] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:27:21] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:28:28] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:28:28] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:28:28] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:28:28] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:28:28] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:28:28] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:28:40] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:28:40] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:28:40] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:28:40] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:28:45] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:28:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:28:47] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:28:47] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:31:49] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:31:49] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:31:49] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:31:49] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:31:49] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:31:49] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:32:01] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:32:01] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:32:02] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:32:02] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:32:07] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:32:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:32:09] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:32:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:33:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:33:09] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:33:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:33:09] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:33:09] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:33:09] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:33:20] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:33:20] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:33:20] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:33:20] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:33:25] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:33:27] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:33:27] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:33:27] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:00] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:40:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:00] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:40:00] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:40:00] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:40:09] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:40:09] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:40:09] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:40:09] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:40:14] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:40:16] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:16] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:40:16] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:35] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:35] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:40:35] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:35] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:40:35] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:40:35] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:40:47] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:40:47] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:40:47] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:40:47] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:40:52] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:40:54] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:40:54] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:40:54] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:41:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:41:26] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:41:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:41:26] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:41:26] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:41:26] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:41:38] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:41:38] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:41:38] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:41:38] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:41:43] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:41:45] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:41:45] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:41:45] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:47:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:47:26] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:47:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:47:26] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:47:26] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:47:26] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:47:36] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:47:36] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:47:36] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:47:36] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:47:41] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:47:43] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:47:43] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:47:43] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:00] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:48:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:00] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:48:00] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:48:00] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:48:13] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:48:13] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:48:13] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:48:13] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:48:18] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:48:20] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:20] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:48:20] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:30] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:30] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:48:30] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:30] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:48:30] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:48:30] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:48:41] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:48:41] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:48:41] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:48:41] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:48:46] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:48:49] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:48:49] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:48:49] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:49:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:49:09] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:49:09] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:49:09] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:49:09] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:49:09] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:49:21] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:49:21] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:49:21] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:49:21] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:49:26] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:49:28] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:49:28] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:49:28] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:51:11] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:51:11] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:51:11] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:51:11] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:51:11] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:51:11] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:51:23] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:51:23] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:51:23] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:51:23] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:51:28] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:51:30] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:51:30] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:51:30] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:52:22] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:52:22] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:52:22] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:52:22] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:52:22] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:52:22] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:52:33] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:52:33] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:52:33] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:52:33] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:52:38] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:52:41] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:52:41] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:52:41] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:54:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:54:00] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:54:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:54:00] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:54:00] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:54:00] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:54:10] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:54:10] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:54:10] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:54:10] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:54:15] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:54:17] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:54:17] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:54:17] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:56:41] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:56:41] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 21:56:41] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:56:41] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 21:56:41] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 21:56:41] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 21:56:53] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 21:56:53] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 21:56:53] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 21:56:53] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 21:56:58] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 21:57:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 21:57:00] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 21:57:00] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:00:18] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:00:18] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 22:00:18] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:00:18] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 22:00:18] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 22:00:18] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 22:00:30] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 22:00:30] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 22:00:30] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 22:00:30] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 22:00:35] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 22:00:37] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:00:37] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 22:00:37] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:07:33] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:07:33] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 22:07:33] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:07:33] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 22:07:33] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 22:07:33] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 22:07:44] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 22:07:44] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 22:07:44] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 22:07:44] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 22:07:49] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 22:07:51] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:07:51] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 22:07:51] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:08:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:08:26] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 22:08:26] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:08:26] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 22:08:26] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 22:08:26] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 22:08:36] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 22:08:36] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 22:08:36] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 22:08:36] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 22:08:41] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 22:08:44] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:08:44] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 22:08:44] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:11:20] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:11:20] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 22:11:20] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:11:20] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 22:11:20] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 22:11:20] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 22:11:30] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 22:11:30] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 22:11:30] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 22:11:30] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 22:11:35] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 22:11:38] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:11:38] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 22:11:38] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:12:13] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:12:13] [INFO] [GENERAL] LinkedIn Authentication Test
-[2025-12-30 22:12:13] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:12:13] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
-[2025-12-30 22:12:13] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
-[2025-12-30 22:12:13] [INFO] [GENERAL] Attempting LinkedIn login...
-[2025-12-30 22:12:23] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
-[2025-12-30 22:12:23] [INFO] [GENERAL] ✓ Cookies saved for future sessions
-[2025-12-30 22:12:23] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
-[2025-12-30 22:12:23] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
-[2025-12-30 22:12:28] [INFO] [GENERAL] Closing browser session...
-[2025-12-30 22:12:30] [INFO] [GENERAL] ============================================================
-[2025-12-30 22:12:30] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
-[2025-12-30 22:12:30] [INFO] [GENERAL] ============================================================
+[2026-01-01 15:58:39] [INFO] [GENERAL] ============================================================
+[2026-01-01 15:58:39] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 15:58:39] [INFO] [GENERAL] ============================================================
+[2026-01-01 15:58:39] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 15:58:39] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 15:58:39] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 15:58:49] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 15:58:49] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 15:58:49] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 15:58:49] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 15:58:54] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 15:58:57] [INFO] [GENERAL] ============================================================
+[2026-01-01 15:58:57] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 15:58:57] [INFO] [GENERAL] ============================================================
+[2026-01-01 15:59:19] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 15:59:33] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 15:59:33] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 15:59:33] [INFO] [GENERAL] ================================================================================
+[2026-01-01 15:59:35] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 15:59:35] [INFO] [GENERAL] 1. ✓ AI Engineer
+AI Engineer
+[2026-01-01 15:59:35] [INFO] [GENERAL]    ID: 4346649944, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 15:59:35] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 15:59:35] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 15:59:35] [INFO] [GENERAL] 3. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 15:59:35] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 15:59:35] [INFO] [GENERAL] 4. ○ Data Engineer
+Data Engineer
+[2026-01-01 15:59:35] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 15:59:35] [INFO] [GENERAL] 5. ○ Interface Research Engineer
+Interface Research Eng
+[2026-01-01 15:59:35] [INFO] [GENERAL]    ID: 4350888956, Viewed: False, Indicator: None
+[2026-01-01 15:59:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 15:59:35] [INFO] [GENERAL] CLICKING on first job (ID: 4346649944) to mark it as viewed...
+[2026-01-01 15:59:35] [INFO] [GENERAL] ================================================================================
+[2026-01-01 15:59:35] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 15:59:35] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 15:59:35] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 15:59:38] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 15:59:38] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 15:59:38] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 15:59:38] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 15:59:38] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 15:59:38] [INFO] [GENERAL] ================================================================================
+[2026-01-01 15:59:39] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 15:59:39] [INFO] [GENERAL] 1. ✓ AI Engineer
+AI Engineer
+[2026-01-01 15:59:39] [INFO] [GENERAL]    ID: 4346649944, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 15:59:39] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 15:59:39] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 15:59:39] [INFO] [GENERAL] 3. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 15:59:39] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 15:59:39] [INFO] [GENERAL] 4. ○ Data Engineer
+Data Engineer
+[2026-01-01 15:59:39] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 15:59:39] [INFO] [GENERAL] 5. ○ Interface Research Engineer
+Interface Research Eng
+[2026-01-01 15:59:39] [INFO] [GENERAL]    ID: 4350888956, Viewed: False, Indicator: None
+[2026-01-01 15:59:39] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 15:59:39] [INFO] [GENERAL] SUMMARY
+[2026-01-01 15:59:39] [INFO] [GENERAL] ================================================================================
+[2026-01-01 15:59:39] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 15:59:39] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 15:59:39] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:04:08] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:04:08] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:04:08] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:04:08] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:04:08] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:04:08] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:04:19] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:04:19] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:04:19] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:04:19] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:04:24] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:04:27] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:04:27] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:04:27] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:04:37] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:04:53] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:04:53] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:04:53] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:04:54] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:04:54] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:04:54] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:04:54] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:04:54] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:04:54] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:04:54] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:04:54] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:04:54] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:04:54] [INFO] [GENERAL] 5. ○ Seismic Expert
+Seismic Expert with verification
+[2026-01-01 16:04:54] [INFO] [GENERAL]    ID: 4313638005, Viewed: False, Indicator: None
+[2026-01-01 16:04:54] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:04:54] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:04:54] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:04:54] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:04:54] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:04:54] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:04:58] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:04:58] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:04:58] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:04:58] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:04:58] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:04:58] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:04:59] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:04:59] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:04:59] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:04:59] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:04:59] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:04:59] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:04:59] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:04:59] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:04:59] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:04:59] [INFO] [GENERAL] 5. ○ Seismic Expert
+Seismic Expert with verification
+[2026-01-01 16:04:59] [INFO] [GENERAL]    ID: 4313638005, Viewed: False, Indicator: None
+[2026-01-01 16:04:59] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:04:59] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:04:59] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:04:59] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:04:59] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:04:59] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:06:45] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:06:45] [INFO] [GENERAL] LinkedIn Authentication Test
+[2026-01-01 16:06:45] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:06:45] [INFO] [GENERAL] LinkedIn Email: neha.ganesh.shastri@gmail.com
+[2026-01-01 16:06:45] [INFO] [GENERAL] Cookie Path: data/.linkedin_cookies.pkl
+[2026-01-01 16:06:45] [INFO] [GENERAL] Attempting LinkedIn login...
+[2026-01-01 16:06:55] [INFO] [GENERAL] ✓ Successfully logged into LinkedIn!
+[2026-01-01 16:06:55] [INFO] [GENERAL] ✓ Cookies saved for future sessions
+[2026-01-01 16:06:55] [INFO] [GENERAL] Current URL: https://www.linkedin.com/feed/
+[2026-01-01 16:06:55] [INFO] [GENERAL] Keeping browser open for 5 seconds to verify...
+[2026-01-01 16:07:00] [INFO] [GENERAL] Closing browser session...
+[2026-01-01 16:07:03] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:07:03] [INFO] [GENERAL] Test complete. Check logs/linkedin_auth_test.log for details
+[2026-01-01 16:07:03] [INFO] [GENERAL] ============================================================
+[2026-01-01 16:07:13] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:07:27] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:07:27] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:07:27] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:07:28] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:07:28] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:07:28] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:07:28] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:07:28] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:07:28] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:07:28] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:07:28] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:07:28] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:07:28] [INFO] [GENERAL] 5. ○ Seismic Expert
+Seismic Expert with verification
+[2026-01-01 16:07:28] [INFO] [GENERAL]    ID: 4313638005, Viewed: False, Indicator: None
+[2026-01-01 16:07:28] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:07:28] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:07:28] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:07:28] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:07:28] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:07:28] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:07:32] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:07:32] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:07:32] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:07:32] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:07:32] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:07:32] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:07:33] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:07:33] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:07:33] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:07:33] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:07:33] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:07:33] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:07:33] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:07:33] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:07:33] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:07:33] [INFO] [GENERAL] 5. ○ Seismic Expert
+Seismic Expert with verification
+[2026-01-01 16:07:33] [INFO] [GENERAL]    ID: 4313638005, Viewed: False, Indicator: None
+[2026-01-01 16:07:33] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:07:33] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:07:33] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:07:33] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:07:33] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:07:33] [INFO] [GENERAL] 
+No change in viewed job count.

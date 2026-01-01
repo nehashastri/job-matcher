@@ -1,9 +1,9 @@
-﻿2025-12-30 21:49:42 [info     ] ================================================================================
+2025-12-30 21:49:42 [info     ] ================================================================================
 2025-12-30 21:49:42 [info     ] TEST: Viewed Job Detection
 2025-12-30 21:49:42 [info     ] ================================================================================
-2025-12-30 21:49:54 [info     ] 
+2025-12-30 21:49:54 [info     ]
 Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2,3,4&f_TPR=r86400&position=1&pageNum=0
-2025-12-30 21:50:11 [info     ] 
+2025-12-30 21:50:11 [info     ]
 ================================================================================
 2025-12-30 21:50:11 [info     ] STEP 1: Initial Scrape - Before clicking any jobs
 2025-12-30 21:50:11 [info     ] ================================================================================
@@ -22,7 +22,7 @@ Machine Learning Engineer (Modeling), Risk with verification at Square (ID: 4336
 AI / Machine Learning Engineer at STAFFXPERT LLC (ID: 4350666450, viewed=False)
 2025-12-30 21:50:12 [debug    ] [SCRAPE_LIST] Extracted job: Machine Learning Engineer (Platform)
 Machine Learning Engineer (Platform) with verification at ArteraAI (ID: 4195677440, viewed=False)
-2025-12-30 21:50:12 [info     ] 
+2025-12-30 21:50:12 [info     ]
 Found 7 jobs initially:
 2025-12-30 21:50:12 [info     ] 1. Γùï [4342625322] Generative AI Generalist
 Generative AI Generalist
@@ -38,13 +38,13 @@ Generative AI Engineer
 2025-12-30 21:50:12 [info     ] 5. Γùï [4336503237] Machine Learning Engineer (Modeling), Risk
 Machine
 2025-12-30 21:50:12 [info     ]    Viewed: False, Indicator: None
-2025-12-30 21:50:12 [info     ] 
+2025-12-30 21:50:12 [info     ]
 Unviewed jobs: 7 / 7
-2025-12-30 21:50:12 [info     ] 
+2025-12-30 21:50:12 [info     ]
 ================================================================================
 2025-12-30 21:50:12 [info     ] STEP 2: Clicking first 2 jobs to mark as viewed
 2025-12-30 21:50:12 [info     ] ================================================================================
-2025-12-30 21:50:12 [info     ] 
+2025-12-30 21:50:12 [info     ]
 Clicking job 1/2: Generative AI Generalist
 Generative AI Generalist
 2025-12-30 21:50:13 [info     ]   Γ£ô Clicked job 4342625322
@@ -72,7 +72,7 @@ Symbols not available. Dumping unresolved backtrace:
 	0x7ffd30fce8d7
 	0x7ffd3198c53c
 
-2025-12-30 21:50:16 [info     ] 
+2025-12-30 21:50:16 [info     ]
 Clicking job 2/2: Research Scientist TTS - Gen AI
 Research Scientist
-2025-12-30 21:50:16 [info     ] 
+2025-12-30 21:50:16 [info     ]

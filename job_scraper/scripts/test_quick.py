@@ -6,7 +6,8 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT_DIR))
 
 from auth.linkedin_auth import LinkedInAuth
 from auth.session_manager import SessionManager
@@ -60,7 +61,9 @@ def test_quick():
                 logger.info(f"  Posted time: {details.get('posted_time')}")
                 logger.info(f"  Applicants: {details.get('applicant_count')}")
                 logger.info(f"  Remote eligible: {details.get('remote_eligible')}")
-                logger.info(f"  Description length: {len(details.get('description', ''))}")
+                logger.info(
+                    f"  Description length: {len(details.get('description', ''))}"
+                )
                 return True
             else:
                 logger.error("✗ Failed to scrape details")

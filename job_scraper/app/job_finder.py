@@ -12,7 +12,6 @@ from pathlib import Path
 
 import click
 from openai import OpenAI
-from pypdf import PdfReader
 from tabulate import tabulate
 
 try:
@@ -29,12 +28,15 @@ if sys.platform == "win32":
     except Exception:
         pass  # Fallback if reconfigure fails
 
-# Add project to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add project root to path for imports
+ROOT_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT_DIR))
 
-from config.config import LOG_DIR
-from scraping.linkedin_scraper import LinkedInScraper
-from storage_pkg import JobStorage
+from config.config import Config, LOG_DIR  # noqa: E402
+from scraping.linkedin_scraper import LinkedInScraper  # noqa: E402
+from storage_pkg import JobStorage  # noqa: E402
+from matching.match_scorer import MatchScorer  # noqa: E402
+from matching.resume_loader import ResumeLoader  # noqa: E402
 
 
 # Custom formatter that strips emojis for console but keeps them for file
@@ -64,7 +66,9 @@ class FileFormatter(logging.Formatter):
 # Setup logging handlers
 file_handler = logging.FileHandler(f"{LOG_DIR}/job_finder.log", encoding="utf-8")
 file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(FileFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+file_handler.setFormatter(
+    FileFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
 
 console_handler = logging.StreamHandler(stream=sys.stdout)
 console_handler.setLevel(logging.INFO)
@@ -82,52 +86,38 @@ class JobFinder:
     """Main job finder application"""
 
     def __init__(self):
+        self.config = Config()
         self.storage = JobStorage(data_dir="data")
         # LinkedIn-only workflow
         self.scrapers = [
             ("LinkedIn", LinkedInScraper()),
         ]
-        self.match_threshold = float(os.getenv("JOB_MATCH_THRESHOLD", "8"))
-        self.openai_key = os.getenv("OPENAI_API_KEY")
+        self.match_threshold = self.config.job_match_threshold
+        self.openai_key = self.config.openai_api_key
+        self.base_model = self.config.openai_model
+        self.rerank_model = self.config.openai_model_rerank
+        self.rerank_band = self.config.job_match_rerank_band
 
         # Initialize OpenAI client safely
         try:
-            self.openai_client = OpenAI(api_key=self.openai_key) if self.openai_key else None
+            self.openai_client = (
+                OpenAI(api_key=self.openai_key) if self.openai_key else None
+            )
         except Exception as e:
             logger.warning(f"Failed to initialize OpenAI client: {e}")
             self.openai_client = None
 
+        self.resume_loader = ResumeLoader(config=self.config, logger=logger)
+        self.match_scorer = MatchScorer(
+            config=self.config, openai_client=self.openai_client, logger=logger
+        )
         self.resume_text = self._load_resume_text()
         self.preferences_text = self._load_preferences()
         self.notifier = ToastNotifier() if ToastNotifier else None
 
     def _load_resume_text(self) -> str:
-        """Read resume text from PDF or txt. Looks for RESUME_PATH or data/resume/master_resume."""
-        candidates = [
-            os.getenv("RESUME_PATH"),
-            os.path.join("data", "resume.pdf"),
-            os.path.join("data", "master_resume.pdf"),
-            "resume.pdf",
-            os.path.join("data", "resume.txt"),
-        ]
-        for path in candidates:
-            if not path:
-                continue
-            p = Path(path)
-            if not p.exists():
-                continue
-            try:
-                if p.suffix.lower() == ".pdf":
-                    reader = PdfReader(str(p))
-                    text = "\n".join(page.extract_text() or "" for page in reader.pages)
-                else:
-                    text = p.read_text(encoding="utf-8", errors="ignore")
-                logger.info(f"Loaded resume text from {p}")
-                return text[:8000]  # keep prompt small
-            except Exception as exc:
-                logger.warning(f"Could not read resume at {p}: {exc}")
-        logger.warning("Resume not found; match scoring may be weak. Set RESUME_PATH.")
-        return ""
+        """Load resume text using ResumeLoader (full text, cached)."""
+        return self.resume_loader.load_text()
 
     def _load_preferences(self) -> str:
         """Load preferences text from PREFERENCES_PATH or data/preferences.txt."""
@@ -176,20 +166,19 @@ class JobFinder:
                     ),
                 },
             ]
-            resp = self.openai_client.responses.create(
-                model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-                messages=messages,
-                response_format={"type": "json_object"},
-                temperature=0,
-            )
-            # responses API returns structured content; grab the first text block
-            content = resp.output[0].content[0].text if resp.output else "{}"
-            import json
 
-            data = json.loads(content)
-            score = float(data.get("score", 0))
-            job["match_reason"] = data.get("reason", "")
-            return score
+            result = self.match_scorer.score(
+                resume_text=self.resume_text,
+                preferences_text=self.preferences_text,
+                job_details=job,
+            )
+
+            job["match_reason"] = result.get("reason", "")
+            if result.get("reranked"):
+                job["match_reason_rerank"] = result.get("reason_rerank", "")
+                job["match_model_used_rerank"] = result.get("model_used_rerank")
+            job["match_model_used"] = result.get("model_used")
+            return float(result.get("score", 0.0))
         except Exception as exc:
             logger.error(f"LLM scoring failed: {exc}")
             return 0.0
@@ -217,7 +206,9 @@ class JobFinder:
         message = f"{job.get('title', '')} @ {job.get('company', '')} ({job.get('location', '')})"
         if self.notifier:
             try:
-                self.notifier.show_toast("Matched Job", message, duration=5, threaded=True)
+                self.notifier.show_toast(
+                    "Matched Job", message, duration=5, threaded=True
+                )
             except Exception as exc:
                 logger.debug(f"Toast notify failed: {exc}")
         logger.info(f"Notify: {message}")
@@ -332,7 +323,11 @@ class JobFinder:
 
     def scrape_jobs(self, max_applicants=100):
         """Scrape each portal: Scrape → Find People → Export → Notify"""
-        click.echo(click.style("\n🔍 Starting multi-portal job scraper...", fg="cyan", bold=True))
+        click.echo(
+            click.style(
+                "\n🔍 Starting multi-portal job scraper...", fg="cyan", bold=True
+            )
+        )
         click.echo(
             "Workflow: Scrape → Filter → Find People → Export to Excel → Notify (per portal)"
         )
@@ -342,7 +337,9 @@ class JobFinder:
 
         # Process each scraper in sequence
         for portal_name, scraper in self.scrapers:
-            click.echo(click.style(f"\n🚀 Processing {portal_name}...", fg="cyan", bold=True))
+            click.echo(
+                click.style(f"\n🚀 Processing {portal_name}...", fg="cyan", bold=True)
+            )
 
             try:
                 # Phase 1: Scrape portal with inline scoring/connecting
@@ -354,7 +351,9 @@ class JobFinder:
                     storage=self.storage,
                     connect_limit=5,
                 )
-                click.echo(f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}")
+                click.echo(
+                    f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}"
+                )
 
                 click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
                 all_jobs.extend(jobs)
@@ -365,7 +364,9 @@ class JobFinder:
 
         click.echo("\n" + "=" * 80)
         click.secho(
-            f"✅ All portals processed! Total jobs scraped: {len(all_jobs)}", fg="green", bold=True
+            f"✅ All portals processed! Total jobs scraped: {len(all_jobs)}",
+            fg="green",
+            bold=True,
         )
 
         return all_jobs
@@ -420,7 +421,9 @@ class JobFinder:
                 logger.error(f"Loop cycle error: {exc}")
             elapsed = time.time() - cycle_start
             sleep_seconds = max(interval_minutes * 60 - elapsed, 0)
-            click.echo(f"⏳ Sleeping {sleep_seconds / 60:.1f} minutes before next cycle...")
+            click.echo(
+                f"⏳ Sleeping {sleep_seconds / 60:.1f} minutes before next cycle..."
+            )
             time.sleep(sleep_seconds)
 
 
@@ -475,13 +478,17 @@ def export():
 
 @cli.command()
 @click.option("--interval", default=15, help="Minutes between scrapes (default: 15)")
-@click.option("--max-applicants", default=100, help="Max applicants filter (default: 100)")
+@click.option(
+    "--max-applicants", default=100, help="Max applicants filter (default: 100)"
+)
 def loop(interval, max_applicants):
     """Run scraper continuously in a loop."""
     finder = JobFinder()
     iteration = 1
 
-    click.echo(click.style("\n🔄 Starting continuous scraper loop", fg="cyan", bold=True))
+    click.echo(
+        click.style("\n🔄 Starting continuous scraper loop", fg="cyan", bold=True)
+    )
     click.echo(f"⏱️  Will run every {interval} minutes")
     click.echo(f"👥 Max applicants filter: {max_applicants}")
     click.echo("Press Ctrl+C to stop")
@@ -513,7 +520,9 @@ def loop(interval, max_applicants):
             time.sleep(wait_seconds)
 
     except KeyboardInterrupt:
-        click.echo(click.style("\n\n⛔ Scraper stopped by user", fg="yellow", bold=True))
+        click.echo(
+            click.style("\n\n⛔ Scraper stopped by user", fg="yellow", bold=True)
+        )
         click.echo(f"Completed {iteration - 1} iterations")
 
 

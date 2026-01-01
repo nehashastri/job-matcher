@@ -28,8 +28,10 @@
   - Email (Gmail app password): `GMAIL_SMTP_HOST`, `GMAIL_SMTP_PORT`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `ALERT_EMAIL_TO` (recipient)
   - `POLL_INTERVAL_MINUTES` (default 30)
   - `OPENAI_API_KEY` (for LLM calls)
-  - `OPENAI_MODEL` (default gpt-4o-mini)
-  - `MATCH_SCORE_THRESHOLD` (default 8)
+  - `OPENAI_MODEL` (default gpt-4o-mini, first-pass scoring)
+  - `OPENAI_MODEL_RERANK` (optional stronger model for second-pass scoring)
+  - `JOB_MATCH_THRESHOLD` (default 8)
+  - `JOB_MATCH_RERANK_BAND` (score band around threshold that triggers rerank; default 1.0)
 - **Roles file**: `data/roles.json`
   - `role` (e.g., "Software Engineer") — required
   - `location` (e.g., "New York, NY") — required
@@ -40,13 +42,13 @@
   - `accept_hr_companies` — boolean (default false); if false, reject roles posted by staffing/HR/recruiter firms and auto-add to blocklist
   - Optional (future): keywords include/exclude, company include/exclude, applicant-count cap
 - **Company blocklist file** (JSON, path e.g., `data/company_blocklist.json`): list of company names/patterns to drop after scraping.
-- **Master resume** (`data/master_resume.pdf`): user's resume for LLM matching.
+- **Master resume** (`data/master_resume.docx`): user's resume for LLM matching.
 
 ## Workflow (Local, then Cloud)
 1. Load `.env`; validate required fields.
 2. Login to LinkedIn (Selenium); persist cookies to `data/.linkedin_cookies.pkl`; retry on failure with exponential backoff (base 2s, max 30s).
 3. Load `data/roles.json` and `data/company_blocklist.json`; validate each role has a location.
-4. Load `data/master_resume.pdf`; extract text via pypdf.
+4. Load `data/master_resume.docx`; extract full text via python-docx (no truncation; cache reuse allowed).
 5. For each role:
    - Build the LinkedIn search URL with filters.
    - If `date_posted` is `r<number>` and 3600 ≤ number ≤ 86400, set `f_TPR=r<number>`.
@@ -59,7 +61,7 @@
    - Apply company blocklist: drop results whose company name matches blocklist patterns (regex/string match, e.g., Lensa). Log blocklist hit.
    - If `accept_hr_companies` is false, run LLM check to identify if company is a staffing/HR/recruiter firm; if detected, reject, auto-add company to blocklist, log decision.
    - If `requires_sponsorship` is true for this role, run LLM sponsorship filter on the job detail; reject if it says no sponsorship/US citizens only; log decision.
-   - If not rejected, run LLM match scoring vs master resume; default accept threshold ≥8/10 (prompt customizable); log score and decision.
+  - If not rejected, run LLM match scoring vs master resume (full text, no truncation); default accept threshold ≥8/10; two-pass routing (cheap model first, rerank near threshold on stronger model); log score, reason, and model used.
 7. When a job is accepted:
    - Record in storage (CSV & JSON) with timestamp, score, and source URL.
    - Open a new browser tab; search "role at company_name" on LinkedIn (add random delay 2–5s).
@@ -92,7 +94,7 @@ Return JSON: {"decision": "accept" or "reject", "reason": "brief explanation"}
 
 **3. Match Scoring**
 ```
-You are a career advisor. The user's resume and preferences are below.
+You are a concise matcher. The user's full resume (no truncation) and preferences are below.
 A job posting follows. On a scale of 0–10, how well does the job match the user's background, goals, and preferences?
 
 User Resume:
@@ -107,8 +109,12 @@ Location: {job_location}
 Job Description:
 {job_description}
 
-Return JSON: {"score": <0-10>, "reasoning": "brief explanation", "verdict": "accept" or "reject"}
+Return JSON: {"score": <0-10>, "reason": "brief explanation"}
 ```
+
+**Two-pass routing**
+- Pass 1: run on `OPENAI_MODEL` (cost-efficient).
+- If `abs(score - JOB_MATCH_THRESHOLD) <= JOB_MATCH_RERANK_BAND` and `OPENAI_MODEL_RERANK` differs, rerun on `OPENAI_MODEL_RERANK`; replace score/reason with rerank output.
 
 ## Date Posted Custom Range (f_TPR)
 - LinkedIn uses `f_TPR=r<seconds>` (e.g., `r86400` for 24h).
@@ -123,31 +129,14 @@ Return JSON: {"score": <0-10>, "reasoning": "brief explanation", "verdict": "acc
 
 ## Data Storage Format
 
-### matched_jobs.csv
+### jobs.csv / jobs.xlsx
 ```
-job_id, title, company, location, remote, seniority, posted_time, job_url, match_score, matched_at, connections_sent, email_sent
+ID,Title,Company,Location,Job URL,Source,Applicants,Posted Date,Scraped Date,Match Score,Viewed,Saved,Applied,Emailed
 ```
 
-### matched_jobs.json (same data, alternative format)
-```json
-{
-  "jobs": [
-    {
-      "job_id": "unique_id",
-      "title": "Software Engineer",
-      "company": "Acme Corp",
-      "location": "New York, NY",
-      "remote": "hybrid",
-      "seniority": "Mid-Senior",
-      "posted_time": "2025-01-01T10:30:00Z",
-      "job_url": "https://linkedin.com/jobs/...",
-      "match_score": 8.5,
-      "matched_at": "2025-01-01T11:45:00Z",
-      "connections_sent": 15,
-      "email_sent": true
-    }
-  ]
-}
+### linkedin_connections.csv / linkedin_connections.xlsx
+```
+Date,Name,Title,LinkedIn URL,Role Searched,Country,Message Sent,Status
 ```
 
 ### company_blocklist.json
@@ -166,7 +155,7 @@ job_id, title, company, location, remote, seniority, posted_time, job_url, match
 - Cloud: long-running worker with health checks; consider per-role staggering to reduce bursts.
 
 ## Logging
-- Daily log files named `logs/job_scraper_YYYY-MM-DD.log`; start a new file at 00:00 local time.
+- Daily-rotated log file `logs/job_finder.log` (TimedRotatingFileHandler adds date suffixes).
 - Log every step with timestamps (ISO format); use horizontal separators (e.g., `---`) for readability.
 - Examples to log:
   - `[TIMESTAMP] [LOGIN] LinkedIn login attempt...`

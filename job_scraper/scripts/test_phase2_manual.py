@@ -8,7 +8,8 @@ import sys
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT_DIR))
 
 from auth.linkedin_auth import LinkedInAuth
 from auth.session_manager import SessionManager
@@ -35,13 +36,17 @@ def test_scraping():
     # Check if credentials are set
     if not config.linkedin_email or not config.linkedin_password:
         logger.error("LinkedIn credentials not found in .env file!")
-        logger.error("Please set LINKEDIN_EMAIL and LINKEDIN_PASSWORD in your .env file")
+        logger.error(
+            "Please set LINKEDIN_EMAIL and LINKEDIN_PASSWORD in your .env file"
+        )
         return False
 
     logger.info(f"LinkedIn Email: {config.linkedin_email}")
     logger.info(f"Max jobs per role: {config.max_jobs_per_role}")
     logger.info(f"Skip viewed jobs: {config.skip_viewed_jobs}")
-    logger.info(f"Request delay: {config.request_delay_min}-{config.request_delay_max}s")
+    logger.info(
+        f"Request delay: {config.request_delay_min}-{config.request_delay_max}s"
+    )
 
     # Initialize session manager
     logger.info("\n--- Step 1: Starting Browser Session ---")
@@ -93,10 +98,14 @@ def test_scraping():
 
         # Scrape job list
         logger.info("\n--- Step 5: Scraping Job List ---")
-        logger.info(f"Looking for unviewed jobs (skip_viewed={config.skip_viewed_jobs})")
+        logger.info(
+            f"Looking for unviewed jobs (skip_viewed={config.skip_viewed_jobs})"
+        )
 
         list_scraper = JobListScraper(driver, config)
-        jobs = list_scraper.scrape_job_list(search_url, max_jobs=5)  # Limit to 5 for testing
+        jobs = list_scraper.scrape_job_list(
+            search_url, max_jobs=5
+        )  # Limit to 5 for testing
 
         logger.info(f"\n[SCRAPE_LIST] Found {len(jobs)} jobs")
 
@@ -116,7 +125,9 @@ def test_scraping():
             logger.info(f"{i}. [{job['job_id']}] {job['title']}")
             logger.info(f"   Company: {job['company']}")
             logger.info(f"   Location: {job['location']}")
-            logger.info(f"   Status: {viewed_status}{viewed_detail if job['is_viewed'] else ''}")
+            logger.info(
+                f"   Status: {viewed_status}{viewed_detail if job['is_viewed'] else ''}"
+            )
             logger.info(f"   URL: {job['job_url']}")
             logger.info("")
 
@@ -133,12 +144,20 @@ def test_scraping():
 
             if details:
                 logger.info(f"[JOB_DETAIL] Successfully scraped job {job['job_id']}")
-                logger.info(f"  Description length: {len(details.get('description', ''))} chars")
+                logger.info(
+                    f"  Description length: {len(details.get('description', ''))} chars"
+                )
                 logger.info(f"  Seniority: {details.get('seniority', 'Unknown')}")
-                logger.info(f"  Employment type: {details.get('employment_type', 'Unknown')}")
+                logger.info(
+                    f"  Employment type: {details.get('employment_type', 'Unknown')}"
+                )
                 logger.info(f"  Posted: {details.get('posted_time', 'Unknown')}")
-                logger.info(f"  Applicants: {details.get('applicant_count', 'Unknown')}")
-                logger.info(f"  Remote eligible: {details.get('remote_eligible', False)}")
+                logger.info(
+                    f"  Applicants: {details.get('applicant_count', 'Unknown')}"
+                )
+                logger.info(
+                    f"  Remote eligible: {details.get('remote_eligible', False)}"
+                )
                 details_count += 1
 
                 # Show FULL description

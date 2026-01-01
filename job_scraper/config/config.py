@@ -35,6 +35,10 @@ class Config:
         # OpenAI
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        # Larger model used for second-pass reranking; defaults to primary if unset
+        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", self.openai_model)
+        # Score band where we trigger rerank (absolute difference from threshold)
+        self.job_match_rerank_band = float(os.getenv("JOB_MATCH_RERANK_BAND", "1.0"))
         self.job_match_threshold = float(os.getenv("JOB_MATCH_THRESHOLD", "8"))
 
         # LinkedIn
@@ -42,9 +46,11 @@ class Config:
         self.linkedin_password = os.getenv("LINKEDIN_PASSWORD", "")
 
         # File paths
-        self.resume_path = Path(os.getenv("RESUME_PATH", "./data/resume.pdf"))
+        self.resume_path = Path(os.getenv("RESUME_PATH", "./data/resume.docx"))
         self.roles_path = Path(os.getenv("ROLES_PATH", "./data/roles.json"))
-        self.blocklist_path = Path(os.getenv("BLOCKLIST_PATH", "./data/company_blocklist.json"))
+        self.blocklist_path = Path(
+            os.getenv("BLOCKLIST_PATH", "./data/company_blocklist.json")
+        )
 
         # Scraping settings
         self.scrape_interval_minutes = int(os.getenv("SCRAPE_INTERVAL_MINUTES", "30"))
@@ -55,8 +61,13 @@ class Config:
 
         # Filtering settings
         self.max_applicants = int(os.getenv("MAX_APPLICANTS", "100"))
-        self.requires_sponsorship = os.getenv("REQUIRES_SPONSORSHIP", "true").lower() == "true"
+        self.requires_sponsorship = (
+            os.getenv("REQUIRES_SPONSORSHIP", "true").lower() == "true"
+        )
         self.skip_viewed_jobs = os.getenv("SKIP_VIEWED_JOBS", "true").lower() == "true"
+        self.reject_hr_companies = (
+            os.getenv("REJECT_HR_COMPANIES", "true").lower() == "true"
+        )
 
         # Networking settings
         self.max_connections_per_job = int(os.getenv("MAX_CONNECTIONS_PER_JOB", "30"))
@@ -166,7 +177,9 @@ class Config:
 
             # Add company and save
             if company not in data.get("blocklist", []):
-                data["blocklist"] = sorted(list(set(data.get("blocklist", []) + [company])))
+                data["blocklist"] = sorted(
+                    list(set(data.get("blocklist", []) + [company]))
+                )
                 with open(self.blocklist_path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 return True
