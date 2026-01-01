@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from openai import OpenAI
-
 from config.config import Config, get_config
 from config.logging_utils import get_logger
+from openai import OpenAI
 
 
 class MatchScorer:
@@ -30,7 +29,9 @@ class MatchScorer:
         """
 
         if not self.client:
-            self.logger.warning("OpenAI client not configured; defaulting match score to 0")
+            self.logger.warning(
+                "OpenAI client not configured; defaulting match score to 0"
+            )
             return {
                 "score": 0.0,
                 "reason": "LLM unavailable",
@@ -125,7 +126,9 @@ class MatchScorer:
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
-    def _call_llm(self, messages: list[dict[str, str]], model: str) -> tuple[float, str]:
+    def _call_llm(
+        self, messages: list[dict[str, str]], model: str
+    ) -> tuple[float, str]:
         """Call OpenAI using chat.completions or responses for JSON output."""
 
         # Prefer chat.completions
