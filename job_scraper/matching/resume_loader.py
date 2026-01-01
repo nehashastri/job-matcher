@@ -36,7 +36,25 @@ class ResumeLoader:
             try:
                 if target_path.suffix.lower() == ".docx":
                     doc = Document(str(target_path))
-                    text = "\n".join(paragraph.text for paragraph in doc.paragraphs)
+                    # Extract text from paragraphs
+                    text_parts = [
+                        paragraph.text
+                        for paragraph in doc.paragraphs
+                        if paragraph.text.strip()
+                    ]
+
+                    # Extract text from tables
+                    for table in doc.tables:
+                        for row in table.rows:
+                            row_text = " ".join(
+                                cell.text.strip()
+                                for cell in row.cells
+                                if cell.text.strip()
+                            )
+                            if row_text:
+                                text_parts.append(row_text)
+
+                    text = "\n".join(text_parts)
                 else:
                     text = target_path.read_text(encoding="utf-8", errors="ignore")
 

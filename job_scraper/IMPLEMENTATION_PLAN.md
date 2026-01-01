@@ -172,18 +172,33 @@
 ### Phase 7: Email Notifications
 **Goal**: Send email alert for accepted jobs via Gmail SMTP.
 
+**Gmail Setup** (prerequisite):
+1. Enable 2FA on your Google account: [myaccount.google.com/security](https://myaccount.google.com/security)
+2. Create App Password: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+   - Select app: **Mail**, device: **Other (Custom name)** → "Job Scraper"
+   - Copy the 16-character password (no spaces)
+3. Add to `.env`:
+   ```
+   EMAIL_SMTP_HOST=smtp.gmail.com
+   EMAIL_SMTP_PORT=587
+   EMAIL_SENDER=your-email@gmail.com
+   EMAIL_PASSWORD=your16charapppassword
+   EMAIL_RECIPIENT=your-email@gmail.com
+   ```
+
 **Deliverables**:
-- `src/notifications/email_notifier.py`: SMTP connection, compose email with job details and connection count
+- `src/notifications/email_notifier.py`: Gmail SMTP connection (TLS), compose email with job details and connection count
 - Template: job title, company, location, match score, job URL, connection count
-- Error handling: SMTP failure, retry or log
+- Error handling: SMTP failure, authentication error, retry or log
 
 **Dependencies**: Phase 0 (config/.env), Phases 2 & 6 (job data & storage).
 
 **Duration**: 1–2 days.
 
 **Test Use Cases** (to be approved):
-- Send email with valid SMTP config; verify email received
+- Send email with valid Gmail SMTP config; verify email received
 - SMTP server unreachable → log error, continue
+- Invalid app password → authentication error, log and continue
 - Invalid email address → SMTP error, log and continue
 - Email with all job details and connection count populated
 
