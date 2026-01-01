@@ -32,11 +32,11 @@ if sys.platform == "win32":
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from config.config import Config, LOG_DIR  # noqa: E402
-from scraping.linkedin_scraper import LinkedInScraper  # noqa: E402
-from storage_pkg import JobStorage  # noqa: E402
+from config.config import LOG_DIR, Config  # noqa: E402
 from matching.match_scorer import MatchScorer  # noqa: E402
 from matching.resume_loader import ResumeLoader  # noqa: E402
+from scraping.linkedin_scraper import LinkedInScraper  # noqa: E402
+from storage_pkg import JobStorage  # noqa: E402
 
 
 # Custom formatter that strips emojis for console but keeps them for file
