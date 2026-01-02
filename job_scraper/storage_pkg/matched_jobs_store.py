@@ -1,6 +1,5 @@
 """Job and contact storage backed by Excel (.xlsx)."""
 
-import csv
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -52,43 +51,16 @@ class MatchedJobsStore:
 
         self.jobs_excel = self.data_dir / "jobs.xlsx"
         self.connections_excel = self.data_dir / "linkedin_connections.xlsx"
-        self.legacy_jobs_csv = self.data_dir / "jobs.csv"
-        self.legacy_connections_csv = self.data_dir / "linkedin_connections.csv"
 
         self._init_files()
 
-    # ---------- Initialization & migration ----------
+    # ---------- Initialization ----------
     def _init_files(self) -> None:
-        """Ensure Excel files exist; migrate legacy CSV if present."""
-        if self.legacy_jobs_csv.exists() and not self.jobs_excel.exists():
-            self._migrate_jobs_csv_to_excel()
-        if self.legacy_connections_csv.exists() and not self.connections_excel.exists():
-            self._migrate_connections_csv_to_excel()
-
+        """Ensure Excel files exist."""
         if not self.jobs_excel.exists():
             self._write_jobs_excel([])
         if not self.connections_excel.exists():
             self._write_connections_excel([])
-
-    def _migrate_jobs_csv_to_excel(self) -> None:
-        try:
-            with open(self.legacy_jobs_csv, encoding="utf-8") as f:
-                rows = list(csv.DictReader(f)) or []
-            self._write_jobs_excel(rows)
-            logger.info("Migrated legacy jobs.csv to jobs.xlsx")
-        except Exception as exc:
-            logger.debug(f"Could not migrate jobs.csv: {exc}")
-
-    def _migrate_connections_csv_to_excel(self) -> None:
-        try:
-            with open(self.legacy_connections_csv, encoding="utf-8") as f:
-                rows = list(csv.DictReader(f)) or []
-            self._write_connections_excel(rows)
-            logger.info(
-                "Migrated legacy linkedin_connections.csv to linkedin_connections.xlsx"
-            )
-        except Exception as exc:
-            logger.debug(f"Could not migrate linkedin_connections.csv: {exc}")
 
     # ---------- Jobs ----------
     def add_job(self, job: dict[str, Any]) -> bool:

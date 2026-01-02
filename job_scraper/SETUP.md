@@ -1,134 +1,66 @@
 # Setup
 
+Step-by-step setup to run the scraper locally without extra services.
+
 ## Prerequisites
 - Windows 10/11
-- Chrome installed
+- Google Chrome installed
 - Pixi package manager (https://pixi.sh)
 - OpenAI API key
 - LinkedIn credentials
 
-## Install
+## Install dependencies
 ```powershell
 cd "d:\Projects\Job List\job_scraper"
 pixi -C project_config install
 ```
 
-## Configure
-1. Create your env file
-   ```powershell
-   Copy-Item project_config/.env.template .env
-   ```
-2. Fill required keys (minimum)
-   ```
-   OPENAI_API_KEY=sk-...
-   LINKEDIN_EMAIL=you@example.com
-   LINKEDIN_PASSWORD=your_password
-   OPENAI_MODEL=gpt-4o-mini
-   MATCH_SCORE_THRESHOLD=8
-   POLL_INTERVAL_MINUTES=30
-   ```
-3. Provide inputs
-   - `data/resume.docx` (your resume)
-   - `data/roles.json` (roles + locations + filters)
-   - `data/company_blocklist.json` (optional blocklist)
-
-## Gmail Email Notifications Setup
-
-To receive email alerts when jobs are matched, you need to set up Gmail App Passwords:
-
-### Step 1: Enable 2-Factor Authentication
-1. Go to [myaccount.google.com/security](https://myaccount.google.com/security)
-2. Navigate to **2-Step Verification**
-3. Follow the prompts to enable 2FA (required for app passwords)
-
-### Step 2: Create App Password
-1. Visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-   - Or: Google Account → Security → 2-Step Verification → App passwords (at bottom)
-2. Select app: **Mail**
-3. Select device: **Other (Custom name)** → enter "Job Scraper"
-4. Click **Generate**
-5. Google will display a 16-character password (e.g., `abcd efgh ijkl mnop`)
-6. **Copy this immediately** - you won't see it again!
-
-### Step 3: Update `.env` File
-Add these lines to your `.env`:
+## Configure environment
+1) Create your .env from the template
+```powershell
+Copy-Item project_config/.env.template .env
 ```
+
+2) Fill required keys (minimum)
+```
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL_RERANK=gpt-4o
+JOB_MATCH_THRESHOLD=8
+JOB_MATCH_RERANK_BAND=1
+LINKEDIN_EMAIL=you@example.com
+LINKEDIN_PASSWORD=your_password
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USERNAME=your-email@gmail.com
-SMTP_PASSWORD=yourapppasswordhere
+SMTP_PASSWORD=your_app_password
 EMAIL_FROM=your-email@gmail.com
 EMAIL_TO=your-email@gmail.com
 ENABLE_EMAIL_NOTIFICATIONS=true
 ```
 
-**Notes:**
-- Use the 16-character app password (remove spaces) in `SMTP_PASSWORD`
-- Do NOT use your regular Gmail password
-- Set `ENABLE_EMAIL_NOTIFICATIONS=false` to disable emails
+3) Provide inputs
+- data/resume.docx (your resume; keep as .docx)
+- data/roles.json (roles, locations, filters)
+- data/company_blocklist.json (optional blocklist entries/patterns)
 
-## Chrome Profile Setup
+## Optional: Gmail app password
+1) Enable 2FA on your Google account.
+2) Generate an App Password (Google Account > Security > App passwords) for Mail/Custom name.
+3) Place the 16-character password (no spaces) in SMTP_PASSWORD.
+4) Set ENABLE_EMAIL_NOTIFICATIONS=true to send alerts.
 
-To enable faster LinkedIn login and reduce CAPTCHA issues, you can copy your existing Chrome profile:
+## Optional: Chrome profile reuse
+Reusing a profile reduces CAPTCHA prompts and speeds up login.
+- Find your profile path via chrome://version/ (Profile Path).
+- Copy that folder to a safe location (Chrome must be closed).
+- Set CHROME_PROFILE_PATH in .env to the copied folder path.
+- Alternatively, start Chrome manually with --remote-debugging-port and set CHROME_REMOTE_DEBUG_PORT.
 
-### Step 1: Locate Your Chrome Profile
-1. Open Chrome and go to `chrome://version/`
-2. Find the **Profile Path** (e.g., `C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data\Default`)
-3. Close all Chrome instances before copying
-
-### Step 2: Copy Your Chrome Profile
-1. Open File Explorer and navigate to your Chrome User Data folder
-2. Copy the `Default` profile folder (or any named profile you use regularly):
-   ```powershell
-   Copy-Item "C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data\Default" `
-     -Destination "D:\Projects\Job List\job_scraper\data\chrome_profile" -Recurse
-   ```
-3. Update your `.env` file with:
-   ```
-   CHROME_PROFILE_PATH=D:\Projects\Job List\job_scraper\data\chrome_profile
-   ```
-
-### Step 3: Verify Setup
-Run a test to ensure the profile loads correctly:
-```powershell
-pixi -C project_config run python ../scripts/test_linkedin_login.py
-```
-
-**Benefits:**
-- Preserves saved passwords and autofill data
-- Reduces CAPTCHA challenges
-- Maintains LinkedIn session cookies
-- Speeds up repeated runs
-
-**Notes:**
-- The profile copy is local and won't affect your regular Chrome browser
-- If login fails, verify the profile path and ensure all Chrome instances are closed
-- You can regenerate the copy anytime by following these steps again
-
-## Resume Management
-
-### Adding Your Resume
-1. Save your resume as a Word document (`.docx` format, NOT `.doc`)
-2. Copy it to: `D:\Projects\Job List\job_scraper\data\resume.docx`
-   ```powershell
-   Copy-Item "C:\Path\To\Your\Resume.docx" "D:\Projects\Job List\job_scraper\data\resume.docx"
-   ```
-3. Verify extraction works:
-   ```powershell
-   pixi -C project_config run python ../scripts/test_resume_extraction.py
-   ```
-
-### Updating Your Resume
-When you need to update your resume:
-1. Save your updated resume as `.docx`
-2. Simply **replace** the file at `data/resume.docx`
-3. No need to restart the application - the resume is loaded fresh each time during the matching phase
-
-**Tips:**
-- Use Microsoft Word or Google Docs (download as .docx)
-- The system extracts text from both paragraphs and tables
-- Ensure your resume has actual text content (not just images or text boxes)
-- Alternative path: Set `RESUME_PATH` in `.env` to point to a different location
+## Resume tips
+- Use .docx (not .pdf) so python-docx can extract text.
+- Tables are supported; images are ignored.
+- If your resume lives elsewhere, set RESUME_PATH in .env.
 
 ## Run
 ```powershell
@@ -140,22 +72,20 @@ pixi -C project_config run loop
 ```
 
 ## Outputs
-- `data/jobs.xlsx` for accepted jobs
-- `data/linkedin_connections.xlsx` for saved contacts
-- `data/company_blocklist.json` and `data/roles.json` for inputs
-- `logs/job_finder.log` (daily rotated) for execution logs
+- data/jobs.xlsx for accepted jobs
+- data/linkedin_connections.xlsx for networking records
+- data/company_blocklist.json and data/roles.json for inputs
+- logs/job_finder.log (created at runtime)
 
 ## Testing
-- Using pixi task: `pixi -C project_config run test`
-- Or directly: `pixi run python -m pytest`
+```powershell
+pixi -C project_config run test
+# or
+pixi run python -m pytest
+```
 
 ## Troubleshooting
-- Chrome/driver: ensure Chrome is installed; Selenium manages the driver.
-- Login failures: recheck creds; solve any CAPTCHA manually.
-- OpenAI errors: verify API key, quota, and network.
-- Empty results: relax filters in `data/roles.json` or lower `MATCH_SCORE_THRESHOLD`.
-
-## Related docs
-- Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
-- Implementation and test plan: [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)
-- Project map: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+- Chrome/driver: ensure Chrome is installed; if profile copy fails, close Chrome and retry.
+- Login: verify LinkedIn credentials and CHROME_PROFILE_PATH/remote debugging settings.
+- OpenAI: check OPENAI_API_KEY and model names; ensure network egress is allowed.
+- Empty results: loosen filters in data/roles.json or lower JOB_MATCH_THRESHOLD.

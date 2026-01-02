@@ -13,6 +13,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from job_scraper.models import ProfileCard
+
 
 class PeopleFinder:
     """Search LinkedIn People results for a given role at a company."""
@@ -269,13 +271,16 @@ class PeopleFinder:
             connection_status = self._extract_connection_status(card)
             is_match = self._is_role_company_match(title, role, company)
             if profile_url or name or title:
-                return {
-                    "name": name,
-                    "title": title,
-                    "profile_url": profile_url,
-                    "connection_status": connection_status,
-                    "is_role_match": is_match,
-                }
+                profile = ProfileCard(
+                    name=name,
+                    title=title,
+                    profile_url=profile_url,
+                    company=company,
+                    role=role,
+                    connection_status=connection_status,
+                    is_role_match=is_match,
+                )
+                return profile.to_dict()
         except Exception as exc:
             self.logger.debug(f"[PEOPLE_SEARCH] Failed to parse profile card: {exc}")
         return None

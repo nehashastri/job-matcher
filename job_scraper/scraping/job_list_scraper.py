@@ -18,6 +18,8 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from job_scraper.models import JobSummary
+
 logger = get_logger(__name__)
 
 
@@ -80,7 +82,7 @@ class JobListScraper:
             logger.warning("[SCRAPE_LIST] Job list did not load within timeout")
             return []
 
-        jobs = []
+        jobs: list[dict[str, Any]] = []
         max_jobs = max_jobs or self.config.max_jobs_per_role
 
         # Scroll and load jobs until we have enough
@@ -301,20 +303,20 @@ class JobListScraper:
                     f"[SCRAPE_LIST] Could not determine viewed status for job {job_id}: {e}"
                 )
 
-            job = {
-                "job_id": job_id,
-                "title": title,
-                "company": company,
-                "location": location,
-                "is_viewed": is_viewed,
-                "viewed_indicator": viewed_indicator,
-                "job_url": f"https://www.linkedin.com/jobs/view/{job_id}/",
-            }
+            summary = JobSummary(
+                job_id=job_id,
+                title=title,
+                company=company,
+                location=location,
+                is_viewed=is_viewed,
+                viewed_indicator=viewed_indicator,
+                job_url=f"https://www.linkedin.com/jobs/view/{job_id}/",
+            )
 
             logger.debug(
                 f"[SCRAPE_LIST] Extracted job: {title} at {company} (ID: {job_id}, viewed={is_viewed})"
             )
-            return job
+            return summary.to_dict()
 
         except NoSuchElementException as e:
             logger.warning(f"[SCRAPE_LIST] Missing element in job card: {e}")

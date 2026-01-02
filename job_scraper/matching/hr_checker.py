@@ -149,7 +149,11 @@ class HRChecker:
 
         # Fallback to older responses API (used in tests/mocks)
         if hasattr(self.client, "responses"):
-            response = self.client.responses.create(
+            responses_obj = self.client.responses
+            if callable(responses_obj):
+                responses_obj = responses_obj()
+
+            response = responses_obj.create(
                 model=model,
                 messages=messages,
                 response_format={"type": "json_object"},
