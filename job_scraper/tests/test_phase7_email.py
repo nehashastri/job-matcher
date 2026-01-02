@@ -136,7 +136,7 @@ class TestEmailComposition:
         assert "Acme Corp" in html
         assert "San Francisco, CA" in html
         assert "9/10" in html
-        assert "Connection Requests Sent:</span>" in html
+        assert "Connections Sent:</span>" in html
         assert "<span>3</span>" in html
         assert "https://linkedin.com/jobs/view/12345" in html
 

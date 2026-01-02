@@ -9,19 +9,19 @@ import re
 import time
 from typing import Any
 
+from config.config import get_config
+from filtering.blocklist import Blocklist
+from matching.hr_checker import HRChecker
+from networking.connection_requester import ConnectionRequester
+from networking.people_finder import PeopleFinder
 from selenium import webdriver
 from selenium.common.exceptions import (
     StaleElementReferenceException,
     TimeoutException,
 )
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
-
-from config.config import get_config
-from filtering.blocklist import Blocklist
-from matching.hr_checker import HRChecker
 
 from .base_scraper import BaseScraper
 
@@ -64,6 +64,13 @@ class LinkedInScraper(BaseScraper):
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option("useAutomationExtension", False)
 
+            if os.getenv("HEADLESS", "false").lower() == "true":
+                options.add_argument("--headless=new")
+                options.add_argument("--disable-gpu")
+                options.add_argument("--window-size=1920,1080")
+                options.add_argument("--no-sandbox")
+                options.add_argument("--disable-dev-shm-usage")
+
             self.driver = webdriver.Chrome(options=options)
             self.wait = WebDriverWait(self.driver, 15)
             self.logger.debug("Chrome WebDriver initialized")
@@ -94,16 +101,22 @@ class LinkedInScraper(BaseScraper):
             password_field = self.driver.find_element(By.ID, "password")
             password_field.send_keys(self.user_password)
 
-            login_button = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+            login_button = self.driver.find_element(
+                By.CSS_SELECTOR, "button[type='submit']"
+            )
             login_button.click()
             time.sleep(4)
 
             try:
                 self.wait.until(
-                    expected_conditions.presence_of_element_located((By.CLASS_NAME, "global-nav"))
+                    expected_conditions.presence_of_element_located(
+                        (By.CLASS_NAME, "global-nav")
+                    )
                 )
                 self.authenticated = True
-                self.logger.info(f"✅ Successfully logged in to LinkedIn as {self.user_email}")
+                self.logger.info(
+                    f"✅ Successfully logged in to LinkedIn as {self.user_email}"
+                )
                 return True
             except TimeoutException:
                 self.logger.error("❌ Login failed")
@@ -119,7 +132,8 @@ class LinkedInScraper(BaseScraper):
         scorer=None,
         match_threshold: float = 0.0,
         storage=None,
-        connect_limit: int = 5,
+        connect_pages: int | None = None,
+        connect_delay_range: tuple[float, float] = (1.0, 2.0),
         team_hint: str | None = None,
     ) -> list[dict[str, Any]]:
         """Main scraping method with inline scoring/export/connect."""
@@ -128,7 +142,13 @@ class LinkedInScraper(BaseScraper):
         self.logger.info("=" * 60)
 
         jobs: list[dict[str, Any]] = []
-        queries = ["data scientist", "machine learning engineer", "AI engineer", "ML engineer"]
+        queries = [
+            "data scientist at google",
+            "data scientist",
+            "machine learning engineer",
+            "AI engineer",
+            "ML engineer",
+        ]
 
         try:
             if not self._login():
@@ -147,10 +167,13 @@ class LinkedInScraper(BaseScraper):
                         scorer=scorer,
                         match_threshold=match_threshold,
                         storage=storage,
-                        connect_limit=connect_limit,
+                        connect_pages=connect_pages,
+                        connect_delay_range=connect_delay_range,
                         team_hint=team_hint,
                     )
-                    self.logger.info(f"✅ Processed {len(page_jobs)} jobs for '{query}'")
+                    self.logger.info(
+                        f"✅ Processed {len(page_jobs)} jobs for '{query}'"
+                    )
                     jobs.extend(page_jobs)
                     if matched:
                         found_match = True
@@ -186,7 +209,8 @@ class LinkedInScraper(BaseScraper):
         scorer=None,
         match_threshold: float = 0.0,
         storage=None,
-        connect_limit: int = 5,
+        connect_pages: int = 3,
+        connect_delay_range: tuple[float, float] = (1.0, 2.0),
         team_hint: str | None = None,
     ) -> tuple[list[dict[str, Any]], bool]:
         """Scrape jobs for a single query; return (jobs, matched_flag)."""
@@ -195,11 +219,16 @@ class LinkedInScraper(BaseScraper):
         try:
             search_url = self._build_search_url(query)
             self.logger.debug(f"  Navigating to: {search_url}")
-            self.driver.get(search_url)
+            if not self._safe_get(search_url):
+                self.logger.error("  Could not navigate to search URL; skipping query")
+                return jobs, matched
             try:
                 self.wait.until(
                     expected_conditions.presence_of_element_located(
-                        (By.CSS_SELECTOR, "ul.scaffold-layout__list, div.jobs-search-results-list")
+                        (
+                            By.CSS_SELECTOR,
+                            "ul.scaffold-layout__list, div.jobs-search-results-list",
+                        )
                     )
                 )
             except Exception:
@@ -221,11 +250,14 @@ class LinkedInScraper(BaseScraper):
                         self.logger.debug("    ⏭️  Skipped: Already viewed")
                         continue
                     try:
-                        self.driver.execute_script("arguments[0].scrollIntoView(true);", job_card)
+                        self.driver.execute_script(
+                            "arguments[0].scrollIntoView(true);", job_card
+                        )
                         time.sleep(0.5)
                         try:
                             link = job_card.find_element(
-                                By.CSS_SELECTOR, "a.job-card-list__title, a.app-aware-link"
+                                By.CSS_SELECTOR,
+                                "a.job-card-list__title, a.app-aware-link",
                             )
                             link.click()
                         except Exception:
@@ -268,7 +300,9 @@ class LinkedInScraper(BaseScraper):
                         continue
 
                     # HR check (configurable)
-                    hr_result = self.hr_checker.check(company_name, description=description)
+                    hr_result = self.hr_checker.check(
+                        company_name, description=description
+                    )
                     if hr_result.get("is_hr_company"):
                         self.logger.info(
                             f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
@@ -278,7 +312,9 @@ class LinkedInScraper(BaseScraper):
                         continue
 
                     if not self._check_visa_sponsorship(description):
-                        self.logger.info("    ❌ Skipped: Explicitly states no sponsorship")
+                        self.logger.info(
+                            "    ❌ Skipped: Explicitly states no sponsorship"
+                        )
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
@@ -306,7 +342,11 @@ class LinkedInScraper(BaseScraper):
                     jobs.append(job)
                     try:
                         self._connect_to_people(
-                            job, connect_limit=connect_limit, team_hint=team_hint
+                            job,
+                            connect_pages=connect_pages,
+                            delay_range=connect_delay_range,
+                            storage=storage,
+                            team_hint=team_hint,
                         )
                     except Exception as exc:
                         self.logger.debug(f"    Connection attempts failed: {exc}")
@@ -356,8 +396,7 @@ class LinkedInScraper(BaseScraper):
             time.sleep(2)
         except Exception:
             try:
-                self.driver.get(search_url)
-                time.sleep(2)
+                self._safe_get(search_url)
             except Exception:
                 self.logger.debug("Could not navigate back to results")
 
@@ -438,7 +477,8 @@ class LinkedInScraper(BaseScraper):
                     job_list = self.driver.find_element(By.CSS_SELECTOR, selector)
                     for _ in range(3):
                         self.driver.execute_script(
-                            "arguments[0].scrollTop = arguments[0].scrollHeight", job_list
+                            "arguments[0].scrollTop = arguments[0].scrollHeight",
+                            job_list,
                         )
                         time.sleep(1)
                     return
@@ -507,7 +547,9 @@ class LinkedInScraper(BaseScraper):
                 "span.job-details-jobs-unified-top-card__location",
                 "span.jobs-unified-top-card__bullet",
             ]
-            details["location"] = self._safe_find_text_multi(location_selectors) or "United States"
+            details["location"] = (
+                self._safe_find_text_multi(location_selectors) or "United States"
+            )
             try:
                 details["url"] = self.driver.current_url
                 if "/jobs/view/" in details["url"]:
@@ -559,6 +601,19 @@ class LinkedInScraper(BaseScraper):
             return element.text.strip()  # type: ignore[no-any-return]
         except Exception:
             return ""
+
+    def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
+        """Navigate to a URL with lightweight retries to reduce flakiness in headless runs."""
+        for attempt in range(retries):
+            try:
+                self.driver.get(url)
+                return True
+            except Exception as exc:
+                self.logger.debug(
+                    f"Nav attempt {attempt + 1}/{retries} failed for {url}: {exc}"
+                )
+                time.sleep(delay)
+        return False
 
     def _safe_find_text_multi(self, selectors: list[str]) -> str:
         for selector in selectors:
@@ -648,7 +703,9 @@ class LinkedInScraper(BaseScraper):
                 for elem in elements:
                     if "benefit" in elem.text.lower():
                         items = elem.find_elements(By.TAG_NAME, "li")
-                        return [item.text.strip() for item in items if item.text.strip()]
+                        return [
+                            item.text.strip() for item in items if item.text.strip()
+                        ]
             except Exception:
                 continue
         return []
@@ -688,7 +745,9 @@ class LinkedInScraper(BaseScraper):
                     text = elem.text.lower()
                     if "industry" in text:
                         parts = [
-                            p.strip() for p in text.replace("industry", "").split(",") if p.strip()
+                            p.strip()
+                            for p in text.replace("industry", "").split(",")
+                            if p.strip()
                         ]
                         return parts
             except Exception:
@@ -698,52 +757,67 @@ class LinkedInScraper(BaseScraper):
     def _check_visa_sponsorship(self, description: str) -> bool:
         return self._sponsors_visa(description, title="", company="")
 
-    def _connect_to_people(self, job: dict, connect_limit: int = 5, team_hint: str | None = None):
+    def _connect_to_people(
+        self,
+        job: dict,
+        connect_pages: int = 3,
+        delay_range: tuple[float, float] = (1.0, 2.0),
+        storage=None,
+        team_hint: str | None = None,
+    ):
         try:
             company = job.get("company", "")
             role = job.get("title", "")
-            search_query = f"{company} {role} hiring manager {team_hint or ''} site:linkedin.com/in"
-            self.logger.info(f"    🌐 Searching for people: {search_query}")
+            if team_hint:
+                role = f"{role} {team_hint}".strip()
+
+            if not company or not role:
+                self.logger.info(
+                    "    [PEOPLE_SEARCH] Missing company or role; skipping networking"
+                )
+                return
+
             if not self._login():
                 return
+
+            original_window = self.driver.current_window_handle
             self.driver.execute_script("window.open('about:blank','_blank');")
             handles = self.driver.window_handles
             self.driver.switch_to.window(handles[-1])
-            self.driver.get("https://www.google.com")
-            time.sleep(2)
-            search_box = self.wait.until(
-                expected_conditions.presence_of_element_located((By.NAME, "q"))
+
+            people_finder = PeopleFinder(self.driver, self.wait, self.logger)
+            connection_requester = ConnectionRequester(
+                self.driver, self.wait, self.logger
             )
-            search_box.clear()
-            search_box.send_keys(search_query)
-            search_box.send_keys(Keys.RETURN)
-            time.sleep(2)
-            links = self.driver.find_elements(By.CSS_SELECTOR, "a")
-            people: list[dict[str, str]] = []
-            for link in links[: connect_limit * 2]:
-                href = link.get_attribute("href")
-                if not href or "linkedin.com/in" not in href:
-                    continue
-                text = link.text.strip()
-                if not text:
-                    continue
-                title = link.get_attribute("aria-label") or text
-                people.append({"name": text, "title": title, "profile_url": href})
-                if len(people) >= connect_limit:
-                    break
-            if people:
-                self.logger.info(f"    🔗 Found {len(people)} potential contacts")
-                for person in people:
-                    self.logger.info(f"      - {person['name']} | {person['profile_url']}")
-            else:
-                self.logger.info("    No potential contacts found")
-            try:
-                self.driver.close()
-                self.driver.switch_to.window(handles[0])
-            except Exception:
-                pass
+
+            summary = connection_requester.run_on_people_search(
+                people_finder,
+                role=role,
+                company=company,
+                message_note_target=10,
+                no_note_target=10,
+                delay_range=delay_range,
+                store=storage,
+                max_pages=connect_pages,
+            )
+            self.logger.info(
+                "    [CONNECT] Requests: "
+                f"messaged={summary['messaged']} sent_with_note={summary['sent_with_note']} "
+                f"sent_without_note={summary['sent_without_note']} skipped={summary['skipped']} "
+                f"failed={summary['failed']} pages={summary['pages_processed']}"
+            )
         except Exception as exc:
             self.logger.debug(f"    Could not connect to people: {exc}")
+        finally:
+            try:
+                handles = self.driver.window_handles
+                if len(handles) > 1:
+                    self.driver.close()
+                    self.driver.switch_to.window(handles[0])
+                else:
+                    self.driver.switch_to.window(original_window)
+            except Exception:
+                pass
 
     def _safe_click(self, selector: str):
         try:
@@ -794,9 +868,14 @@ class LinkedInScraper(BaseScraper):
         return profiles
 
     def _parse_company_info(self) -> dict:
-        info: dict[str, str | None] = {"company_link": None, "company_description": None}
+        info: dict[str, str | None] = {
+            "company_link": None,
+            "company_description": None,
+        }
         try:
-            link_elem = self.driver.find_element(By.CSS_SELECTOR, "a.topcard__org-name-link")
+            link_elem = self.driver.find_element(
+                By.CSS_SELECTOR, "a.topcard__org-name-link"
+            )
             info["company_link"] = link_elem.get_attribute("href")
         except Exception:
             info["company_link"] = None

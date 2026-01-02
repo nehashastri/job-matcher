@@ -310,7 +310,11 @@ class JobFinder:
                 scorer=self._score_job_with_llm,
                 match_threshold=self.match_threshold,
                 storage=self.storage,
-                connect_limit=5,
+                connect_pages=self.config.max_people_search_pages,
+                connect_delay_range=(
+                    self.config.request_delay_min,
+                    self.config.request_delay_max,
+                ),
             )
             click.echo(f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}")
 
@@ -349,7 +353,11 @@ class JobFinder:
                     scorer=self._score_job_with_llm,
                     match_threshold=self.match_threshold,
                     storage=self.storage,
-                    connect_limit=5,
+                    connect_pages=self.config.max_people_search_pages,
+                    connect_delay_range=(
+                        self.config.request_delay_min,
+                        self.config.request_delay_max,
+                    ),
                 )
                 click.echo(
                     f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}"

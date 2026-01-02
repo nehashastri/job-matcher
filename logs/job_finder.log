@@ -1,0 +1,272 @@
+[2026-01-02 11:49:38] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-02 11:49:52] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:49:52] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-02 11:49:52] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:49:54] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-02 11:49:54] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:49:54] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:49:54] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:49:54] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:49:54] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:49:54] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:49:54] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:49:54] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:49:54] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:49:54] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:49:54] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:49:54] [INFO] [GENERAL] CLICKING on first job (ID: 4346915363) to mark it as viewed...
+[2026-01-02 11:49:54] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:49:54] [INFO] [GENERAL] BEFORE click:
+[2026-01-02 11:49:54] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:49:54] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:49:58] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-02 11:49:58] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:49:58] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:49:58] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:49:58] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-02 11:49:58] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:49:59] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-02 11:49:59] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:49:59] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:49:59] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:49:59] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:49:59] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:49:59] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:49:59] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:49:59] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:49:59] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:49:59] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:49:59] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:49:59] [INFO] [GENERAL] SUMMARY
+[2026-01-02 11:49:59] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:49:59] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-02 11:49:59] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-02 11:49:59] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-02 11:51:03] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-02 11:51:17] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:51:17] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-02 11:51:17] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:51:19] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-02 11:51:19] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:51:19] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:51:19] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:51:19] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:51:19] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:51:19] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:51:19] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:51:19] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:51:19] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:51:19] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:51:19] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:51:19] [INFO] [GENERAL] CLICKING on first job (ID: 4346915363) to mark it as viewed...
+[2026-01-02 11:51:19] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:51:19] [INFO] [GENERAL] BEFORE click:
+[2026-01-02 11:51:19] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:51:19] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:51:22] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-02 11:51:22] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:51:22] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:51:22] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:51:22] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-02 11:51:22] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:51:24] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-02 11:51:24] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:51:24] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:51:24] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:51:24] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:51:24] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:51:24] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:51:24] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:51:24] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:51:24] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:51:24] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:51:24] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:51:24] [INFO] [GENERAL] SUMMARY
+[2026-01-02 11:51:24] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:51:24] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-02 11:51:24] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-02 11:51:24] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-02 11:52:15] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-02 11:52:29] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:52:29] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-02 11:52:29] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:52:30] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-02 11:52:30] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:52:30] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:52:30] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:52:30] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:52:30] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:52:30] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:52:30] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:52:30] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:52:30] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:52:30] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:52:30] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:52:30] [INFO] [GENERAL] CLICKING on first job (ID: 4346915363) to mark it as viewed...
+[2026-01-02 11:52:30] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:52:31] [INFO] [GENERAL] BEFORE click:
+[2026-01-02 11:52:31] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:52:31] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:52:34] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-02 11:52:34] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:52:34] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:52:34] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:52:34] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-02 11:52:34] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:52:35] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-02 11:52:35] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:52:35] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:52:35] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:52:35] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:52:35] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:52:35] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:52:35] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:52:35] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:52:35] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:52:35] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:52:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:52:35] [INFO] [GENERAL] SUMMARY
+[2026-01-02 11:52:35] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:52:35] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-02 11:52:35] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-02 11:52:35] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-02 11:53:50] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-02 11:54:04] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:54:04] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-02 11:54:04] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:54:05] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-02 11:54:05] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:54:05] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:54:05] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:54:05] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:54:05] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:54:05] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:54:05] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:54:05] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:54:05] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:54:05] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:54:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:54:05] [INFO] [GENERAL] CLICKING on first job (ID: 4346915363) to mark it as viewed...
+[2026-01-02 11:54:05] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:54:05] [INFO] [GENERAL] BEFORE click:
+[2026-01-02 11:54:05] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:54:05] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:54:09] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-02 11:54:09] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-02 11:54:09] [INFO] [GENERAL]   aria-current: page
+[2026-01-02 11:54:09] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:54:09] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-02 11:54:09] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:54:10] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-02 11:54:10] [INFO] [GENERAL] 1. ✓ Remote Software Engineer (US)
+Remote Software Engi
+[2026-01-02 11:54:10] [INFO] [GENERAL]    ID: 4346915363, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-02 11:54:10] [INFO] [GENERAL] 2. ○ Sensor Fusion & Machine Learning Engineer
+Sensor F
+[2026-01-02 11:54:10] [INFO] [GENERAL]    ID: 4329825782, Viewed: False, Indicator: None
+[2026-01-02 11:54:10] [INFO] [GENERAL] 3. ○ Design Engineer, Americas
+Design Engineer, America
+[2026-01-02 11:54:10] [INFO] [GENERAL]    ID: 4323386769, Viewed: False, Indicator: None
+[2026-01-02 11:54:10] [INFO] [GENERAL] 4. ○ Software Engineer I, Backend (New Grad - 2025)
+Sof
+[2026-01-02 11:54:10] [INFO] [GENERAL]    ID: 4337122724, Viewed: False, Indicator: None
+[2026-01-02 11:54:10] [INFO] [GENERAL] 5. ○ Junior Python Developer
+Junior Python Developer wi
+[2026-01-02 11:54:10] [INFO] [GENERAL]    ID: 4349342007, Viewed: False, Indicator: None
+[2026-01-02 11:54:10] [INFO] [GENERAL] 
+================================================================================
+[2026-01-02 11:54:10] [INFO] [GENERAL] SUMMARY
+[2026-01-02 11:54:10] [INFO] [GENERAL] ================================================================================
+[2026-01-02 11:54:10] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-02 11:54:10] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-02 11:54:10] [INFO] [GENERAL] 
+No change in viewed job count.

@@ -10,8 +10,8 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (prefer .env values over existing env vars)
+load_dotenv(override=True)
 
 # Base directories
 BASE_DIR = Path(__file__).parent.parent
@@ -87,6 +87,7 @@ class Config:
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
         self.email_from = os.getenv("EMAIL_FROM", "")
         self.email_to = os.getenv("EMAIL_TO", "")
+        self.smtp_use_ssl = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
         self.enable_email_notifications = (
             os.getenv("ENABLE_EMAIL_NOTIFICATIONS", "false").lower() == "true"
         )
