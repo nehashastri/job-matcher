@@ -6,7 +6,7 @@
 job_scraper/
 ├── app/                     # Runtime entry points
 │   ├── job_finder.py        # Main CLI app (uses scraping + matching + storage)
-│   └── storage.py           # Storage shim for Excel/CSV exports
+│   └── storage.py           # Storage shim for Excel exports
 ├── auth/                    # LinkedIn authentication & browser session
 ├── cli/                     # CLI wiring (legacy)
 ├── config/                  # Config loader + logging helpers
@@ -26,7 +26,7 @@ job_scraper/
 │   ├── test_viewed_detection.py
 │   ├── test_viewed_jobs.py
 │   └── test_viewed_results.txt
-├── project_config/          # Tooling/config files (pixi.toml, pyproject.toml, requirements.txt, .env.template)
+├── project_config/          # Tooling/config files (pixi.toml, pyproject.toml, .env.template)
 ├── tests/                   # Automated tests (unit/integration)
 ├── logs/                    # Runtime logs (gitignored)
 ├── COPILOT.md               # Agent instructions (kept at root)
@@ -48,16 +48,16 @@ job_scraper/
 - `storage_pkg/`: `blocklist_store.py`, `matched_jobs_store.py` for persistence.
 - `notifications/`: `email_notifier.py` for SMTP alerts.
 - `app/job_finder.py`: main CLI that wires scraping + matching + storage + notifications.
-- `scripts/`: manual/debug scripts; each prepends project root to `sys.path` so they work when run from `python scripts/<file>.py`.
+- `scripts/`: manual/debug scripts; run them via Pixi, e.g., `pixi -C project_config run python ../scripts/test_quick.py`.
 
 ## Config & Tooling
 
-- All tooling/config files live in `project_config/` (`pixi.toml`, `pyproject.toml`, `requirements.txt`, `.env.template`).
+- All tooling/config files live in `project_config/` (`pixi.toml`, `pyproject.toml`, `.env.template`).
 - Place your real `.env` at the repo root (gitignored). Use the template in `project_config/.env.template` as a reference.
 
 ## Data & Logs
 
-- `data/roles.json`, `data/company_blocklist.json`, `data/jobs.csv`, `data/viewed_jobs.json`, etc. hold user/config data.
+- `data/roles.json`, `data/company_blocklist.json`, `data/jobs.xlsx`, `data/linkedin_connections.xlsx`, etc. hold user/config data (CSV files are legacy and migrated on first run).
 - `logs/` is for runtime logs; it is gitignored and may be created at runtime.
 
 ## Docs
@@ -91,4 +91,4 @@ job_scraper/
 4. **Error handling**: Every module has retry logic and graceful degradation (log and continue).
 5. **Logging**: Centralized logger with daily rotation and structured format.
 6. **Configuration**: Single source of truth (`.env` + `roles.json`) loaded at startup.
-7. **Storage**: CSV/XLSX for human-readability; kept in `data/jobs.*` and `data/linkedin_connections.*`.
+7. **Storage**: Excel (.xlsx) for human-readability; kept in `data/jobs.xlsx` and `data/linkedin_connections.xlsx`.

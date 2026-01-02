@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, cast
 
 from config.config import Config, get_config
 from config.logging_utils import get_logger
@@ -21,7 +21,7 @@ class SponsorshipFilter:
     ):
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
-        self.client = openai_client or self._maybe_create_client()
+        self.client: Any | None = openai_client or self._maybe_create_client()
 
     def check(
         self, job_description: str, requires_sponsorship: bool | None = None
@@ -211,27 +211,42 @@ class SponsorshipFilter:
 
         model = self.config.openai_model or "gpt-4o-mini"
 
-        if hasattr(self.client, "chat") and hasattr(self.client.chat, "completions"):
-            resp = self.client.chat.completions.create(
+        if self.client is None:
+            raise RuntimeError("OpenAI client not initialized")
+
+        client = cast(Any, self.client)
+        typed_messages = cast(list[Any], messages)
+
+        if hasattr(client, "chat") and hasattr(client.chat, "completions"):
+            resp = client.chat.completions.create(
                 model=model,
-                messages=messages,
+                messages=typed_messages,
                 temperature=0,
                 response_format={"type": "json_object"},
             )
             content = resp.choices[0].message.content if resp.choices else "{}"
             return json.loads(content or "{}")
 
-        if hasattr(self.client, "responses"):
-            response = self.client.responses.create(
+        if hasattr(client, "responses"):
+            response = client.responses.create(
                 model=model,
-                messages=messages,
+                messages=typed_messages,
                 response_format={"type": "json_object"},
                 temperature=0,
             )
 
             content = ""
-            if getattr(response, "output", None):
-                content = response.output[0].content[0].text  # type: ignore[index]
+            output = getattr(response, "output", None)
+            if output and len(output) > 0:
+                first_output = output[0]
+                inner_content = getattr(first_output, "content", None)
+                if inner_content and len(inner_content) > 0:
+                    text_candidate = getattr(inner_content[0], "text", "")
+                    content = (
+                        text_candidate
+                        if isinstance(text_candidate, str)
+                        else str(text_candidate)
+                    )
             elif hasattr(response, "content"):
                 content = getattr(response, "content")
             return json.loads(content or "{}")

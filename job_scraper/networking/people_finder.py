@@ -1,11 +1,11 @@
-"""LinkedIn People search helper for Phase 8 networking."""
+"""LinkedIn People search helper for Phase 6 networking."""
 
 from __future__ import annotations
 
 import logging
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Generator
 from urllib.parse import quote_plus
 
 from selenium.webdriver.common.by import By
@@ -48,7 +48,7 @@ class PeopleFinder:
 
     def iterate_pages(
         self, role: str, company: str, pages: int | None = None
-    ) -> list[list[dict[str, Any]]]:
+    ) -> Generator[list[dict[str, Any]], None, None]:
         """Yield profiles page-by-page while staying on the current tab.
 
         This lets callers perform per-page actions before advancing to the next page.
@@ -62,7 +62,7 @@ class PeopleFinder:
         if not self._search_via_bar(query):
             if not self._safe_get(search_url):
                 self.logger.error("[PEOPLE_SEARCH] Unable to load search URL")
-                return []
+                return
 
         self._click_people_filter()
         self._ensure_people_url(search_url)
@@ -193,16 +193,22 @@ class PeopleFinder:
 
     def _wait_for_results(self) -> None:
         try:
+            # Wait up to 30s for results to load
             self.wait.until(
                 EC.presence_of_element_located(
                     (
                         By.CSS_SELECTOR,
-                        "li.reusable-search__result-container, div.reusable-search__result-container, div.entity-result",
+                        "[data-view-name='people-search-result'], li.reusable-search__result-container, div.reusable-search__result-container, div.entity-result, div.search-result__occluded-item",
                     )
                 )
             )
+            self.logger.info("[PEOPLE_SEARCH] Results loaded successfully")
         except Exception as exc:
-            self.logger.debug(f"[PEOPLE_SEARCH] Results not visible yet: {exc}")
+            self.logger.warning(
+                f"[PEOPLE_SEARCH] Results wait timeout/error (will try to parse anyway): {exc}"
+            )
+            # Log selector counts for debugging
+            self._log_debug_counts()
 
     def _dump_page(self, filename: str) -> None:
         try:
@@ -260,12 +266,14 @@ class PeopleFinder:
             if title and "mutual connection" in title.lower():
                 title = ""
 
+            connection_status = self._extract_connection_status(card)
             is_match = self._is_role_company_match(title, role, company)
             if profile_url or name or title:
                 return {
                     "name": name,
                     "title": title,
                     "profile_url": profile_url,
+                    "connection_status": connection_status,
                     "is_role_match": is_match,
                 }
         except Exception as exc:
@@ -335,6 +343,24 @@ class PeopleFinder:
         if "scientist" in role_l:
             variants.add(role_l.replace("scientist", "science"))
         return any(v and v in title_l for v in variants)
+
+    @staticmethod
+    def _extract_connection_status(card) -> str:
+        selectors = [
+            "span.entity-result__badge-text",
+            "span.entity-result__badge",
+            "span[data-test-entity-result-badge], span[class*='entity-result__badge']",
+            "span.artdeco-entity-lockup__subtitle",
+        ]
+        for selector in selectors:
+            try:
+                elem = card.find_element(By.CSS_SELECTOR, selector)
+                text = elem.text.strip()
+                if text:
+                    return text
+            except Exception:
+                continue
+        return ""
 
     def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
         for attempt in range(retries):

@@ -19,7 +19,7 @@
 - **Notifier**: send email alerts immediately for accepted matches.
 - **Scheduler**: continuous polling loop; configurable intervals (default 30 minutes).
 - **Logging**: daily log files (rotated at midnight); log every step with timestamps and separators.
-- **Persistence**: keep CSV/JSON for matches only; do not store seen jobs (rely on LinkedIn "viewed").
+- **Persistence**: keep Excel/JSON for matches only; do not store seen jobs (rely on LinkedIn "viewed").
 - **Observability**: structured logs, metrics hooks for cloud readiness.
 
 ## Configuration Artifacts
@@ -42,13 +42,13 @@
   - `accept_hr_companies` — boolean (default false); if false, reject roles posted by staffing/HR/recruiter firms and auto-add to blocklist
   - Optional (future): keywords include/exclude, company include/exclude, applicant-count cap
 - **Company blocklist file** (JSON, path e.g., `data/company_blocklist.json`): list of company names/patterns to drop after scraping.
-- **Master resume** (`data/master_resume.docx`): user's resume for LLM matching.
+- **Master resume** (`data/resume.docx`): user's resume for LLM matching.
 
 ## Workflow (Local, then Cloud)
 1. Load `.env`; validate required fields.
 2. Login to LinkedIn (Selenium); persist cookies to `data/.linkedin_cookies.pkl`; retry on failure with exponential backoff (base 2s, max 30s).
 3. Load `data/roles.json` and `data/company_blocklist.json`; validate each role has a location.
-4. Load `data/master_resume.docx`; extract full text via python-docx (no truncation; cache reuse allowed).
+4. Load `data/resume.docx`; extract full text via python-docx (no truncation; cache reuse allowed).
 5. For each role:
    - Build the LinkedIn search URL with filters.
    - If `date_posted` is `r<number>` and 3600 ≤ number ≤ 86400, set `f_TPR=r<number>`.
@@ -63,7 +63,7 @@
    - If `requires_sponsorship` is true for this role, run LLM sponsorship filter on the job detail; reject if it says no sponsorship/US citizens only; log decision.
   - If not rejected, run LLM match scoring vs master resume (full text, no truncation); default accept threshold ≥8/10; two-pass routing (cheap model first, rerank near threshold on stronger model); log score, reason, and model used.
 7. When a job is accepted:
-   - Record in storage (CSV & JSON) with timestamp, score, and source URL.
+  - Record in storage (Excel & JSON) with timestamp, score, and source URL.
    - Open a new browser tab; search "role at company_name" on LinkedIn (add random delay 2–5s).
    - Scrape and send connection requests to people matching the role (at least first 3 pages, max 10 requests/page or until page exhausted).
    - Log connection requests sent per page; handle rate limit/failure gracefully; continue to next page.
@@ -129,12 +129,12 @@ Return JSON: {"score": <0-10>, "reason": "brief explanation"}
 
 ## Data Storage Format
 
-### jobs.csv / jobs.xlsx
+### jobs.xlsx (Excel-only)
 ```
 ID,Title,Company,Location,Job URL,Source,Applicants,Posted Date,Scraped Date,Match Score,Viewed,Saved,Applied,Emailed
 ```
 
-### linkedin_connections.csv / linkedin_connections.xlsx
+### linkedin_connections.xlsx (Excel-only)
 ```
 Date,Name,Title,LinkedIn URL,Role Searched,Country,Message Sent,Status
 ```
@@ -179,7 +179,7 @@ Date,Name,Title,LinkedIn URL,Role Searched,Country,Message Sent,Status
 2) Email transport: Gmail with app password (SMTP).
 3) Default polling interval: 30 minutes; default date_posted `r3600`.
 4) Custom `r` clamp: 3600–86400 seconds.
-5) Storage: keep CSV/JSON for now.
+5) Storage: keep Excel/JSON for now.
 6) No captcha handling planned.
 7) No local seen-store; rely on LinkedIn "viewed" markers; company blocklist filtering post-scrape.
 8) HR/staffing company detection via LLM; auto-add to blocklist if rejected

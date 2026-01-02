@@ -5,7 +5,9 @@ Scrapes job listings from the left-pane search results
 
 import random
 import time
+from typing import Any
 
+from config.logging_utils import get_logger
 from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
@@ -15,8 +17,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from config.logging_utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -36,7 +36,9 @@ class JobListScraper:
         self.config = config
         self.wait = WebDriverWait(driver, 10)
 
-    def scrape_job_list(self, search_url: str, max_jobs: int | None = None) -> list[dict[str, any]]:
+    def scrape_job_list(
+        self, search_url: str, max_jobs: int | None = None
+    ) -> list[dict[str, Any]]:
         """
         Scrape job listings from a LinkedIn search results page.
 
@@ -63,8 +65,12 @@ class JobListScraper:
         list_loaded = False
         for selector in ["scaffold-layout__list", "jobs-search__results-list"]:
             try:
-                self.wait.until(EC.presence_of_element_located((By.CLASS_NAME, selector)))
-                logger.debug(f"[SCRAPE_LIST] Job list loaded using selector: {selector}")
+                self.wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, selector))
+                )
+                logger.debug(
+                    f"[SCRAPE_LIST] Job list loaded using selector: {selector}"
+                )
                 list_loaded = True
                 break
             except TimeoutException:
@@ -115,7 +121,7 @@ class JobListScraper:
 
         return jobs
 
-    def _scrape_current_page(self) -> list[dict[str, any]]:
+    def _scrape_current_page(self) -> list[dict[str, Any]]:
         """
         Scrape all job cards currently visible on the page.
 
@@ -147,11 +153,14 @@ class JobListScraper:
                     else:
                         logger.debug("[SCRAPE_LIST] Job extraction returned None")
                 except StaleElementReferenceException:
-                    logger.warning("[SCRAPE_LIST] Stale element encountered, skipping job")
+                    logger.warning(
+                        "[SCRAPE_LIST] Stale element encountered, skipping job"
+                    )
                     continue
                 except Exception as e:
                     logger.error(
-                        f"[SCRAPE_LIST] Error extracting job from card: {e}", exc_info=True
+                        f"[SCRAPE_LIST] Error extracting job from card: {e}",
+                        exc_info=True,
                     )
                     continue
 
@@ -160,7 +169,7 @@ class JobListScraper:
 
         return jobs
 
-    def _extract_job_from_card(self, card) -> dict[str, any] | None:
+    def _extract_job_from_card(self, card) -> dict[str, Any] | None:
         """
         Extract job information from a job card element.
 
@@ -268,9 +277,9 @@ class JobListScraper:
 
                 # Data attributes sometimes toggle when viewed
                 if not is_viewed:
-                    data_viewed = card.get_attribute("data-viewed") or job_link.get_attribute(
+                    data_viewed = card.get_attribute(
                         "data-viewed"
-                    )
+                    ) or job_link.get_attribute("data-viewed")
                     if data_viewed and data_viewed.lower() in ["true", "1", "yes"]:
                         is_viewed = True
                         viewed_indicator = "data-viewed=true"
@@ -324,11 +333,15 @@ class JobListScraper:
         try:
             # Get current job count
             current_count = len(
-                self.driver.find_elements(By.CSS_SELECTOR, "ul.jobs-search__results-list > li")
+                self.driver.find_elements(
+                    By.CSS_SELECTOR, "ul.jobs-search__results-list > li"
+                )
             )
 
             # Scroll to bottom of job list
-            job_list = self.driver.find_element(By.CLASS_NAME, "jobs-search__results-list")
+            job_list = self.driver.find_element(
+                By.CLASS_NAME, "jobs-search__results-list"
+            )
             self.driver.execute_script(
                 "arguments[0].scrollTop = arguments[0].scrollHeight", job_list
             )
@@ -338,7 +351,9 @@ class JobListScraper:
 
             # Check if new jobs were loaded
             new_count = len(
-                self.driver.find_elements(By.CSS_SELECTOR, "ul.jobs-search__results-list > li")
+                self.driver.find_elements(
+                    By.CSS_SELECTOR, "ul.jobs-search__results-list > li"
+                )
             )
 
             return new_count > current_count
@@ -349,6 +364,8 @@ class JobListScraper:
 
     def _random_delay(self):
         """Add a random delay between requests to avoid rate limiting"""
-        delay = random.uniform(self.config.request_delay_min, self.config.request_delay_max)
+        delay = random.uniform(
+            self.config.request_delay_min, self.config.request_delay_max
+        )
         logger.debug(f"[SCRAPE_LIST] Waiting {delay:.2f} seconds")
         time.sleep(delay)

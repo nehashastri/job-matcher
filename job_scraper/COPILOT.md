@@ -2,6 +2,10 @@
 
 ## Agent Constitution
 
+**CRITICAL: Use Pixi for all commands (run, test, lint, scripts). Never use raw python/venv or other tools.**
+
+**CRITICAL: NEVER AUTOMATICALLY RUN TESTS, SCRIPTS, OR TERMINAL COMMANDS.** Only make file edits. Always ask for explicit permission before running anything in the terminal. Wait for the user's approval, then provide the command for the user to execute manually. Do not use `runTests`, `run_in_terminal`, or any execution tools without prior approval.
+
 **CRITICAL RULE:** If the user corrects you on anything, you must:
 
 1. Immediately record the correction in COPILOT.md in an appropriate section.

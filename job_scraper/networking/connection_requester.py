@@ -1,4 +1,4 @@
-"""LinkedIn connection requester for Phase 8 networking."""
+"""LinkedIn connection requester for Phase 6 networking (no notes/messages)."""
 
 from __future__ import annotations
 
@@ -12,15 +12,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-NOTE_TEMPLATE = (
-    "Hi {person},\n"
-    "I'm Neha, master's student at Boston University. I just applied to {role} at {company}. "
-    "Would you be willing to get on a quick call? I'd like to know more about your work."
-)
-
 
 class ConnectionRequester:
-    """Send connection requests to LinkedIn profiles with optional personalized note."""
+    """Send connection requests or messages while staying on the search tab."""
 
     def __init__(
         self, driver, wait: WebDriverWait, logger: logging.Logger | None = None
@@ -28,260 +22,208 @@ class ConnectionRequester:
         self.driver = driver
         self.wait = wait
         self.logger = logger or logging.getLogger(__name__)
+        try:
+            self.primary_handle = driver.current_window_handle
+        except Exception:
+            self.primary_handle = None
 
     def run_on_people_search(
         self,
         people_finder,
         role: str,
         company: str,
-        message_note_target: int = 10,
-        no_note_target: int = 10,
         delay_range: tuple[float, float] = (1.0, 2.0),
         store=None,
-        max_pages: int | None = None,
+        max_pages: int | None = 3,
+        use_new_tab: bool = False,
     ) -> dict[str, int]:
-        """Drive the people search tab and perform outreach until quotas or exhaustion.
+        """Process LinkedIn People results for up to `max_pages` pages.
 
-        Logic (strict role match only):
-        - role_match=True → Message if available; else Connect with note
-        - role_match=False → if Message present skip; if Connect present send without note
-        - Stay in the search results tab; never open profiles
-        - Stop when message+note >= target and no-note >= target, or when no more people/pages
+        Behavior (Phase 6 spec):
+        - For role matches: record presence of Message button (do not send) and, if
+          Connect is present, click Connect and record the action.
+        - For non-matches: if Connect is present, click Connect and record.
+        - No notes/messages are sent in Phase 6; only actions/availability are stored.
         """
 
         summary = {
-            "messaged": 0,
-            "sent_with_note": 0,
-            "sent_without_note": 0,
-            "failed": 0,
+            "message_available": 0,
+            "connect_clicked_match": 0,
+            "connect_clicked_non_match": 0,
             "skipped": 0,
+            "failed": 0,
             "pages_processed": 0,
         }
 
+        original_handle = self._current_handle()
+        networking_handle = self._open_networking_tab() if use_new_tab else None
+
         try:
-            for page_index, page_profiles in enumerate(
-                people_finder.iterate_pages(role, company, pages=max_pages), start=1
+            if networking_handle:
+                self._switch_to_handle(networking_handle)
+
+            for page_index, profiles in enumerate(
+                people_finder.iterate_pages(role, company, pages=max_pages)
             ):
-                summary["pages_processed"] = page_index
+                summary["pages_processed"] += 1
                 self.logger.info(
-                    f"[CONNECT] Processing page {page_index} with {len(page_profiles)} profiles"
+                    "[CONNECT] Page %s: processing %s profiles",
+                    page_index + 1,
+                    len(profiles),
                 )
-                if self._process_page_profiles(
-                    page_profiles,
-                    role,
-                    company,
-                    summary,
-                    delay_range,
-                    store,
-                    message_note_target,
-                    no_note_target,
-                ):
-                    break  # quotas met
-        except Exception as exc:
-            self.logger.debug(f"[CONNECT] Failed during people search run: {exc}")
 
-        self.logger.info(
-            "[CONNECT] Completed: "
-            f"messaged={summary['messaged']} | "
-            f"sent_with_note={summary['sent_with_note']} | "
-            f"sent_without_note={summary['sent_without_note']} | "
-            f"skipped={summary['skipped']} | "
-            f"failed={summary['failed']} | "
-            f"pages={summary['pages_processed']}"
-        )
+                for profile in profiles:
+                    if self._should_ignore_profile(profile):
+                        continue
+
+                    name = (profile.get("name") or "").strip() or "there"
+                    title = (profile.get("title") or "").strip()
+                    profile_url = profile.get("profile_url", "")
+                    is_match = bool(profile.get("is_role_match"))
+
+                    card = self._find_card_by_url(profile_url)
+                    if not card:
+                        summary["skipped"] += 1
+                        continue
+
+                    try:
+                        if is_match:
+                            handled, message_hit = self._handle_match(
+                                card,
+                                name,
+                                title,
+                                role,
+                                company,
+                                profile_url,
+                                store,
+                            )
+                        else:
+                            handled, message_hit = self._handle_non_match(
+                                card,
+                                name,
+                                title,
+                                role,
+                                company,
+                                profile_url,
+                                store,
+                            )
+
+                        if message_hit:
+                            summary["message_available"] += 1
+                        if handled:
+                            summary[handled] += 1
+                        if not handled and not message_hit:
+                            summary["skipped"] += 1
+                    except Exception as exc:
+                        self.logger.debug(f"[CONNECT] Error on profile '{name}': {exc}")
+                        summary["failed"] += 1
+
+                    self._random_delay(*delay_range)
+
+        finally:
+            if networking_handle:
+                self._close_networking_tab(networking_handle, original_handle)
+            elif original_handle:
+                self._switch_to_handle(original_handle)
+
         return summary
-
-    def _process_page_profiles(
-        self,
-        profiles: list[dict[str, Any]],
-        role: str,
-        company: str,
-        summary: dict[str, int],
-        delay_range: tuple[float, float],
-        store,
-        message_note_target: int,
-        no_note_target: int,
-    ) -> bool:
-        """Process all profiles on the current page. Returns True if quotas are met."""
-
-        for idx, profile in enumerate(profiles, start=1):
-            try:
-                url = profile.get("profile_url", "")
-                card = self._find_card_by_url(url)
-                if not card:
-                    self.logger.info(
-                        f"[CONNECT] Card not found on page for profile idx={idx}; skipping"
-                    )
-                    summary["failed"] += 1
-                    continue
-
-                is_match = bool(profile.get("is_role_match"))
-                person_name = profile.get("name", "").strip()
-                note_text = NOTE_TEMPLATE.format(
-                    person=person_name or "there",
-                    role=role,
-                    company=company,
-                )
-
-                if is_match:
-                    self._handle_match(card, note_text, profile, role, store, summary)
-                else:
-                    self._handle_non_match(
-                        card,
-                        summary,
-                        store=store,
-                        profile=profile,
-                        role=role,
-                    )
-
-                if self._reached_quotas(summary, message_note_target, no_note_target):
-                    return True
-
-                self._random_delay(*delay_range)
-            except Exception as exc:
-                self.logger.debug(f"[CONNECT] Failed on profile idx={idx}: {exc}")
-                summary["failed"] += 1
-
-        return self._reached_quotas(summary, message_note_target, no_note_target)
 
     def _handle_match(
         self,
         card,
-        note_text: str,
-        profile: dict[str, Any],
+        name: str,
+        title: str,
         role: str,
+        company: str,
+        profile_url: str,
         store,
-        summary: dict[str, int],
-    ) -> None:
-        msg_btn = self._find_message_button_in_card(card)
-        if msg_btn:
-            if self._send_message(msg_btn, note_text):
-                summary["messaged"] += 1
-                if store:
-                    store.add_linkedin_connection(
-                        {
-                            "name": profile.get("name", ""),
-                            "title": profile.get("title", ""),
-                            "url": profile.get("profile_url", ""),
-                            "role": role,
-                            "country": "",
-                            "message_sent": "Yes",
-                            "status": "Messaged",
-                        }
-                    )
-            else:
-                self.logger.info("[CONNECT] Message send failed (card)")
-                summary["failed"] += 1
-            return
+    ) -> tuple[str | None, str | None]:
+        """Handle role matches: record message availability and connect when present."""
 
+        message_btn = self._find_message_button_in_card(card)
         connect_btn = self._find_connect_button_in_card(card)
+
+        message_available = bool(message_btn)
+        connected = False
+
+        if message_available:
+            self.logger.info("[CONNECT] Match: message available for %s", name)
+
         if connect_btn:
             try:
                 connect_btn.click()
-            except Exception:
-                self.logger.info("[CONNECT] Connect click failed (card)")
-                summary["failed"] += 1
-                return
-
-            self.logger.info(
-                "[CONNECT] Match=True -> adding note before sending invite (card)"
-            )
-            self._add_note(note_text)
-            if not self._send_invite():
-                self.logger.info("[CONNECT] Send button not found (card); skipping")
-                summary["failed"] += 1
-                return
-
-            summary["sent_with_note"] += 1
-            if store:
-                store.add_linkedin_connection(
-                    {
-                        "name": profile.get("name", ""),
-                        "title": profile.get("title", ""),
-                        "url": profile.get("profile_url", ""),
-                        "role": role,
-                        "country": "",
-                        "message_sent": "Yes",
-                        "status": "SentWithNote",
-                    }
+                connected = True
+                self.logger.info("[CONNECT] Match: connect clicked for %s", name)
+            except Exception as exc:
+                self.logger.debug(
+                    f"[CONNECT] Could not click connect for {name}: {exc}"
                 )
-            return
 
-        self.logger.info("[CONNECT] No Message/Connect button for match; skipping")
-        summary["failed"] += 1
+        self._record_connection(
+            store,
+            name,
+            title,
+            profile_url,
+            role,
+            company,
+            is_match=True,
+            message_available=message_available,
+            connected=connected,
+            status="ConnectClickedMatch" if connected else "MessageAvailableOnly",
+        )
+
+        handled = "connect_clicked_match" if connected else None
+        message_result = "message_available" if message_available else None
+        return handled, message_result
 
     def _handle_non_match(
-        self, card, summary: dict[str, int], store=None, profile=None, role: str = ""
-    ) -> None:
-        msg_btn = self._find_message_button_in_card(card)
-        if msg_btn:
-            self.logger.info("[CONNECT] Non-match with Message present; skipping")
-            summary["skipped"] += 1
-            return
-
+        self,
+        card,
+        name: str,
+        title: str,
+        role: str,
+        company: str,
+        profile_url: str,
+        store,
+    ) -> tuple[str | None, str | None]:
         connect_btn = self._find_connect_button_in_card(card)
         if connect_btn:
             try:
                 connect_btn.click()
-            except Exception:
-                self.logger.info("[CONNECT] Connect click failed (card, non-match)")
-                summary["failed"] += 1
-                return
-
-            if not self._send_invite():
-                self.logger.info("[CONNECT] Send button not found (card, non-match)")
-                summary["failed"] += 1
-                return
-
-            summary["sent_without_note"] += 1
-            if store and profile is not None:
-                store.add_linkedin_connection(
-                    {
-                        "name": profile.get("name", ""),
-                        "title": profile.get("title", ""),
-                        "url": profile.get("profile_url", ""),
-                        "role": role,
-                        "country": "",
-                        "message_sent": "No",
-                        "status": "SentWithoutNote",
-                    }
+                self.logger.info("[CONNECT] Non-match: connect clicked for %s", name)
+                self._record_connection(
+                    store,
+                    name,
+                    title,
+                    profile_url,
+                    role,
+                    company,
+                    is_match=False,
+                    message_available=False,
+                    connected=True,
+                    status="ConnectClickedNonMatch",
                 )
-            return
+                return "connect_clicked_non_match", None
+            except Exception as exc:
+                self.logger.debug(
+                    f"[CONNECT] Could not click connect for {name}: {exc}"
+                )
 
-        self.logger.info("[CONNECT] Non-match with no Message/Connect; skipping")
-        summary["skipped"] += 1
+        return None, None
 
-    @staticmethod
-    def _reached_quotas(
-        summary: dict[str, int], message_note_target: int, no_note_target: int
-    ) -> bool:
-        message_note_total = summary.get("messaged", 0) + summary.get(
-            "sent_with_note", 0
-        )
-        return (
-            message_note_total >= message_note_target
-            and summary.get("sent_without_note", 0) >= no_note_target
-        )
+    def _should_ignore_profile(self, profile: dict[str, Any]) -> bool:
+        name = (profile.get("name") or "").strip().lower()
+        if not name:
+            return True
+        if "lewei zeng" in name:
+            return True
+        return False
 
-    def _find_message_button(self):
+    def _find_message_button_in_card(self, card):
         selectors = [
             "button[aria-label*='Message']",
             "a[aria-label*='Message']",
             "button[data-control-name='message']",
-        ]
-        for selector in selectors:
-            try:
-                btn = self.driver.find_element(By.CSS_SELECTOR, selector)
-                if btn and btn.is_enabled():
-                    return btn
-            except Exception:
-                continue
-        return None
-
-    def _find_message_button_in_card(self, card):
-        selectors = [
-            "a[aria-label*='Message']",
-            "button[aria-label*='Message']",
         ]
         for selector in selectors:
             try:
@@ -295,9 +237,8 @@ class ConnectionRequester:
     def _find_connect_button_in_card(self, card):
         selectors = [
             "button[aria-label*='Connect']",
-            "button[aria-label*='Invite']",
-            "a[aria-label*='Connect']",
-            "a[aria-label*='Invite']",
+            "button[data-control-name='connect']",
+            "button[aria-label='Connect']",
         ]
         for selector in selectors:
             try:
@@ -308,100 +249,74 @@ class ConnectionRequester:
                 continue
         return None
 
-    def _send_message(self, msg_button, note_text: str) -> bool:
+    def _send_message(self, message_button, name: str, role: str, company: str) -> bool:
+        original_handle = None
         try:
-            try:
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView({block: 'center'});", msg_button
-                )
-            except Exception:
-                pass
-
-            # Hide interop overlay that can block clicks
-            try:
-                self.driver.execute_script(
-                    "var o=document.getElementById('interop-outlet'); if(o){o.style.visibility='hidden'; o.style.pointerEvents='none'; o.style.zIndex='0';}"
-                )
-            except Exception:
-                pass
-
-            href = msg_button.get_attribute("href") or ""
-
-            clicked = False
-            try:
-                msg_button.click()
-                clicked = True
-            except Exception:
-                try:
-                    self.driver.execute_script("arguments[0].click();", msg_button)
-                    clicked = True
-                except Exception:
-                    clicked = False
-
-            # Wait for overlay/composer; if missing, try navigating to href in same tab
-            content = self._wait_for_composer()
-            if not content and href:
-                try:
-                    self.driver.get(href)
-                    content = self._wait_for_composer()
-                except Exception:
-                    content = None
-
-            if not content:
-                self.logger.info("[CONNECT] Message box not found (composer)")
-                return False
-
-            try:
-                content.clear() if hasattr(content, "clear") else None
-            except Exception:
-                pass
-            content.send_keys(note_text)
-            time.sleep(0.3)
-
-            send_selectors = [
-                "button.msg-form__send-button",
-                "button[aria-label='Send now']",
-                "button[aria-label='Send']",
-            ]
-            for selector in send_selectors:
-                try:
-                    send_btn = self.wait.until(
-                        EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
-                    )
-                    send_btn.click()
-                    self.logger.info("[CONNECT] Message sent")
-                    self._close_message_overlay()
-                    return True
-                except Exception:
-                    continue
-            # Fallback: send via Enter if button never appears (button may render after typing)
-            try:
-                content.send_keys(Keys.ENTER)
-                self.logger.info("[CONNECT] Message sent via Enter fallback")
-                self._close_message_overlay()
-                return True
-            except Exception:
-                pass
-            self.logger.info("[CONNECT] Send message button not found")
-            return False
-        except Exception as exc:
-            self.logger.info(f"[CONNECT] Could not send message: {exc}")
-            return False
-
-    def _click_menu_connect(self) -> None:
-        try:
-            menu_selectors = ["//span[text()='Connect']", "//div[text()='Connect']"]
-            for xpath in menu_selectors:
-                try:
-                    item = self.wait.until(
-                        EC.element_to_be_clickable((By.XPATH, xpath))
-                    )
-                    item.click()
-                    return
-                except Exception:
-                    continue
+            original_handle = self.driver.current_window_handle
         except Exception:
             pass
+
+        try:
+            message_button.click()
+            composer = self._wait_for_composer()
+            if not composer:
+                return False
+            textbox = self._find_composer_textarea(composer)
+            if not textbox:
+                return False
+            message_text = f"Hi {name}, I applied to {role} at {company} and would appreciate a quick connect."
+            textbox.clear()
+            textbox.send_keys(message_text)
+            if not self._click_send_message():
+                textbox.send_keys(Keys.ENTER)
+            self._close_message_overlay()
+            self._switch_to_primary_window()
+            return True
+        except Exception as exc:
+            self.logger.info(f"[CONNECT] Could not send message: {exc}")
+            self._switch_to_primary_window()
+            return False
+        finally:
+            if original_handle:
+                try:
+                    self.driver.switch_to.window(original_handle)
+                except Exception:
+                    self._switch_to_primary_window()
+
+    def _click_send_message(self) -> bool:
+        selectors = [
+            "button[aria-label='Send']",
+            "button[aria-label*='Send message']",
+            "button[data-control-name='send']",
+            "button.msg-form__send-button",
+        ]
+        for selector in selectors:
+            try:
+                btn = self.wait.until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                )
+                btn.click()
+                return True
+            except Exception:
+                continue
+        return False
+
+    def _find_composer_textarea(self, composer):
+        selectors = [
+            "div[contenteditable='true'][role='textbox']",
+            "div.msg-form__contenteditable",
+            "div.msg-form__contenteditable p",
+            "div.msg-overlay-conversation-bubble--is-active div[contenteditable='true']",
+        ]
+        for selector in selectors:
+            try:
+                elems = composer.find_elements(By.CSS_SELECTOR, selector)
+                visible = [e for e in elems if e.is_displayed()]
+                if visible:
+                    return visible[0]
+            except Exception:
+                continue
+        return None
 
     def _add_note(self, note_text: str) -> None:
         try:
@@ -468,51 +383,88 @@ class ConnectionRequester:
                 continue
         return False
 
-    def _close_message_overlay(self) -> None:
-        try:
-            close_selectors = [
-                "button.msg-overlay-bubble-header__control[aria-label*='Close']",
-                "button[aria-label*='Close your draft conversation']",
-                "button.msg-overlay-bubble-header__control",
-            ]
-            for selector in close_selectors:
+    def _wait_for_composer(self, timeout: float = 10.0):
+        composer_selectors = [
+            "div.msg-overlay-conversation-bubble",
+            "section.msg-overlay-conversation-bubble",
+            "div.msg-overlay-conversation-bubble--is-active",
+            "section.msg-overlay-conversation-bubble--is-active",
+            "form.msg-form",
+            "div.msg-form__contenteditable",
+            "div[contenteditable='true'][role='textbox']",
+            "div.msg-form__container",
+            "div.msg-overlay-list-bubble",
+            "div.msg-overlay-conversation-bubble__content",
+            "div.msg-form__textarea",
+            "main.msg-conversation-container",
+            "div.msg-conversation-container",
+            "div.msg-compose-form__container",
+            "div.msg-conversations-container",
+            "div[role='dialog'][aria-label*='Message']",
+            "div[aria-label*='Messaging']",
+        ]
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            for selector in composer_selectors:
                 try:
-                    btn = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if btn and btn.is_displayed():
-                        btn.click()
-                        return
+                    elems = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                    visible = [e for e in elems if e.is_displayed()]
+                    if visible:
+                        return visible[0]
                 except Exception:
                     continue
-        except Exception:
-            pass
-
-    def _wait_for_composer(self):
-        composer_selectors = [
-            "div.msg-form__contenteditable",
-            "div[contenteditable='true']",
-            "form.msg-form",
-            "div.msg-overlay-conversation-bubble",
-        ]
-        for selector in composer_selectors:
-            try:
-                elem = self.wait.until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, selector))
-                )
-                if elem:
-                    return elem
-            except Exception:
-                continue
+            time.sleep(0.3)
         return None
 
     def _find_card_by_url(self, profile_url: str):
         try:
             if not profile_url:
                 return None
+            self._switch_to_primary_window()
             profile_id = profile_url.split("/")[-1].split("?")[0]
-            xpath = f"//a[contains(@href, '{profile_id}')]/ancestor::*[contains(@data-view-name,'people-search-result') or contains(@class,'reusable-search__result-container') or contains(@class,'search-result__occluded-item') or contains(@class,'entity-result')][1]"
+            xpath = (
+                "//a[contains(@href, '"
+                + profile_id
+                + "')]/ancestor::*[contains(@data-view-name,'people-search-result') "
+                "or contains(@class,'reusable-search__result-container') or contains(@class,'search-result__occluded-item') "
+                "or contains(@class,'entity-result')][1]"
+            )
             return self.driver.find_element(By.XPATH, xpath)
         except Exception:
             return None
+
+    def _record_connection(
+        self,
+        store,
+        name: str,
+        title: str,
+        profile_url: str,
+        role: str,
+        company: str,
+        is_match: bool,
+        message_available: bool,
+        connected: bool,
+        status: str,
+    ) -> None:
+        if not store:
+            return
+        try:
+            store.add_linkedin_connection(
+                {
+                    "name": name,
+                    "title": title,
+                    "url": profile_url,
+                    "company": company,
+                    "role": role,
+                    "country": "",
+                    "role_match": is_match,
+                    "message_available": message_available,
+                    "connected": connected,
+                    "status": status,
+                }
+            )
+        except Exception:
+            self.logger.debug("[CONNECT] Failed to record connection")
 
     def _random_delay(self, min_delay: float, max_delay: float) -> None:
         try:
@@ -520,3 +472,87 @@ class ConnectionRequester:
             time.sleep(delay)
         except Exception:
             time.sleep(1)
+
+    def _close_message_overlay(self) -> None:
+        """Close the LinkedIn messaging overlay if it is open."""
+        try:
+            close_selectors = [
+                "button[aria-label='Dismiss']",
+                "button.msg-overlay-bubble-header__control",
+                "button[aria-label*='Close']",
+                "button[data-control-name='overlay.close']",
+            ]
+            for selector in close_selectors:
+                try:
+                    btn = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    if btn.is_displayed() and btn.is_enabled():
+                        btn.click()
+                        return
+                except Exception:
+                    continue
+
+            try:
+                body = self.driver.find_element(By.TAG_NAME, "body")
+                body.send_keys(Keys.ESCAPE)
+            except Exception:
+                pass
+        except Exception:
+            self.logger.debug("[CONNECT] Could not close message overlay")
+
+    def _switch_to_primary_window(self) -> None:
+        try:
+            if self.primary_handle and self.primary_handle in getattr(
+                self.driver, "window_handles", []
+            ):
+                self.driver.switch_to.window(self.primary_handle)
+                return
+            handles = getattr(self.driver, "window_handles", [])
+            if handles:
+                self.primary_handle = handles[0]
+                self.driver.switch_to.window(self.primary_handle)
+        except Exception:
+            pass
+
+    def _current_handle(self):
+        try:
+            return self.driver.current_window_handle
+        except Exception:
+            return None
+
+    def _switch_to_handle(self, handle) -> None:
+        try:
+            if handle:
+                self.driver.switch_to.window(handle)
+        except Exception:
+            pass
+
+    def _open_networking_tab(self):
+        try:
+            if not self.driver:
+                return None
+            existing = set(getattr(self.driver, "window_handles", []))
+            self.driver.execute_script("window.open('about:blank','_blank');")
+            time.sleep(0.5)
+            handles = set(getattr(self.driver, "window_handles", []))
+            new_handles = list(handles - existing)
+            handle = new_handles[-1] if new_handles else None
+            if handle:
+                self.driver.switch_to.window(handle)
+            return handle
+        except Exception as exc:
+            self.logger.debug(f"[CONNECT] Could not open networking tab: {exc}")
+            return None
+
+    def _close_networking_tab(self, handle, fallback) -> None:
+        try:
+            if (
+                self.driver
+                and handle
+                and handle in getattr(self.driver, "window_handles", [])
+            ):
+                self.driver.switch_to.window(handle)
+                self.driver.close()
+        except Exception:
+            pass
+        finally:
+            self._switch_to_handle(fallback or self.primary_handle)

@@ -5,11 +5,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from openai import OpenAI
-
 from config.config import Config, get_config
 from config.logging_utils import get_logger
 from filtering.blocklist import Blocklist
+from openai import OpenAI
 
 
 class HRChecker:
@@ -28,7 +27,10 @@ class HRChecker:
         self.client = openai_client or self._maybe_create_client()
 
     def check(
-        self, company: str, description: str = "", accept_hr_companies: bool | None = None
+        self,
+        company: str,
+        description: str = "",
+        accept_hr_companies: bool | None = None,
     ) -> dict[str, Any]:
         """Check if company is an HR/staffing firm.
 
@@ -88,12 +90,17 @@ class HRChecker:
                 is_hr = bool(data.get("is_hr_company", False))
                 reason = data.get("reason", "No reason provided")
                 result = {"is_hr_company": is_hr, "reason": reason}
-            except Exception as exc:  # pragma: no cover - exercised via invalid JSON test
+            except (
+                Exception
+            ) as exc:  # pragma: no cover - exercised via invalid JSON test
                 # Invalid JSON or API error → assume accept per requirement
                 self.logger.error(
                     f"HR check failed for {company_name}; defaulting to accept. Error: {exc}"
                 )
-                result = {"is_hr_company": False, "reason": f"LLM error (assumed accept): {exc}"}
+                result = {
+                    "is_hr_company": False,
+                    "reason": f"LLM error (assumed accept): {exc}",
+                }
 
         if result["is_hr_company"]:
             added = self.blocklist.add(company_name)
@@ -106,7 +113,9 @@ class HRChecker:
                     f"Rejected {company_name} as HR/staffing (already blocked). Reason: {result['reason']}"
                 )
         else:
-            self.logger.info(f"Accepted {company_name}; HR check clear. Reason: {result['reason']}")
+            self.logger.info(
+                f"Accepted {company_name}; HR check clear. Reason: {result['reason']}"
+            )
 
         return result
 
@@ -148,8 +157,17 @@ class HRChecker:
             )
 
             content = ""
-            if getattr(response, "output", None):
-                content = response.output[0].content[0].text  # type: ignore[index]
+            output = getattr(response, "output", None)
+            if output and len(output) > 0:
+                first_output = output[0]
+                inner_content = getattr(first_output, "content", None)
+                if inner_content and len(inner_content) > 0:
+                    text_candidate = getattr(inner_content[0], "text", "")
+                    content = (
+                        text_candidate
+                        if isinstance(text_candidate, str)
+                        else str(text_candidate)
+                    )
             elif hasattr(response, "content"):
                 content = getattr(response, "content")
             return json.loads(content or "{}")

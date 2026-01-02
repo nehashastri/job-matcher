@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, cast
 
 from config.config import Config, get_config
 from config.logging_utils import get_logger
@@ -19,7 +19,7 @@ class MatchScorer:
     ):
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
-        self.client = openai_client or self._maybe_create_client()
+        self.client: Any | None = openai_client or self._maybe_create_client()
 
     def score(self, resume_text: str, preferences_text: str, job_details: dict) -> dict:
         """Score a job against resume/preferences.
@@ -45,8 +45,7 @@ class MatchScorer:
 
         base_model = self.config.openai_model or "gpt-4o-mini"
         rerank_model = self.config.openai_model_rerank or base_model
-        threshold = getattr(self.config, "job_match_threshold", 8)
-        band = getattr(self.config, "job_match_rerank_band", 1.0)
+        trigger = getattr(self.config, "job_match_rerank_trigger", 8)
 
         try:
             first_score, first_reason = self._call_llm(messages, base_model)
@@ -54,11 +53,18 @@ class MatchScorer:
             reason_rerank = None
             model_used_rerank = None
 
-            needs_rerank = (
-                rerank_model != base_model and abs(first_score - threshold) <= band
-            )
+            needs_rerank = rerank_model != base_model and first_score >= trigger
 
             if needs_rerank:
+                self.logger.info(
+                    "Triggering rerank pass",
+                    extra={
+                        "base_model": base_model,
+                        "rerank_model": rerank_model,
+                        "first_score": first_score,
+                        "trigger": trigger,
+                    },
+                )
                 reranked = True
                 model_used_rerank = rerank_model
                 rerank_score, reason_rerank = self._call_llm(messages, rerank_model)
@@ -80,11 +86,16 @@ class MatchScorer:
                 "model_used_rerank": model_used_rerank,
             }
         except Exception as exc:  # pragma: no cover - defensive
-            self.logger.error(f"Match scoring failed: {exc}")
+            # Requirement: invalid/failed JSON → accept job and append
+            threshold = getattr(self.config, "job_match_threshold", 8.0)
+            fallback_score = min(10.0, max(threshold, 0.0) + 0.1)
+            self.logger.error(
+                f"Match scoring failed; defaulting to accept with score {fallback_score}: {exc}"
+            )
             return {
-                "score": 0.0,
-                "reason": f"LLM error: {exc}",
-                "model_used": None,
+                "score": fallback_score,
+                "reason": f"LLM error (accepted): {exc}",
+                "model_used": base_model,
                 "reranked": False,
                 "reason_rerank": None,
                 "model_used_rerank": None,
@@ -131,11 +142,17 @@ class MatchScorer:
     ) -> tuple[float, str]:
         """Call OpenAI using chat.completions or responses for JSON output."""
 
+        if self.client is None:
+            raise RuntimeError("OpenAI client not initialized")
+
+        client = cast(Any, self.client)
+        typed_messages = cast(list[Any], messages)
+
         # Prefer chat.completions
-        if hasattr(self.client, "chat") and hasattr(self.client.chat, "completions"):
-            resp = self.client.chat.completions.create(
+        if hasattr(client, "chat") and hasattr(client.chat, "completions"):
+            resp = client.chat.completions.create(
                 model=model,
-                messages=messages,
+                messages=typed_messages,
                 temperature=0,
                 response_format={"type": "json_object"},
             )
@@ -144,17 +161,26 @@ class MatchScorer:
             return float(data.get("score", 0)), data.get("reason", "")
 
         # Fallback to responses API (matches mocks/tests style)
-        if hasattr(self.client, "responses"):
-            response = self.client.responses.create(
+        if hasattr(client, "responses"):
+            response = client.responses.create(
                 model=model,
-                messages=messages,
+                messages=typed_messages,
                 response_format={"type": "json_object"},
                 temperature=0,
             )
 
             content = ""
-            if getattr(response, "output", None):
-                content = response.output[0].content[0].text  # type: ignore[index]
+            output = getattr(response, "output", None)
+            if output and len(output) > 0:
+                first_output = output[0]
+                inner_content = getattr(first_output, "content", None)
+                if inner_content and len(inner_content) > 0:
+                    text_candidate = getattr(inner_content[0], "text", "")
+                    content = (
+                        text_candidate
+                        if isinstance(text_candidate, str)
+                        else str(text_candidate)
+                    )
             elif hasattr(response, "content"):
                 content = getattr(response, "content")
 

@@ -4,16 +4,21 @@ from __future__ import annotations
 
 import importlib
 import time
+from typing import Any
 
 try:
     _selenium_exc = importlib.import_module("selenium.common.exceptions")
-    NoSuchElementException = _selenium_exc.NoSuchElementException  # type: ignore[attr-defined]
-    TimeoutException = _selenium_exc.TimeoutException  # type: ignore[attr-defined]
-    WebDriverException = _selenium_exc.WebDriverException  # type: ignore[attr-defined]
-    By = importlib.import_module("selenium.webdriver.common.by").By  # type: ignore[attr-defined]
-    EC = importlib.import_module("selenium.webdriver.support.expected_conditions")  # type: ignore[attr-defined]
-    WebDriverWait = importlib.import_module("selenium.webdriver.support.ui").WebDriverWait  # type: ignore[attr-defined]
-except ModuleNotFoundError:  # pragma: no cover - allows import without selenium installed
+    NoSuchElementException = getattr(_selenium_exc, "NoSuchElementException", Exception)
+    TimeoutException = getattr(_selenium_exc, "TimeoutException", Exception)
+    WebDriverException = getattr(_selenium_exc, "WebDriverException", Exception)
+    By = getattr(importlib.import_module("selenium.webdriver.common.by"), "By", None)
+    EC = importlib.import_module("selenium.webdriver.support.expected_conditions")
+    WebDriverWait = getattr(
+        importlib.import_module("selenium.webdriver.support.ui"), "WebDriverWait", None
+    )
+except (
+    ModuleNotFoundError
+):  # pragma: no cover - allows import without selenium installed
     NoSuchElementException = TimeoutException = WebDriverException = Exception
     By = EC = WebDriverWait = None
 
@@ -74,13 +79,20 @@ class LinkedInAuth:
 
         raise LinkedInAuthError("Login failed")
 
-    def _login_once(self, driver, email: str, password: str) -> None:
+    def _login_once(self, driver: Any, email: str, password: str) -> None:
         driver.get(self.login_url)
+
+        if WebDriverWait is None or By is None or EC is None:
+            raise LinkedInAuthError(
+                "Selenium is not installed. Install dependencies via pixi before running authentication."
+            )
 
         wait = WebDriverWait(driver, 15)
         try:
             email_el = wait.until(EC.presence_of_element_located((By.ID, "username")))
-            password_el = wait.until(EC.presence_of_element_located((By.ID, "password")))
+            password_el = wait.until(
+                EC.presence_of_element_located((By.ID, "password"))
+            )
             submit_el = wait.until(
                 EC.element_to_be_clickable(
                     (By.XPATH, "//button[@type='submit' or @aria-label='Sign in']")
@@ -109,13 +121,19 @@ class LinkedInAuth:
         driver.get(self.home_url)
         return "/feed" in driver.current_url and "login" not in driver.current_url
 
-    def _has_invalid_credentials_error(self, driver) -> bool:
+    def _has_invalid_credentials_error(self, driver: Any) -> bool:
+        if By is None:
+            return False
         try:
-            error_el = driver.find_element(By.CSS_SELECTOR, ".alert.error, .form__message--error")
+            error_el = driver.find_element(
+                By.CSS_SELECTOR, ".alert.error, .form__message--error"
+            )
             return error_el.is_displayed()
         except NoSuchElementException:
             return False
 
     def _backoff(self, attempt: int) -> None:
-        delay = min(self.backoff_start_seconds * (2 ** (attempt - 1)), self.backoff_max_seconds)
+        delay = min(
+            self.backoff_start_seconds * (2 ** (attempt - 1)), self.backoff_max_seconds
+        )
         time.sleep(delay)

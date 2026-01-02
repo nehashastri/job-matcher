@@ -6,7 +6,7 @@ Automation for finding LinkedIn roles, filtering, LLM-based matching against you
 - Scrape LinkedIn search results for configured roles and locations (Selenium, Chrome).
 - Skip already viewed jobs and apply company blocklist/HR-company rejection.
 - Optional sponsorship filter and LLM match scoring with configurable threshold.
-- Persist accepted jobs to CSV/XLSX and send email alerts.
+- Persist accepted jobs to Excel (.xlsx) and send email alerts.
 - (Future) People search + connection requests after a job is accepted.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design and [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for phased delivery.
@@ -30,13 +30,13 @@ OPENAI_API_KEY=your_key
 OPENAI_MODEL=gpt-4o-mini               # first-pass scoring model
 OPENAI_MODEL_RERANK=gpt-4o             # stronger model for second-pass rerank (optional)
 JOB_MATCH_THRESHOLD=8                  # accept when score >= threshold
-JOB_MATCH_RERANK_BAND=1.0              # rerank when first-pass score is within this band of the threshold
+JOB_MATCH_RERANK_TRIGGER=8             # rerank only when first-pass score meets/exceeds this trigger
 LINKEDIN_EMAIL=you@example.com
 LINKEDIN_PASSWORD=your_pw
 POLL_INTERVAL_MINUTES=30
 ```
 
-Place your resume at `data/master_resume.docx` (full text used; no truncation) and adjust `data/roles.json` + `data/company_blocklist.json` as needed.
+Place your resume at `data/resume.docx` (full text used; no truncation) and adjust `data/roles.json` + `data/company_blocklist.json` as needed.
 
 ## Run
 ```powershell
@@ -48,8 +48,8 @@ pixi -C project_config run loop
 ```
 
 ## Outputs
-- data/jobs.csv and data/jobs.xlsx for accepted jobs
-- data/linkedin_connections.csv and data/linkedin_connections.xlsx for saved contacts
+- data/jobs.xlsx for accepted jobs
+- data/linkedin_connections.xlsx for saved contacts
 - data/company_blocklist.json and data/roles.json for inputs
 - logs/job_finder.log (daily rotated) for execution logs
 - Rerank config: `OPENAI_MODEL_RERANK` and `JOB_MATCH_RERANK_BAND` control second-pass scoring cost/accuracy

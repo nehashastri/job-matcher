@@ -10,8 +10,8 @@ import pytest
 
 try:
     _selenium_exceptions = importlib.import_module("selenium.common.exceptions")
-    TimeoutException = _selenium_exceptions.TimeoutException  # type: ignore[attr-defined]
-    WebDriverException = _selenium_exceptions.WebDriverException  # type: ignore[attr-defined]
+    TimeoutException = getattr(_selenium_exceptions, "TimeoutException", Exception)
+    WebDriverException = getattr(_selenium_exceptions, "WebDriverException", Exception)
 except (
     ModuleNotFoundError
 ):  # pragma: no cover - fallback for type checking when selenium not installed
@@ -55,7 +55,7 @@ class FakeDriver:
 def fake_session(tmp_path) -> SessionManager:
     # Build a session manager that uses our FakeDriver
     mgr = SessionManager()
-    mgr._driver = FakeDriver()  # type: ignore[attr-defined]
+    mgr._driver = FakeDriver()
     # Override cookie path to temp dir
     mgr.cookie_path = tmp_path / ".linkedin_cookies.pkl"
     return mgr
@@ -79,7 +79,9 @@ def test_load_cookies_missing_file(fake_session: SessionManager):
 
 
 def test_login_success_with_retry(monkeypatch, fake_session: SessionManager):
-    auth = LinkedInAuth(fake_session, max_retries=3, backoff_start_seconds=0, backoff_max_seconds=0)
+    auth = LinkedInAuth(
+        fake_session, max_retries=3, backoff_start_seconds=0, backoff_max_seconds=0
+    )
 
     calls = {"count": 0}
 
@@ -91,7 +93,9 @@ def test_login_success_with_retry(monkeypatch, fake_session: SessionManager):
 
     monkeypatch.setattr(auth, "_login_once", succeed_on_third)
     monkeypatch.setattr(
-        auth, "_is_logged_in", lambda: fake_session.get_driver().current_url.endswith("/feed/")
+        auth,
+        "_is_logged_in",
+        lambda: fake_session.get_driver().current_url.endswith("/feed/"),
     )
 
     assert auth.login("user", "pass") is True
@@ -99,7 +103,9 @@ def test_login_success_with_retry(monkeypatch, fake_session: SessionManager):
 
 
 def test_login_invalid_credentials(monkeypatch, fake_session: SessionManager):
-    auth = LinkedInAuth(fake_session, max_retries=2, backoff_start_seconds=0, backoff_max_seconds=0)
+    auth = LinkedInAuth(
+        fake_session, max_retries=2, backoff_start_seconds=0, backoff_max_seconds=0
+    )
 
     def invalid(driver, email, password):
         raise LinkedInAuthError("Invalid LinkedIn credentials")
@@ -127,14 +133,18 @@ def test_login_uses_cookies_first(monkeypatch, fake_session: SessionManager, tmp
     monkeypatch.setattr(
         auth,
         "_login_once",
-        lambda *args, **kwargs: (_ for _ in ()).throw(Exception("should not be called")),
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            Exception("should not be called")
+        ),
     )
 
     assert auth.login("user", "pass") is True
 
 
 def test_login_fails_after_max_retries(monkeypatch, fake_session: SessionManager):
-    auth = LinkedInAuth(fake_session, max_retries=2, backoff_start_seconds=0, backoff_max_seconds=0)
+    auth = LinkedInAuth(
+        fake_session, max_retries=2, backoff_start_seconds=0, backoff_max_seconds=0
+    )
 
     def always_timeout(driver, email, password):
         raise TimeoutException("timeout")

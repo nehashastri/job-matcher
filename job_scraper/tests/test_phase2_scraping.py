@@ -6,7 +6,6 @@ Tests search URL builder, job list scraper, and job detail scraper
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from scraping.job_detail_scraper import JobDetailScraper
 from scraping.job_list_scraper import JobListScraper
 from scraping.search_builder import LinkedInSearchBuilder
@@ -21,7 +20,9 @@ class TestSearchBuilder:
 
     def test_build_basic_search_url(self):
         """Test building a basic search URL with keywords and location"""
-        url = self.builder.build_search_url(keywords="Software Engineer", location="United States")
+        url = self.builder.build_search_url(
+            keywords="Software Engineer", location="United States"
+        )
 
         assert "https://www.linkedin.com/jobs/search/" in url
         assert "keywords=Software%20Engineer" in url
@@ -44,13 +45,17 @@ class TestSearchBuilder:
 
     def test_build_url_with_date_posted_24h(self):
         """Test building URL with date_posted filter for past 24 hours"""
-        url = self.builder.build_search_url(keywords="Software Engineer", date_posted="r86400")
+        url = self.builder.build_search_url(
+            keywords="Software Engineer", date_posted="r86400"
+        )
 
         assert "f_TPR=r86400" in url
 
     def test_build_url_with_custom_date_posted(self):
         """Test building URL with custom date_posted value (e.g., r3600 for past hour)"""
-        url = self.builder.build_search_url(keywords="Software Engineer", date_posted="r3600")
+        url = self.builder.build_search_url(
+            keywords="Software Engineer", date_posted="r3600"
+        )
 
         assert "f_TPR=r3600" in url
 
@@ -99,7 +104,9 @@ class TestSearchBuilder:
 
     def test_get_next_page_url_replaces_existing(self):
         """Test getting next page URL replaces existing pageNum"""
-        current_url = "https://www.linkedin.com/jobs/search/?keywords=Engineer&pageNum=0"
+        current_url = (
+            "https://www.linkedin.com/jobs/search/?keywords=Engineer&pageNum=0"
+        )
         next_url = self.builder.get_next_page_url(current_url, 2)
 
         assert "pageNum=2" in next_url
@@ -149,7 +156,7 @@ class TestJobListScraper:
         assert job["title"] == "Software Engineer"
         assert job["company"] == "Acme Corp"
         assert job["location"] == "New York, NY"
-        assert job["is_viewed"] == False
+        assert not job["is_viewed"]
         assert "1234567890" in job["job_url"]
 
     @patch("scraping.job_list_scraper.time.sleep")
@@ -158,7 +165,9 @@ class TestJobListScraper:
         card = MagicMock()
 
         job_link = MagicMock()
-        job_link.get_attribute.return_value = "https://www.linkedin.com/jobs/view/1234567890/"
+        job_link.get_attribute.return_value = (
+            "https://www.linkedin.com/jobs/view/1234567890/"
+        )
         job_link.text = "Software Engineer"
         card.find_element.side_effect = [
             job_link,
@@ -173,7 +182,7 @@ class TestJobListScraper:
         job = self.scraper._extract_job_from_card(card)
 
         assert job is not None
-        assert job["is_viewed"] == True
+        assert job["is_viewed"]
 
     @patch("scraping.job_list_scraper.time.sleep")
     def test_scrape_job_list_filters_viewed_jobs(self, mock_sleep):
@@ -207,7 +216,9 @@ class TestJobListScraper:
         card = MagicMock()
 
         job_link = MagicMock()
-        job_link.get_attribute.return_value = f"https://www.linkedin.com/jobs/view/{job_id}/"
+        job_link.get_attribute.return_value = (
+            f"https://www.linkedin.com/jobs/view/{job_id}/"
+        )
         job_link.text = title
 
         card.find_element.side_effect = [
@@ -292,14 +303,15 @@ class TestJobDetailScraper:
         assert details is not None
         assert details["job_id"] == job_id
         assert (
-            details["description"] == "Full job description with requirements and responsibilities"
+            details["description"]
+            == "Full job description with requirements and responsibilities"
         )
         assert "Entry level" in details["seniority"]
         assert "Full-time" in details["employment_type"]
         assert "Engineering" in details["job_function"]
         assert details["posted_time"] == "2 days ago"
         assert details["applicant_count"] == 50
-        assert details["remote_eligible"] == True
+        assert details["remote_eligible"]
 
     @patch("scraping.job_detail_scraper.time.sleep")
     def test_extract_job_details_handles_missing_elements(self, mock_sleep):
@@ -400,7 +412,7 @@ class TestJobDetailScraper:
         details = self.scraper._extract_job_details(job_id)
 
         assert details is not None
-        assert details["remote_eligible"] == True
+        assert details["remote_eligible"]
 
     @patch("scraping.job_detail_scraper.time.sleep")
     def test_pagination_with_multiple_pages(self, mock_sleep):
