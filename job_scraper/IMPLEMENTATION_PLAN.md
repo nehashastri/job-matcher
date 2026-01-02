@@ -205,27 +205,40 @@
 ---
 
 ### Phase 8: People Search & Networking (New Tab)
-**Goal**: Open new tab, search for people with matching role at company, send connection requests.
+**Goal**: After a role is accepted (Phase 5), emailed (Phase 7), and saved (Phase 6), open a new tab to LinkedIn People search for that role/company and attempt to start a conversation with matching employees.
 
 **Deliverables**:
-- `src/networking/people_finder.py`: search "role at company" in new tab; scrape people profiles (name, title, URL)
-- `src/networking/connection_requester.py`: send connection requests (max 10/page, first 3 pages or until exhausted)
-- Rate limiting: 1–2s delay between requests; handle failures gracefully; log attempts
-- Tab management: open new tab, close after finishing, return to main tab
+- `src/networking/people_finder.py`: open a new tab, search `"<role-name> at <company-name>"`, click the LinkedIn **People** tab, collect people cards (name, title, profile URL, connection status) from the first 3 pages; derive a `role_match` flag.
+- **Match definition (strict)**: `role_match = true` only when the person’s title contains the queried role string (case-insensitive substring of the role phrase). Example: query "data scientist" matches titles containing "data scientist" or "data science"; it does **not** match "ML" or "AI".
+- `src/networking/connection_requester.py`: operate in the same people-search tab (do not open individual profiles). For each card:
+   - If `role_match` is false: no outreach; if **Message** is present, skip; if **Connect** is present, send **without note** (counts toward the no-note quota).
+   - If `role_match` is true:
+      - **Message path (already connected)**: detect **Message** button → open chatbox → send personalized message → click **Send** → close chatbox (counts toward message+note quota).
+      - **Connect path (not connected)**: click **Connect** → choose **Add note/Send with note** → send the personalized note → submit (counts toward message+note quota).
+- **Personalized message template** (filled with person name, role-name, company-name):
+   ```
+   Hi <person-name>,
+   I'm Neha, master's student at Boston University. I just applied to <role-name> at <company-name>. Would you be willing to get on a quick call? I'd like to know more about your work.
+   ```
+- **Stop conditions**: continue processing cards; when reaching the end of a page, click **Next** and continue. Halt when (a) at least 10 "message sent + connect with note" actions, and (b) at least 10 "connect without note" actions are both met, **or** when there are no more people/pages to process; then close the networking tab and return focus to the main tab.
+- Rate limiting: 1–2s delay between requests; log attempts, outcomes, counters, and failures per page/person; continue on errors.
+- Tab management: open new tab for people search; close after processing; return focus to the main tab.
 
-**Dependencies**: Phase 1 (session manager), Phase 2 (job data).
+**Dependencies**: Phase 1 (session manager), Phase 2 (job data), Phase 5 (accepted role), Phase 6 (saved role), Phase 7 (email sent).
 
 **Duration**: 3–4 days.
 
-**Test Use Cases** (to be approved):
-- Open new tab; verify tab count increases
-- Search "Software Engineer at Acme"; verify results show people
-- Scrape people profiles; extract name, title, URL
-- Send connection request to single person; verify request sent/queued
-- Send 10 requests per page; verify 10 requests attempt
-- Close new tab; return to main tab; verify main tab still open
-- People search returns 0 results → log and continue
-- Connection request fails (rate limit) → skip person, continue
+**Test Use Cases**:
+- Open new tab after a role is accepted and email sent; verify People tab selected for query `"Software Engineer at Acme"`.
+- Scrape people cards across first 3 pages; capture name, title, profile URL, connection status, and `role_match` flag.
+- Match logic: query "data scientist" matches titles containing "data scientist"/"data science"; does not match "machine learning" or "AI".
+- Non-match handling: with **Message** present, skip action; with **Connect** present, send without note; increment the no-note counter.
+- Message path: for a matched 1st-degree connection, open chat, send the filled template, send successfully, and close chat; increment the message+note counter.
+- Connect path with note: for a matched non-connection, open Connect → Add note, paste filled template, send successfully; increment the message+note counter.
+- Pagination: when a page is exhausted before quotas are met, click **Next** and continue processing; if no further pages/people exist, stop.
+- Stop logic: execution halts once both counters reach 10 (message+note ≥10 and no-note ≥10), or when no further people/pages are available; tab closes and main tab is active.
+- Rate limit respected (1–2s) and attempts logged; failures logged but workflow continues.
+- Tab cleanup: close networking tab and return to the main tab.
 
 ---
 

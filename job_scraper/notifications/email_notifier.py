@@ -31,6 +31,7 @@ class EmailNotifier:
         self.smtp_password = config.smtp_password
         self.email_from = config.email_from
         self.email_to = config.email_to
+        self.smtp_use_ssl = getattr(config, "smtp_use_ssl", False)
         self.enabled = config.enable_email_notifications
 
     def send_job_notification(
@@ -127,21 +128,18 @@ class EmailNotifier:
             smtplib.SMTPException: If SMTP error occurs
         """
         try:
-            # Connect to SMTP server
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
-            server.ehlo()
+            # Prefer SSL when configured or using port 465; otherwise use STARTTLS
+            if self.smtp_use_ssl or self.smtp_port == 465:
+                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=30)
+                server.ehlo()
+            else:
+                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
 
-            # Start TLS encryption
-            server.starttls()
-            server.ehlo()
-
-            # Login
             server.login(self.smtp_username, self.smtp_password)
-
-            # Send email
             server.send_message(msg)
-
-            # Close connection
             server.quit()
 
         except smtplib.SMTPServerDisconnected as e:

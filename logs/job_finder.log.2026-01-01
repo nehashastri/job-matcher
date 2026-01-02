@@ -1,0 +1,2582 @@
+[2026-01-01 16:31:37] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:31:52] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:31:52] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:31:52] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:31:53] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:31:53] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:31:53] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:31:53] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:31:53] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:31:53] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:31:53] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:31:53] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:31:53] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:31:53] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:31:53] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:31:53] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:31:53] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:31:53] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:31:53] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:31:53] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:31:53] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:31:56] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:31:56] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:31:56] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:31:56] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:31:56] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:31:56] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:31:58] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:31:58] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:31:58] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:31:58] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:31:58] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:31:58] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:31:58] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:31:58] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:31:58] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:31:58] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:31:58] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:31:58] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:31:58] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:31:58] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:31:58] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:31:58] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:31:58] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:44:57] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:45:13] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:45:13] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:45:13] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:45:14] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:45:14] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:45:14] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:45:14] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:45:14] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:45:14] [INFO] [GENERAL] 3. ○ Full Stack Engineer
+Full Stack Engineer
+[2026-01-01 16:45:14] [INFO] [GENERAL]    ID: 4346923369, Viewed: False, Indicator: None
+[2026-01-01 16:45:14] [INFO] [GENERAL] 4. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:45:14] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:45:14] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:45:14] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:45:14] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:45:14] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:45:14] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:45:14] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:45:14] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:45:14] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:45:18] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:45:18] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:45:18] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:45:18] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:45:18] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:45:18] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:45:19] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:45:19] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:45:19] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:45:19] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:45:19] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:45:19] [INFO] [GENERAL] 3. ○ Full Stack Engineer
+Full Stack Engineer
+[2026-01-01 16:45:19] [INFO] [GENERAL]    ID: 4346923369, Viewed: False, Indicator: None
+[2026-01-01 16:45:19] [INFO] [GENERAL] 4. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:45:19] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:45:19] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:45:19] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:45:19] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:45:19] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:45:19] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:45:19] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:45:19] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:45:19] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:49:50] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:50:04] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:50:04] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:50:04] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:50:05] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:50:05] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:50:05] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:50:05] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:50:05] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:50:05] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:50:05] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:50:05] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:50:05] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:50:05] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:50:05] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:50:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:50:05] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:50:05] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:50:05] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:50:05] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:50:05] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:50:09] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:50:09] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:50:09] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:50:09] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:50:09] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:50:09] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:50:10] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:50:10] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:50:10] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:50:10] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:50:10] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:50:10] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:50:10] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:50:10] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:50:10] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:50:10] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:50:10] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:50:10] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:50:10] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:50:10] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:50:10] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:50:10] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:50:10] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 16:50:50] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 16:51:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:51:05] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 16:51:05] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:51:07] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 16:51:07] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:51:07] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:51:07] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:51:07] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:51:07] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:51:07] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:51:07] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:51:07] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:51:07] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:51:07] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:51:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:51:07] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 16:51:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:51:07] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 16:51:07] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:51:07] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:51:10] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 16:51:10] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 16:51:10] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 16:51:10] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:51:10] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 16:51:10] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:51:12] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 16:51:12] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 16:51:12] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 16:51:12] [INFO] [GENERAL] 2. ○ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 16:51:12] [INFO] [GENERAL]    ID: 4323251264, Viewed: False, Indicator: None
+[2026-01-01 16:51:12] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 16:51:12] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 16:51:12] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 16:51:12] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 16:51:12] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 16:51:12] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 16:51:12] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 16:51:12] [INFO] [GENERAL] SUMMARY
+[2026-01-01 16:51:12] [INFO] [GENERAL] ================================================================================
+[2026-01-01 16:51:12] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 16:51:12] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 16:51:12] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:06:20] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:06:36] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:06:36] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:06:36] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:06:38] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:06:38] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:06:38] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:06:38] [INFO] [GENERAL] 2. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:06:38] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:06:38] [INFO] [GENERAL] 3. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:06:38] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:06:38] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:06:38] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:06:38] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 17:06:38] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 17:06:38] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:06:38] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 17:06:38] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:06:38] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:06:38] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:06:38] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:06:41] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:06:41] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:06:41] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:06:41] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:06:41] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:06:41] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:06:43] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:06:43] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:06:43] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:06:43] [INFO] [GENERAL] 2. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:06:43] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:06:43] [INFO] [GENERAL] 3. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:06:43] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:06:43] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:06:43] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:06:43] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 17:06:43] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 17:06:43] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:06:43] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:06:43] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:06:43] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 17:06:43] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 17:06:43] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:08:07] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:08:23] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:08:23] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:08:23] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:08:25] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:08:25] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:08:25] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:08:25] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:08:25] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:08:25] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:08:25] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:08:25] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:08:25] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:08:25] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:08:25] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:08:25] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:08:25] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:08:25] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:08:25] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:08:25] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:08:25] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:08:28] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:08:28] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:08:28] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:08:28] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:08:28] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:08:28] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:08:30] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:08:30] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:08:30] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:08:30] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:08:30] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:08:30] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:08:30] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:08:30] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:08:30] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:08:30] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:08:30] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:08:30] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:08:30] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:08:30] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:08:30] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:08:30] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:08:30] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:11:24] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:11:38] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:11:38] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:11:38] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:11:40] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:11:40] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:11:40] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:11:40] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:11:40] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:11:40] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:11:40] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:11:40] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:11:40] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:11:40] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:11:40] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:11:40] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:11:40] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:11:40] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:11:40] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:11:40] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:11:40] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:11:43] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:11:43] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:11:43] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:11:43] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:11:43] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:11:43] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:11:45] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:11:45] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:11:45] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:11:45] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:11:45] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:11:45] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:11:45] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:11:45] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:11:45] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:11:45] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:11:45] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:11:45] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:11:45] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:11:45] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:11:45] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:11:45] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:11:45] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:12:27] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:12:41] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:12:41] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:12:41] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:12:43] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:12:43] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:12:43] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:12:43] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:12:43] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:12:43] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:12:43] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:12:43] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:12:43] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:12:43] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:12:43] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:12:43] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:12:43] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:12:43] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:12:43] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:12:43] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:12:43] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:12:46] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:12:46] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:12:46] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:12:46] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:12:46] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:12:46] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:12:47] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:12:47] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:12:47] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:12:47] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:12:47] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:12:47] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:12:47] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:12:47] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:12:47] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:12:47] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:12:47] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:12:47] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:12:47] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:12:47] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:12:47] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:12:47] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:12:47] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:27:28] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:27:42] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:27:42] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:27:42] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:27:44] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:27:44] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:27:44] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:27:44] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:27:44] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:27:44] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:27:44] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:27:44] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:27:44] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:27:44] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:27:44] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:27:44] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:27:44] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:27:44] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:27:44] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:27:44] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:27:44] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:27:47] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:27:47] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:27:47] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:27:47] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:27:47] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:27:47] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:27:49] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:27:49] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:27:49] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:27:49] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:27:49] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:27:49] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:27:49] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:27:49] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:27:49] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:27:49] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:27:49] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:27:49] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:27:49] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:27:49] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:27:49] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:27:49] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:27:49] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:29:45] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:29:59] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:29:59] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:29:59] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:30:00] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:30:00] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:30:00] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:30:00] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:30:00] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:30:00] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:30:00] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:30:00] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:30:00] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:30:00] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:30:00] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:30:00] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:30:00] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:30:00] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:30:00] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:30:00] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:30:00] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:30:04] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:30:04] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:30:04] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:30:04] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:30:04] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:30:04] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:30:05] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:30:05] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:30:05] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:30:05] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:30:05] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:30:05] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:30:05] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:30:05] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:30:05] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:30:05] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:30:05] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:30:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:30:05] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:30:05] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:30:05] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:30:05] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:30:05] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:31:36] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:31:51] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:31:51] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:31:51] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:31:53] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:31:53] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:31:53] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:31:53] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:31:53] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:31:53] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:31:53] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:31:53] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:31:53] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:31:53] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:31:53] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:31:53] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:31:53] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:31:53] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:31:53] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:31:53] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:31:53] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:31:56] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:31:56] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:31:56] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:31:56] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:31:56] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:31:56] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:31:58] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:31:58] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:31:58] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:31:58] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:31:58] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:31:58] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:31:58] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:31:58] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:31:58] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:31:58] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:31:58] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:31:58] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:31:58] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:31:58] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:31:58] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:31:58] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:31:58] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:43:10] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:43:24] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:43:24] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:43:24] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:43:25] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:43:25] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:43:25] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:43:25] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:43:25] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:43:25] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:43:25] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:43:25] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:43:25] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:43:25] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:43:25] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:43:25] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:43:25] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:43:25] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:43:25] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:43:25] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:43:25] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:43:29] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:43:29] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:43:29] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:43:29] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:43:29] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:43:29] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:43:30] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:43:30] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:43:30] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:43:30] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:43:30] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:43:30] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:43:30] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:43:30] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:43:30] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:43:30] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:43:30] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:43:30] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:43:30] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:43:30] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:43:30] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:43:30] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:43:30] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:46:48] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:47:03] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:47:03] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:47:03] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:47:04] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:47:04] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:47:04] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:47:04] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:47:04] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:47:04] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:47:04] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:47:04] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:47:04] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:47:04] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:47:04] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:47:04] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:47:04] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:47:04] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:47:04] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:47:04] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:47:04] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:47:07] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:47:07] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:47:07] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:47:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:47:07] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:47:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:47:09] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:47:09] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:47:09] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:47:09] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:47:09] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:47:09] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:47:09] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:47:09] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:47:09] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:47:09] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:47:09] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:47:09] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:47:09] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:47:09] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:47:09] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:47:09] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:47:09] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:49:22] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:49:36] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:49:36] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:49:36] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:49:38] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:49:38] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:49:38] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:49:38] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:49:38] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:49:38] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:49:38] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:49:38] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:49:38] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:49:38] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:49:38] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:49:38] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:49:38] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:49:38] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:49:38] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:49:38] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:49:38] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:49:41] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:49:41] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:49:41] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:49:41] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:49:41] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:49:41] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:49:43] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:49:43] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:49:43] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:49:43] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:49:43] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:49:43] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:49:43] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:49:43] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:49:43] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:49:43] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:49:43] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:49:43] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:49:43] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:49:43] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:49:43] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:49:43] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:49:43] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:51:20] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:51:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:51:35] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:51:35] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:51:36] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:51:36] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:51:36] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:51:36] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:51:36] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:51:36] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:51:36] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:51:36] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:51:36] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:51:36] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:51:36] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:51:36] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:51:36] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:51:36] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:51:36] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:51:36] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:51:36] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:51:39] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:51:39] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:51:39] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:51:39] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:51:39] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:51:39] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:51:41] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:51:41] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:51:41] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:51:41] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:51:41] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:51:41] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:51:41] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:51:41] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:51:41] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:51:41] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:51:41] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:51:41] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:51:41] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:51:41] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:51:41] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:51:41] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:51:41] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:53:49] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:54:03] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:54:03] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:54:03] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:54:05] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:54:05] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:54:05] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:54:05] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:54:05] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:54:05] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:54:05] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:54:05] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:54:05] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:54:05] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:54:05] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:54:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:54:05] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:54:05] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:54:05] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:54:05] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:54:05] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:54:09] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:54:09] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:54:09] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:54:09] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:54:09] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:54:09] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:54:10] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:54:10] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:54:10] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:54:10] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:54:10] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:54:10] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:54:10] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:54:10] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:54:10] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:54:10] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:54:10] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:54:10] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:54:10] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:54:10] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:54:10] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:54:10] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:54:10] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:55:30] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:55:45] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:55:45] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:55:45] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:55:47] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:55:47] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:55:47] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:55:47] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:55:47] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:55:47] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:55:47] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:55:47] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:55:47] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:55:47] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:55:47] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:55:47] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:55:47] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:55:47] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:55:47] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:55:47] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:55:47] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:55:50] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:55:50] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:55:50] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:55:50] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:55:50] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:55:50] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:55:52] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:55:52] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:55:52] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:55:52] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:55:52] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:55:52] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:55:52] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:55:52] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:55:52] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:55:52] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:55:52] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:55:52] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:55:52] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:55:52] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:55:52] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:55:52] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:55:52] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:57:15] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:57:29] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:57:29] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:57:29] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:57:31] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:57:31] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:57:31] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:57:31] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:57:31] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:57:31] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:57:31] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:57:31] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:57:31] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:57:31] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:57:31] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:57:31] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:57:31] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:57:31] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:57:31] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:57:31] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:57:31] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:57:34] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:57:34] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:57:34] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:57:34] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:57:34] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:57:34] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:57:36] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:57:36] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:57:36] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:57:36] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:57:36] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:57:36] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:57:36] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:57:36] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:57:36] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:57:36] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:57:36] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:57:36] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:57:36] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:57:36] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:57:36] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:57:36] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:57:36] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 17:59:13] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 17:59:29] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:59:29] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 17:59:29] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:59:30] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 17:59:30] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:59:30] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:59:30] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:59:30] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:59:30] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:59:30] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:59:30] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:59:30] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:59:30] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:59:30] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:59:30] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:59:30] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 17:59:30] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:59:30] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 17:59:30] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:59:30] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:59:34] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 17:59:34] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 17:59:34] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 17:59:34] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:59:34] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 17:59:34] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:59:35] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 17:59:35] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 17:59:35] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:59:35] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 17:59:35] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 17:59:35] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 17:59:35] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 17:59:35] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 17:59:35] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 17:59:35] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 17:59:35] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 17:59:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 17:59:35] [INFO] [GENERAL] SUMMARY
+[2026-01-01 17:59:35] [INFO] [GENERAL] ================================================================================
+[2026-01-01 17:59:35] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 17:59:35] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 17:59:35] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:03:02] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:03:19] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:03:19] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:03:19] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:03:20] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:03:20] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:03:20] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:03:20] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:03:20] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:03:20] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:03:20] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:03:20] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:03:20] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:03:20] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:03:20] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:03:20] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:03:20] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 18:03:20] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:03:20] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:03:20] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:03:20] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:03:24] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:03:24] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:03:24] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:03:24] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:03:24] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:03:24] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:03:26] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:03:26] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:03:26] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:03:26] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:03:26] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:03:26] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:03:26] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:03:26] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:03:26] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:03:26] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:03:26] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:03:26] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:03:26] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:03:26] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:03:26] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:03:26] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:03:26] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:06:55] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:07:10] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:07:10] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:07:10] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:07:12] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:07:12] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:07:12] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:07:12] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:07:12] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:07:12] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:07:12] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:07:12] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:07:12] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:07:12] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:07:12] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:07:12] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:07:12] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 18:07:12] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:07:12] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:07:12] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:07:12] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:07:15] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:07:15] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:07:15] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:07:15] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:07:15] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:07:15] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:07:16] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:07:16] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:07:16] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:07:16] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:07:16] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:07:16] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:07:16] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:07:16] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:07:16] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:07:16] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:07:16] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:07:16] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:07:16] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:07:16] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:07:16] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:07:16] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:07:16] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:08:32] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:08:47] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:08:47] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:08:47] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:08:49] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:08:49] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:08:49] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:08:49] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:08:49] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:08:49] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:08:49] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:08:49] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:08:49] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:08:49] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:08:49] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:08:49] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:08:49] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 18:08:49] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:08:49] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:08:49] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:08:49] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:08:52] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:08:52] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:08:52] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:08:52] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:08:52] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:08:52] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:08:54] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:08:54] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:08:54] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:08:54] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:08:54] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:08:54] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:08:54] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:08:54] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:08:54] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:08:54] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:08:54] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:08:54] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:08:54] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:08:54] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:08:54] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:08:54] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:08:54] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:15:59] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:16:13] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:16:13] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:16:13] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:16:14] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:16:14] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:16:14] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:16:14] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:16:14] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:16:14] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:16:14] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:16:14] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:16:14] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:16:14] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:16:14] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:16:14] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:16:14] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 18:16:14] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:16:14] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:16:14] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:16:14] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:16:18] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:16:18] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:16:18] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:16:18] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:16:18] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:16:18] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:16:19] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:16:19] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:16:19] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:16:19] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:16:19] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:16:19] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:16:19] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:16:19] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:16:19] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:16:19] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:16:19] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:16:19] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:16:19] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:16:19] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:16:19] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:16:19] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:16:19] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:18:47] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:19:01] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:19:01] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:19:01] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:19:03] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:19:03] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:19:03] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:19:03] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:19:03] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:19:03] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:19:03] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:19:03] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:19:03] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:19:03] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:19:03] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:19:03] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:19:03] [INFO] [GENERAL] CLICKING on first job (ID: 4281684668) to mark it as viewed...
+[2026-01-01 18:19:03] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:19:03] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:19:03] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:19:03] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:19:06] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:19:06] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:19:06] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:19:06] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:19:06] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:19:06] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:19:07] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:19:07] [INFO] [GENERAL] 1. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:19:07] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:19:07] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:19:07] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:19:07] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:19:07] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:19:07] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:19:07] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:19:07] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:19:07] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:19:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:19:07] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:19:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:19:07] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:19:07] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:19:07] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:19:47] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:20:02] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:20:02] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:20:02] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:20:03] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:20:03] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:20:03] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:20:03] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:20:03] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:20:03] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:20:03] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:20:03] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:20:03] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:20:03] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:20:03] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:20:03] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:20:03] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:20:03] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:20:04] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:20:04] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:20:04] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:20:07] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:20:07] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:20:07] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:20:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:20:07] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:20:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:20:08] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:20:08] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:20:08] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:20:08] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:20:08] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:20:08] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:20:08] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:20:08] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:20:08] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:20:08] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:20:08] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:20:08] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:20:08] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:20:08] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:20:08] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:20:08] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:20:08] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:23:32] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:23:49] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:23:49] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:23:49] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:23:51] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:23:51] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:23:51] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:23:51] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:23:51] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:23:51] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:23:51] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:23:51] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:23:51] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:23:51] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:23:51] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:23:51] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:23:51] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:23:51] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:23:51] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:23:51] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:23:51] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:23:54] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:23:54] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:23:54] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:23:54] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:23:54] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:23:54] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:23:56] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:23:56] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:23:56] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:23:56] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:23:56] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:23:56] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:23:56] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:23:56] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:23:56] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:23:56] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:23:56] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:23:56] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:23:56] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:23:56] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:23:56] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:23:56] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:23:56] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:30:44] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:31:00] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:31:00] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:31:00] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:31:02] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:31:02] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:31:02] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:31:02] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:31:02] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:31:02] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:31:02] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:31:02] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:31:02] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:31:02] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:31:02] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:31:02] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:31:02] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:31:02] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:31:02] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:31:02] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:31:02] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:31:05] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:31:05] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:31:05] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:31:05] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:31:05] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:31:05] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:31:07] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:31:07] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:31:07] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:31:07] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:31:07] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:31:07] [INFO] [GENERAL] 3. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:31:07] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:31:07] [INFO] [GENERAL] 4. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:31:07] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:31:07] [INFO] [GENERAL] 5. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:31:07] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:31:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:31:07] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:31:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:31:07] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:31:07] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:31:07] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:34:03] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:34:20] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:34:20] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:34:20] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:34:22] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:34:22] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:34:22] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:34:22] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:34:22] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:34:22] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:34:22] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:34:22] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:34:22] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:34:22] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:34:22] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:34:22] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:34:22] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:34:22] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:34:22] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:34:22] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:34:22] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:34:25] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:34:25] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:34:25] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:34:25] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:34:25] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:34:25] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:34:26] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:34:26] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:34:26] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:34:26] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:34:26] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:34:26] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:34:26] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:34:26] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:34:26] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:34:26] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:34:26] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:34:26] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:34:26] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:34:26] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:34:26] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:34:26] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:34:26] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:36:15] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:36:32] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:36:32] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:36:32] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:36:34] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:36:34] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:36:34] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:36:34] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:36:34] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:36:34] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:36:34] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:36:34] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:36:34] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:36:34] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:36:34] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:36:34] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:36:34] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:36:34] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:36:34] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:36:34] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:36:34] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:36:37] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:36:37] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:36:37] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:36:37] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:36:37] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:36:37] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:36:39] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:36:39] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:36:39] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:36:39] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:36:39] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:36:39] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:36:39] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:36:39] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:36:39] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:36:39] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:36:39] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:36:39] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:36:39] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:36:39] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:36:39] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:36:39] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:36:39] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:38:52] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:39:06] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:39:06] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:39:06] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:39:08] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:39:08] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:39:08] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:39:08] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:39:08] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:39:08] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:39:08] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:39:08] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:39:08] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:39:08] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:39:08] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:39:08] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:39:08] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:39:08] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:39:08] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:39:08] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:39:08] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:39:11] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:39:11] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:39:11] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:39:11] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:39:11] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:39:11] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:39:12] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:39:12] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:39:12] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:39:12] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:39:12] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:39:12] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:39:12] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:39:12] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:39:12] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:39:12] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:39:12] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:39:12] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:39:12] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:39:12] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:39:12] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:39:12] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:39:12] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:40:19] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:40:33] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:40:33] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:40:33] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:40:35] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:40:35] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:40:35] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:40:35] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:40:35] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:40:35] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:40:35] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:40:35] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:40:35] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:40:35] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:40:35] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:40:35] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:40:35] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:40:35] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:40:35] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:40:35] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:40:35] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:40:38] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:40:38] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:40:38] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:40:38] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:40:38] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:40:38] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:40:40] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:40:40] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:40:40] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:40:40] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:40:40] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:40:40] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:40:40] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:40:40] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:40:40] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:40:40] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:40:40] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:40:40] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:40:40] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:40:40] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:40:40] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:40:40] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:40:40] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:46:00] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:46:14] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:46:14] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:46:14] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:46:16] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:46:16] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:46:16] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:46:16] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:46:16] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:46:16] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:46:16] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:46:16] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:46:16] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:46:16] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:46:16] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:46:16] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:46:16] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:46:16] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:46:16] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:46:16] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:46:16] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:46:19] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:46:19] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:46:19] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:46:19] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:46:19] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:46:19] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:46:21] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:46:21] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:46:21] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:46:21] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:46:21] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:46:21] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:46:21] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:46:21] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:46:21] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:46:21] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:46:21] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:46:21] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:46:21] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:46:21] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:46:21] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:46:21] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:46:21] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:51:09] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:51:24] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:51:24] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:51:24] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:51:26] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:51:26] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:51:26] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:51:26] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:51:26] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:51:26] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:51:26] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:51:26] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:51:26] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:51:26] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:51:26] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:51:26] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:51:26] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:51:26] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:51:26] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:51:26] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:51:26] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:51:29] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:51:29] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:51:29] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:51:29] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:51:29] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:51:29] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:51:31] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:51:31] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:51:31] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:51:31] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:51:31] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:51:31] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:51:31] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:51:31] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:51:31] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:51:31] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:51:31] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:51:31] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:51:31] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:51:31] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:51:31] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:51:31] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:51:31] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:53:31] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:53:45] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:53:45] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:53:45] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:53:47] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:53:47] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:53:47] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:53:47] [INFO] [GENERAL] 2. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:53:47] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:53:47] [INFO] [GENERAL] 3. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:53:47] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:53:47] [INFO] [GENERAL] 4. ○ Super SWE
+Super SWE
+[2026-01-01 18:53:47] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:53:47] [INFO] [GENERAL] 5. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:53:47] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:53:47] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:53:47] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:53:47] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:53:47] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:53:47] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:53:47] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:53:50] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:53:50] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:53:50] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:53:50] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:53:50] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:53:50] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:53:52] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:53:52] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:53:52] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:53:52] [INFO] [GENERAL] 2. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:53:52] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:53:52] [INFO] [GENERAL] 3. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:53:52] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:53:52] [INFO] [GENERAL] 4. ○ Super SWE
+Super SWE
+[2026-01-01 18:53:52] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:53:52] [INFO] [GENERAL] 5. ○ Data Engineer
+Data Engineer
+[2026-01-01 18:53:52] [INFO] [GENERAL]    ID: 4343144678, Viewed: False, Indicator: None
+[2026-01-01 18:53:52] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:53:52] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:53:52] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:53:52] [INFO] [GENERAL] Viewed jobs BEFORE: 1/7
+[2026-01-01 18:53:52] [INFO] [GENERAL] Viewed jobs AFTER:  1/7
+[2026-01-01 18:53:52] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:55:52] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:56:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:56:07] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:56:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:56:08] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:56:08] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:56:08] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:56:08] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:56:08] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:56:08] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:56:08] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:56:08] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:56:08] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:56:08] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:56:08] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:56:08] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:56:08] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:56:08] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:56:08] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:56:08] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:56:08] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:56:11] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:56:11] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:56:11] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:56:11] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:56:11] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:56:11] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:56:12] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:56:12] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:56:12] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:56:12] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:56:12] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:56:12] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:56:12] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:56:12] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:56:12] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:56:12] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:56:12] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:56:12] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:56:12] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:56:12] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:56:12] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:56:12] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:56:12] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:56:59] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 18:57:15] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:57:15] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 18:57:15] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:57:17] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 18:57:17] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:57:17] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:57:17] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:57:17] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:57:17] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:57:17] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:57:17] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:57:17] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:57:17] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:57:17] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:57:17] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:57:17] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 18:57:17] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:57:17] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 18:57:17] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:57:17] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:57:20] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 18:57:20] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 18:57:20] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 18:57:20] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:57:20] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 18:57:20] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:57:22] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 18:57:22] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 18:57:22] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:57:22] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 18:57:22] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 18:57:22] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 18:57:22] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 18:57:22] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 18:57:22] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 18:57:22] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 18:57:22] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 18:57:22] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 18:57:22] [INFO] [GENERAL] SUMMARY
+[2026-01-01 18:57:22] [INFO] [GENERAL] ================================================================================
+[2026-01-01 18:57:22] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 18:57:22] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 18:57:22] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 18:59:49] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 19:00:06] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:00:06] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 19:00:06] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:00:07] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 19:00:07] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 19:00:07] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:00:07] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 19:00:07] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:00:07] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 19:00:07] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 19:00:07] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 19:00:07] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 19:00:07] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 19:00:07] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 19:00:07] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:00:07] [INFO] [GENERAL] CLICKING on first job (ID: 4323251264) to mark it as viewed...
+[2026-01-01 19:00:07] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:00:07] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 19:00:07] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 19:00:07] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 19:00:11] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 19:00:11] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 19:00:11] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 19:00:11] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:00:11] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 19:00:11] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:00:13] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 19:00:13] [INFO] [GENERAL] 1. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 19:00:13] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:00:13] [INFO] [GENERAL] 2. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 19:00:13] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:00:13] [INFO] [GENERAL] 3. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 19:00:13] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 19:00:13] [INFO] [GENERAL] 4. ○ Junior Full Stack AI Engineer (Remote)
+Junior Full
+[2026-01-01 19:00:13] [INFO] [GENERAL]    ID: 4346845524, Viewed: False, Indicator: None
+[2026-01-01 19:00:13] [INFO] [GENERAL] 5. ○ Super SWE
+Super SWE
+[2026-01-01 19:00:13] [INFO] [GENERAL]    ID: 4318402806, Viewed: False, Indicator: None
+[2026-01-01 19:00:13] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:00:13] [INFO] [GENERAL] SUMMARY
+[2026-01-01 19:00:13] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:00:13] [INFO] [GENERAL] Viewed jobs BEFORE: 2/7
+[2026-01-01 19:00:13] [INFO] [GENERAL] Viewed jobs AFTER:  2/7
+[2026-01-01 19:00:13] [INFO] [GENERAL] 
+No change in viewed job count.
+[2026-01-01 19:02:14] [INFO] [GENERAL] Navigating to: https://www.linkedin.com/jobs/search/?keywords=Software%20Engineer&location=United%20States&f_WT=2&f_E=2&f_TPR=r86400&position=1&pageNum=0
+[2026-01-01 19:02:31] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:02:31] [INFO] [GENERAL] INITIAL SCRAPE - Before clicking any jobs
+[2026-01-01 19:02:31] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:02:32] [INFO] [GENERAL] 
+Found 7 jobs initially:
+[2026-01-01 19:02:32] [INFO] [GENERAL] 1. ✓ Software Engineer (Backend)
+Software Engineer (Bac
+[2026-01-01 19:02:32] [INFO] [GENERAL]    ID: 4346689007, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:32] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 19:02:32] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:32] [INFO] [GENERAL] 3. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 19:02:32] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:32] [INFO] [GENERAL] 4. ○ Systems/Infra/Data/Platform Engineer - Exchange Fe
+[2026-01-01 19:02:32] [INFO] [GENERAL]    ID: 4351051892, Viewed: False, Indicator: None
+[2026-01-01 19:02:32] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 19:02:32] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 19:02:32] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:02:32] [INFO] [GENERAL] CLICKING on first job (ID: 4346689007) to mark it as viewed...
+[2026-01-01 19:02:32] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:02:33] [INFO] [GENERAL] BEFORE click:
+[2026-01-01 19:02:33] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 19:02:33] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 19:02:36] [INFO] [GENERAL] 
+AFTER click:
+[2026-01-01 19:02:36] [INFO] [GENERAL]   Classes: display-flex job-card-container relative job-card-list
+        job-card-container--clickable
+        
+        job-card-list--underline-title-on-hover jobs-search-results-list__list-item--active jobs-search-two-pane__job-card-container--viewport-tracking-0
+[2026-01-01 19:02:36] [INFO] [GENERAL]   aria-current: page
+[2026-01-01 19:02:36] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:02:36] [INFO] [GENERAL] RE-SCRAPE - After clicking first job
+[2026-01-01 19:02:36] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:02:37] [INFO] [GENERAL] 
+Found 7 jobs after click:
+[2026-01-01 19:02:37] [INFO] [GENERAL] 1. ✓ Software Engineer (Backend)
+Software Engineer (Bac
+[2026-01-01 19:02:37] [INFO] [GENERAL]    ID: 4346689007, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:37] [INFO] [GENERAL] 2. ✓ GenAI Agent Engineer
+GenAI Agent Engineer with ver
+[2026-01-01 19:02:37] [INFO] [GENERAL]    ID: 4323251264, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:37] [INFO] [GENERAL] 3. ✓ AI Engineer, Enterprise Solutions
+AI Engineer, Ent
+[2026-01-01 19:02:37] [INFO] [GENERAL]    ID: 4281684668, Viewed: True, Indicator: text contains 'viewed'
+[2026-01-01 19:02:37] [INFO] [GENERAL] 4. ○ Systems/Infra/Data/Platform Engineer - Exchange Fe
+[2026-01-01 19:02:37] [INFO] [GENERAL]    ID: 4351051892, Viewed: False, Indicator: None
+[2026-01-01 19:02:37] [INFO] [GENERAL] 5. ○ Software Engineer, Product Strategy
+Software Engin
+[2026-01-01 19:02:37] [INFO] [GENERAL]    ID: 4341169789, Viewed: False, Indicator: None
+[2026-01-01 19:02:37] [INFO] [GENERAL] 
+================================================================================
+[2026-01-01 19:02:37] [INFO] [GENERAL] SUMMARY
+[2026-01-01 19:02:37] [INFO] [GENERAL] ================================================================================
+[2026-01-01 19:02:37] [INFO] [GENERAL] Viewed jobs BEFORE: 3/7
+[2026-01-01 19:02:37] [INFO] [GENERAL] Viewed jobs AFTER:  3/7
+[2026-01-01 19:02:37] [INFO] [GENERAL] 
+No change in viewed job count.
