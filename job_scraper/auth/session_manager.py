@@ -53,14 +53,12 @@ class SessionManager:
         window_size: str = "1280,900",
         driver_path: str | None = None,
         cookie_path: Path = Path(__file__).parent.parent / "data/.linkedin_cookies.pkl",
-        chrome_profile_path: str | None = None,
     ) -> None:
         self.headless = headless
         self.user_agent = user_agent
         self.window_size = window_size
         self.driver_path = driver_path
         self.cookie_path = cookie_path
-        self.chrome_profile_path = chrome_profile_path
         self._driver: ChromeWebDriver | None = None
 
     def start(self) -> ChromeWebDriver:
@@ -116,12 +114,6 @@ class SessionManager:
         if chrome_options_cls is None:
             raise RuntimeError("ChromeOptions not available in selenium.webdriver")
         options = chrome_options_cls()
-
-        # Use user's Chrome profile if specified
-        if self.chrome_profile_path:
-            options.add_argument(f"--user-data-dir={self.chrome_profile_path}")
-            # Use a specific profile directory to avoid conflicts
-            options.add_argument("--profile-directory=Default")
 
         if self.headless:
             # Headless Chrome with new headless mode for stability

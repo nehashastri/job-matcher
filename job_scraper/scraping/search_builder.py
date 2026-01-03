@@ -84,7 +84,16 @@ class LinkedInSearchBuilder:
         # r2592000 = Past month
         # Custom: r3600 = Past hour
         if date_posted:
-            params.append(f"f_TPR={date_posted}")
+            # Clamp to LinkedIn-allowed recency window (1h to 24h) and normalize format r<number>
+            import re
+
+            match = re.match(r"r(\d+)", str(date_posted).strip())
+            if match:
+                seconds = int(match.group(1))
+                clamped = max(3600, min(seconds, 86400))
+                params.append(f"f_TPR=r{clamped}")
+            else:
+                params.append("f_TPR=r86400")
 
         # Easy Apply filter
         if easy_apply:

@@ -30,6 +30,18 @@ class Config:
         self._load_env_config()
         self._load_json_config()
 
+    def _resolve_path(self, env_var: str, default: Path) -> Path:
+        """Resolve a path from env; treat relative values as repo-root relative."""
+        value = os.getenv(env_var)
+        if not value:
+            return default
+
+        candidate = Path(value)
+        if candidate.is_absolute():
+            return candidate
+
+        return (BASE_DIR / candidate).resolve()
+
     def _load_env_config(self):
         """Load configuration from environment variables"""
         # OpenAI
@@ -50,14 +62,11 @@ class Config:
         self.linkedin_email = os.getenv("LINKEDIN_EMAIL", "")
         self.linkedin_password = os.getenv("LINKEDIN_PASSWORD", "")
 
-        # Chrome Configuration
-        self.chrome_profile_path = os.getenv("CHROME_PROFILE_PATH", "")
-
         # File paths (resolve against repo data dir by default)
-        self.resume_path = Path(os.getenv("RESUME_PATH", str(DATA_DIR / "resume.docx")))
-        self.roles_path = Path(os.getenv("ROLES_PATH", str(DATA_DIR / "roles.json")))
-        self.blocklist_path = Path(
-            os.getenv("BLOCKLIST_PATH", str(DATA_DIR / "company_blocklist.json"))
+        self.resume_path = self._resolve_path("RESUME_PATH", DATA_DIR / "resume.docx")
+        self.roles_path = self._resolve_path("ROLES_PATH", DATA_DIR / "roles.json")
+        self.blocklist_path = self._resolve_path(
+            "BLOCKLIST_PATH", DATA_DIR / "company_blocklist.json"
         )
 
         # Scraping settings
@@ -66,11 +75,24 @@ class Config:
         self.request_delay_min = float(os.getenv("REQUEST_DELAY_MIN", "2"))
         self.request_delay_max = float(os.getenv("REQUEST_DELAY_MAX", "5"))
         self.max_jobs_per_role = int(os.getenv("MAX_JOBS_PER_ROLE", "50"))
+        self.headless = os.getenv("HEADLESS", "false").lower() == "true"
 
         # Filtering settings
         self.max_applicants = int(os.getenv("MAX_APPLICANTS", "100"))
         self.requires_sponsorship = (
             os.getenv("REQUIRES_SPONSORSHIP", "true").lower() == "true"
+        )
+        self.reject_unpaid_roles = (
+            os.getenv("REJECT_UNPAID_ROLES", "true").lower() == "true"
+        )
+        self.reject_volunteer_roles = (
+            os.getenv("REJECT_VOLUNTEER_ROLES", "true").lower() == "true"
+        )
+        self.min_required_experience_years = int(
+            os.getenv("MIN_REQUIRED_EXPERIENCE_YEARS", "0")
+        )
+        self.allow_phd_required = (
+            os.getenv("ALLOW_PHD_REQUIRED", "true").lower() == "true"
         )
         self.skip_viewed_jobs = os.getenv("SKIP_VIEWED_JOBS", "true").lower() == "true"
         self.reject_hr_companies = (
@@ -100,7 +122,7 @@ class Config:
         self.email_to = os.getenv("EMAIL_TO", "")
         self.smtp_use_ssl = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
         self.enable_email_notifications = (
-            os.getenv("ENABLE_EMAIL_NOTIFICATIONS", "false").lower() == "true"
+            os.getenv("ENABLE_EMAIL_NOTIFICATIONS", "true").lower() == "true"
         )
         self.enable_toast_notifications = (
             os.getenv("ENABLE_TOAST_NOTIFICATIONS", "true").lower() == "true"

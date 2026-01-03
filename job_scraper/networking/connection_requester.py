@@ -158,6 +158,10 @@ class ConnectionRequester:
                 self.logger.debug(
                     f"[CONNECT] Could not click connect for {name}: {exc}"
                 )
+        else:
+            self.logger.info(
+                "[CONNECT] Match: no connect button for %s (skipping connect)", name
+            )
 
         self._record_connection(
             store,
@@ -209,6 +213,11 @@ class ConnectionRequester:
                     f"[CONNECT] Could not click connect for {name}: {exc}"
                 )
 
+        # Visibility/logging when no connect action was taken
+        self.logger.info(
+            "[CONNECT] Non-match: no connect button for %s (skipping)", name
+        )
+
         return None, None
 
     def _should_ignore_profile(self, profile: dict[str, Any]) -> bool:
@@ -239,7 +248,15 @@ class ConnectionRequester:
             "button[aria-label*='Connect']",
             "button[data-control-name='connect']",
             "button[aria-label='Connect']",
+            "button[aria-label*='Invite']",
+            "button[aria-label*='connect with']",
+            "button.artdeco-button--secondary",
+            "a[aria-label*='Invite'][href*='search-custom-invite'],",
+            "a[aria-label*='Connect']",
+            "a[href*='search-custom-invite']",
         ]
+
+        # First pass: direct selectors
         for selector in selectors:
             try:
                 btn = card.find_element(By.CSS_SELECTOR, selector)
@@ -247,6 +264,29 @@ class ConnectionRequester:
                     return btn
             except Exception:
                 continue
+
+        # Second pass: scan any buttons/links with visible text or label containing "connect"
+        try:
+            candidates = card.find_elements(By.CSS_SELECTOR, "button, a, span")
+            for c in candidates:
+                try:
+                    label = (c.get_attribute("aria-label") or "").lower()
+                    text = (c.text or "").lower()
+                    href = (c.get_attribute("href") or "").lower()
+                    if (
+                        "connect" in label
+                        or "invite" in label
+                        or "connect" in text
+                        or "invite" in text
+                        or "search-custom-invite" in href
+                    ):
+                        if c.is_enabled():
+                            return c
+                except Exception:
+                    continue
+        except Exception:
+            pass
+
         return None
 
     def _send_message(self, message_button, name: str, role: str, company: str) -> bool:

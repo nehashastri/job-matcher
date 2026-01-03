@@ -40,28 +40,20 @@ ENABLE_EMAIL_NOTIFICATIONS=true
 ```
 
 3) Provide inputs
-- data/resume.docx (your resume; keep as .docx)
-- data/roles.json (roles, locations, filters)
-- data/company_blocklist.json (optional blocklist entries/patterns)
 
+# Reject unpaid/volunteer roles and cap experience
+REJECT_UNPAID_ROLES=true
+REJECT_VOLUNTEER_ROLES=true
+MIN_REQUIRED_EXPERIENCE_YEARS=0
+ALLOW_PHD_REQUIRED=true
 ## Optional: Gmail app password
 1) Enable 2FA on your Google account.
 2) Generate an App Password (Google Account > Security > App passwords) for Mail/Custom name.
 3) Place the 16-character password (no spaces) in SMTP_PASSWORD.
 4) Set ENABLE_EMAIL_NOTIFICATIONS=true to send alerts.
 
-## Optional: Chrome profile reuse
-Reusing a profile reduces CAPTCHA prompts and speeds up login.
-- Find your profile path via chrome://version/ (Profile Path).
-- Copy that folder to a safe location (Chrome must be closed).
-- Set CHROME_PROFILE_PATH in .env to the copied folder path.
-- Alternatively, start Chrome manually with --remote-debugging-port and set CHROME_REMOTE_DEBUG_PORT.
-
 ## Resume tips
 - Use .docx (not .pdf) so python-docx can extract text.
-- Tables are supported; images are ignored.
-- If your resume lives elsewhere, set RESUME_PATH in .env.
-
 ## Run
 ```powershell
 # Single pass over configured roles
@@ -85,7 +77,7 @@ pixi run python -m pytest
 ```
 
 ## Troubleshooting
-- Chrome/driver: ensure Chrome is installed; if profile copy fails, close Chrome and retry.
-- Login: verify LinkedIn credentials and CHROME_PROFILE_PATH/remote debugging settings.
+- Chrome/driver: ensure Chrome is installed.
+- Login: verify LinkedIn credentials and handle any CAPTCHA prompts manually.
 - OpenAI: check OPENAI_API_KEY and model names; ensure network egress is allowed.
 - Empty results: loosen filters in data/roles.json or lower JOB_MATCH_THRESHOLD.

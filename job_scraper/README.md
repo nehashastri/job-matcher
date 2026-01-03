@@ -43,8 +43,7 @@ Place your resume at data/resume.docx and update data/roles.json plus data/compa
 
 ## Configuration
 - Environment: set values in .env (OpenAI keys, LinkedIn creds, email SMTP, thresholds, polling interval).
-- Chrome profile: set CHROME_PROFILE_PATH (or remote debugging port) if you want to reuse an existing session.
-- Sponsorship/HR: toggle REQUIRES_SPONSORSHIP and REJECT_HR_COMPANIES flags in .env/config.
+- Sponsorship/HR/eligibility: toggle REQUIRES_SPONSORSHIP, REJECT_HR_COMPANIES, REJECT_UNPAID_ROLES, REJECT_VOLUNTEER_ROLES, MIN_REQUIRED_EXPERIENCE_YEARS, ALLOW_PHD_REQUIRED in .env/config.
 - Match scoring: OPENAI_MODEL, OPENAI_MODEL_RERANK, JOB_MATCH_THRESHOLD, JOB_MATCH_RERANK_BAND.
 
 ## Outputs
@@ -61,7 +60,6 @@ pixi run python -m pytest
 ```
 
 ## Troubleshooting
-- Chrome session: verify CHROME_PROFILE_PATH or remote debugging flags; ensure Chrome is closed when copying profiles.
 - Login failures: recheck LINKEDIN_EMAIL/LINKEDIN_PASSWORD; solve any CAPTCHA manually.
 - OpenAI errors: confirm OPENAI_API_KEY, model names, and network access.
 - Empty results: relax filters in data/roles.json or lower JOB_MATCH_THRESHOLD.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from config.config import Config, get_config
@@ -106,15 +107,15 @@ class HRChecker:
             added = self.blocklist.add(company_name)
             if added:
                 self.logger.info(
-                    f"Rejected {company_name} as HR/staffing; added to blocklist. Reason: {result['reason']}"
+                    f"Rejected {company_name} as HR/staffing; added to blocklist. Reason: {self._short_reason(result['reason'])}"
                 )
             else:
                 self.logger.info(
-                    f"Rejected {company_name} as HR/staffing (already blocked). Reason: {result['reason']}"
+                    f"Rejected {company_name} as HR/staffing (already blocked). Reason: {self._short_reason(result['reason'])}"
                 )
         else:
             self.logger.info(
-                f"Accepted {company_name}; HR check clear. Reason: {result['reason']}"
+                f"Accepted {company_name}; HR check clear. Reason: {self._short_reason(result['reason'])}"
             )
 
         return result
@@ -177,3 +178,14 @@ class HRChecker:
             return json.loads(content or "{}")
 
         raise RuntimeError("OpenAI client missing chat.completions or responses API")
+
+    @staticmethod
+    def _short_reason(reason: str) -> str:
+        """Return up to two sentences for concise logging."""
+
+        if not reason:
+            return "No reason provided"
+
+        sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
+        joined = " ".join(sentences[:2]).strip()
+        return joined or reason.strip()[:240]

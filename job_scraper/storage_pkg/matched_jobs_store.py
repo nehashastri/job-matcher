@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import openpyxl
+from config.config import DATA_DIR
 from openpyxl.styles import Alignment, Font, PatternFill
 
 logger = logging.getLogger(__name__)
@@ -45,8 +46,9 @@ CONNECTION_HEADERS = [
 class MatchedJobsStore:
     """Store and manage jobs/contacts in Excel format."""
 
-    def __init__(self, data_dir: str = "data"):
-        self.data_dir = Path(data_dir)
+    def __init__(self, data_dir: str | Path | None = None):
+        # Default to repo-level data directory when not provided
+        self.data_dir = Path(data_dir) if data_dir else DATA_DIR
         self.data_dir.mkdir(exist_ok=True)
 
         self.jobs_excel = self.data_dir / "jobs.xlsx"

@@ -288,15 +288,19 @@ class PeopleFinder:
     def _click_next_page(self) -> bool:
         try:
             next_selectors = [
+                "button[data-testid='pagination-controls-next-button-visible']",
                 "button[aria-label='Next']",
                 "button.artdeco-pagination__button--next",
             ]
             for selector in next_selectors:
                 try:
                     btn = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if btn.get_attribute("disabled"):
+                    if btn.get_attribute("disabled") or btn.get_attribute(
+                        "aria-disabled"
+                    ) in {"true", True}:
                         return False
                     btn.click()
+                    time.sleep(0.5)
                     return True
                 except Exception:
                     continue
