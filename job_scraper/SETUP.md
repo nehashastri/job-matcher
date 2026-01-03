@@ -37,6 +37,8 @@ SMTP_PASSWORD=your_app_password
 EMAIL_FROM=your-email@gmail.com
 EMAIL_TO=your-email@gmail.com
 ENABLE_EMAIL_NOTIFICATIONS=true
+# Browser mode
+HEADLESS=false  # set to true in CI or when you don't need a visible Chrome window
 ```
 
 3) Provide inputs
@@ -57,6 +59,11 @@ ALLOW_PHD_REQUIRED=true
 ## Run
 ```powershell
 # Single pass over configured roles
+cd "D:\Projects\Job List\job_scraper\project_config"
+pixi run scrape
+
+# (Equivalent from repo root)
+cd "D:\Projects\Job List\job_scraper"
 pixi -C project_config run scrape
 
 # Continuous polling (interval from .env)

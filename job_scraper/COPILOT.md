@@ -22,6 +22,17 @@ This ensures that corrections become part of the permanent knowledge base for al
 
 This ensures that the most important and frequently needed guidance is easily accessible and hard to miss.
 
+
+## Early-Stop Logic (LinkedIn Scraper)
+
+The LinkedIn job scraper will now stop searching for a role early in these cases:
+
+- **No matches after 8 pages:** If no jobs are accepted (matched) after 8 pages of results for a role, the scraper will stop searching for that role and move to the next.
+- **All 25 jobs on a page rejected by blocklist/HR:** If all 25 jobs on a page are rejected due to the company being blocklisted or flagged as HR/staffing, the scraper will stop searching for that role and move to the next.
+
+This logic is implemented to avoid wasting time on unproductive searches and to speed up the scraping process.
+
+---
 ## Getting Started
 
 ### Quick Setup

@@ -1,0 +1,13 @@
+{
+    "blocklist": [
+        "Lensa",
+        "Dice",
+        "Jobot"
+    ],
+    "patterns": [
+        ".*[Rr]ecruiting.*",
+        ".*[Ss]taffing.*"
+    ],
+    "notes": "Sample blocklist entries for testing.",
+    "patterns_note": "patterns are regex; these two drop any company name containing 'recruiting' or 'staffing' (case-insensitive)"
+}

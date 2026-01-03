@@ -10,10 +10,17 @@ env/
 # dotenv secret file
 .env
 
+# Ignore additional dotenv vars
+.env_vars
+
 # Personal artifacts
 data/resume.docx
+data/roles.json
+data/company_blocklist.json
 data/preferences.txt
 data/*.xlsx
+data/*.docx
+data/*.pdf
 
 # Logs
 logs/

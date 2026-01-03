@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from scraping.job_detail_scraper import JobDetailScraper
 from scraping.job_list_scraper import JobListScraper
+from scraping.linkedin_scraper import LinkedInScraper
 from scraping.search_builder import LinkedInSearchBuilder
 
 
@@ -395,6 +396,18 @@ class TestJobDetailScraper:
         # Should succeed on retry
         assert result is not None
         assert mock_click.call_count == 2
+
+
+class TestPaginationMath:
+    """Pagination calculations should match LinkedIn page sizing."""
+
+    def test_compute_total_pages_caps_results(self):
+        assert LinkedInScraper._compute_total_pages(0) == 0
+        assert LinkedInScraper._compute_total_pages(1) == 1
+        assert LinkedInScraper._compute_total_pages(25) == 1
+        assert LinkedInScraper._compute_total_pages(26) == 2
+        assert LinkedInScraper._compute_total_pages(240, cap=3) == 3
+        assert LinkedInScraper._compute_total_pages(241, cap=3) == 3
 
     @patch("scraping.job_detail_scraper.time.sleep")
     def test_detect_remote_from_description(self, mock_sleep):
