@@ -3,15 +3,22 @@
         {
             "title": "AI Engineer",
             "location": "United States",
+            "experience_levels": [
+                "Internship",
+                "Entry level",
+                "Associate"
+            ],
+            "date_posted": "r86400",
             "enabled": true
         },
         {
             "title": "Machine Learning Engineer",
             "location": "United States",
+            "experience_levels": [
+                "Mid-Senior level"
+            ],
+            "date_posted": "r604800",
             "enabled": true
         }
-    ],
-    "search_settings": {
-        "date_posted": "r3600"
-    }
+    ]
 }

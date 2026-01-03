@@ -9,7 +9,6 @@ from typing import Any, Generator
 from urllib.parse import quote_plus
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -51,45 +50,49 @@ class PeopleFinder:
     def iterate_pages(
         self, role: str, company: str, pages: int | None = None
     ) -> Generator[list[dict[str, Any]], None, None]:
-        """Yield profiles page-by-page while staying on the current tab.
-
-        This lets callers perform per-page actions before advancing to the next page.
-        """
+        """Yield profiles page-by-page, opening the search in a new tab and closing it after done."""
         query = f"{role} at {company}".strip()
         search_url = (
             f"{self.base_url}/search/results/people/?keywords={quote_plus(query)}"
         )
-        self.logger.info(f"[PEOPLE_SEARCH] '{query}'")
+        self.logger.info(f"[PEOPLE_SEARCH] '{query}' (new tab)")
 
-        if not self._search_via_bar(query):
-            if not self._safe_get(search_url):
-                self.logger.error("[PEOPLE_SEARCH] Unable to load search URL")
-                return
+        original_handle = self.driver.current_window_handle
+        self.driver.execute_script(f"window.open('{search_url}', '_blank');")
+        new_handle = self.driver.window_handles[-1]
+        self.driver.switch_to.window(new_handle)
 
-        self._click_people_filter()
-        self._ensure_people_url(search_url)
-        self._wait_for_results()
         try:
-            self.logger.info(f"[PEOPLE_SEARCH] Current URL: {self.driver.current_url}")
-        except Exception:
-            pass
-
-        page_count = 0
-        while True:
-            self._scroll_results()
-            page_profiles = self._scrape_current_page(role, company)
-            for p in page_profiles:
+            self._click_people_filter()
+            self._ensure_people_url(search_url)
+            self._wait_for_results()
+            try:
                 self.logger.info(
-                    f"[PEOPLE_SEARCH] Profile: name='{p.get('name')}', title='{p.get('title')}', match={p.get('is_role_match')}"
+                    f"[PEOPLE_SEARCH] Current URL: {self.driver.current_url}"
                 )
-            yield page_profiles
+            except Exception:
+                pass
 
-            page_count += 1
-            if pages is not None and page_count >= pages:
-                break
-            if not self._click_next_page():
-                break
-            time.sleep(1)
+            page_count = 0
+            while True:
+                self._scroll_results()
+                page_profiles = self._scrape_current_page(role, company)
+                for p in page_profiles:
+                    self.logger.info(
+                        f"[PEOPLE_SEARCH] Profile: name='{p.get('name')}', title='{p.get('title')}', match={p.get('is_role_match')}"
+                    )
+                yield page_profiles
+
+                page_count += 1
+                if pages is not None and page_count >= pages:
+                    break
+                if not self._click_next_page():
+                    break
+                time.sleep(1)
+        finally:
+            # Close the search tab and switch back
+            self.driver.close()
+            self.driver.switch_to.window(original_handle)
 
     def _click_people_filter(self) -> None:
         """Ensure the People filter/tab is selected."""
@@ -115,25 +118,7 @@ class PeopleFinder:
         except Exception as exc:
             self.logger.debug(f"[PEOPLE_SEARCH] Could not click People filter: {exc}")
 
-    def _search_via_bar(self, query: str) -> bool:
-        """Try to mimic user typing into LinkedIn top search bar."""
-        try:
-            if not self._safe_get(self.base_url):
-                return False
-            search_box = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "input[aria-label='Search']")
-                )
-            )
-            search_box.clear()
-            search_box.send_keys(query)
-            search_box.send_keys(Keys.ENTER)
-            time.sleep(2)
-            self.logger.info("[PEOPLE_SEARCH] Submitted query via top search bar")
-            return True
-        except Exception as exc:
-            self.logger.debug(f"[PEOPLE_SEARCH] Search bar path failed: {exc}")
-            return False
+    # Removed unused legacy function _search_via_bar
 
     def _scrape_current_page(self, role: str, company: str) -> list[dict[str, Any]]:
         profiles: list[dict[str, Any]] = []

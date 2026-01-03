@@ -185,23 +185,63 @@ class LinkedInScraper(BaseScraper):
                 if not title or title in seen_titles:
                     continue
                 seen_titles.add(title)
-                location = role.get("location", "United States")
-                experience_levels = role.get("experience_levels")
+                # Query-related fields from roles.json, with defaults
+                location = role.get("location") or os.getenv(
+                    "DEFAULT_LOCATION", "United States"
+                )
+                experience_levels = role.get("experience_levels") or [
+                    "Entry level",
+                    "Associate",
+                ]
+                date_posted = role.get("date_posted") or os.getenv(
+                    "DEFAULT_DATE_POSTED",
+                    self.config.search_settings.get("date_posted", "r86400"),
+                )
+                # Threshold/limit fields from .env/config, with defaults
+                try:
+                    max_applicants_val = int(
+                        os.getenv("MAX_APPLICANTS", str(max_applicants))
+                    )
+                except Exception:
+                    max_applicants_val = 100
+                try:
+                    match_threshold_val = float(
+                        os.getenv("JOB_MATCH_THRESHOLD", str(match_threshold))
+                    )
+                except Exception:
+                    match_threshold_val = 0.0
+                try:
+                    no_match_pages_threshold_val = int(
+                        os.getenv("NO_MATCH_PAGES_THRESHOLD", "8")
+                    )
+                except Exception:
+                    no_match_pages_threshold_val = 8
+                try:
+                    connect_pages_val = int(
+                        os.getenv(
+                            "CONNECT_PAGES_THRESHOLD",
+                            str(connect_pages if connect_pages is not None else 3),
+                        )
+                    )
+                except Exception:
+                    connect_pages_val = 3
+
                 self.logger.info(
-                    f"🔎 Searching for: '{title}' | Location: '{location}' | Experience: {experience_levels}"
+                    f"🔎 Searching for: '{title}' | Location: '{location}' | Experience: {experience_levels} | Date Posted: {date_posted} | Max Applicants: {max_applicants_val} | Match Threshold: {match_threshold_val} | No Match Pages: {no_match_pages_threshold_val} | Connect Pages: {connect_pages_val}"
                 )
                 page_jobs, matched = self._scrape_query(
                     title,
-                    max_applicants,
+                    max_applicants_val,
                     scorer=scorer,
-                    match_threshold=match_threshold,
+                    match_threshold=match_threshold_val,
                     storage=storage,
-                    connect_pages=connect_pages,
+                    connect_pages=connect_pages_val,
                     connect_delay_range=connect_delay_range,
                     team_hint=team_hint,
-                    no_match_pages_threshold=8,
+                    no_match_pages_threshold=no_match_pages_threshold_val,
                     location=location,
                     experience_levels=experience_levels,
+                    date_posted=date_posted,
                 )
                 self.logger.info(f"✅ Processed {len(page_jobs)} jobs for '{title}'")
                 jobs.extend(page_jobs)
@@ -243,6 +283,7 @@ class LinkedInScraper(BaseScraper):
         no_match_pages_threshold: int | None = None,
         location: str = "United States",
         experience_levels: list[str] | None = None,
+        date_posted: str | None = None,
     ) -> tuple[list[dict[str, Any]], bool]:
         """Scrape jobs for a single query; return (jobs, matched_flag)."""
 
@@ -256,9 +297,11 @@ class LinkedInScraper(BaseScraper):
             if self.driver is None or self.wait is None:
                 self.logger.error("Driver or wait not set up; aborting query")
                 return jobs, matched
-            # Use date_posted from config.search_settings if available
-            date_posted = self.config.search_settings.get("date_posted", "r86400")
+            # Use date_posted passed in, fallback to config, then default
+            if not date_posted:
+                date_posted = self.config.search_settings.get("date_posted", "r86400")
             search_url = self._build_search_url(
+                keywords=query,
                 location=location,
                 date_posted=date_posted,
                 experience_levels=experience_levels,
@@ -626,24 +669,24 @@ class LinkedInScraper(BaseScraper):
 
     def _build_search_url(
         self,
+        keywords: str = "",
         location: str = "United States",
-        date_posted: str = "r86400",
+        date_posted: str | None = "r86400",
         experience_levels: list[str] | None = None,
         start: int = 0,
     ) -> str:
-        if experience_levels is None:
-            experience_levels = ["Entry level", "Associate"]
         """Build LinkedIn job search URL with explicit filters for keywords, location, date_posted (f_TPR), and experience_levels (f_E)."""
         from urllib.parse import quote
 
         base = f"{self.base_url}/jobs/search/?"
         params = []
+        if keywords:
+            params.append(f"keywords={quote(keywords)}")
         if location:
             params.append(f"location={quote(location)}")
         if date_posted:
             params.append(f"f_TPR={date_posted}")
         if experience_levels:
-            # Map experience_levels to LinkedIn codes
             exp_map = {
                 "Internship": "1",
                 "Entry level": "2",
