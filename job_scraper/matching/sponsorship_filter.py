@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, cast
 
 from config.config import Config, get_config
@@ -26,7 +27,7 @@ class SponsorshipFilter:
     def check(
         self, job_description: str, requires_sponsorship: bool | None = None
     ) -> dict[str, Any]:
-        """Return sponsorship decision as {"accepts_sponsorship": bool, "reason": str}."""
+        """Return sponsorship/eligibility decision as {"accepts_sponsorship": bool, "reason": str}."""
 
         needs_sponsorship = requires_sponsorship
         if needs_sponsorship is None:
@@ -48,6 +49,21 @@ class SponsorshipFilter:
             return {"accepts_sponsorship": True, "reason": "No description provided"}
 
         lowered = job_description.lower()
+
+        unpaid_reason = self._check_unpaid_or_volunteer(lowered)
+        if unpaid_reason:
+            self.logger.info(f"Eligibility check: REJECTED ({unpaid_reason})")
+            return {"accepts_sponsorship": False, "reason": unpaid_reason}
+
+        exp_reason = self._check_experience_requirement(lowered)
+        if exp_reason:
+            self.logger.info(f"Eligibility check: REJECTED ({exp_reason})")
+            return {"accepts_sponsorship": False, "reason": exp_reason}
+
+        phd_reason = self._check_phd_requirement(lowered)
+        if phd_reason:
+            self.logger.info(f"Eligibility check: REJECTED ({phd_reason})")
+            return {"accepts_sponsorship": False, "reason": phd_reason}
 
         strong_negative = self._find_strong_negative_phrase(lowered)
         if strong_negative:
@@ -72,11 +88,13 @@ class SponsorshipFilter:
             "You are evaluating sponsorship for a candidate on F-1 STEM OPT who will need "
             "continued work authorization (e.g., H-1B or similar). From the job description, "
             'decide if the employer supports work visas. Return JSON only: {"accepts_sponsorship": '
-            'true|false, "reason": "brief explanation"}. Treat any of these as NOT sponsoring: '
+            'true|false, "reason": "brief explanation"}. Reject ONLY when the description explicitly '
+            "denies sponsorship or requires unrestricted work authorization. Treat any of these as NOT sponsoring: "
             "no visa sponsorship, cannot hire international candidates, US citizens only, must have "
             "permanent work authorization/GC/USC, no OPT/CPT, must already be authorized without "
-            "sponsorship. If the description is positive about sponsorship (e.g., we sponsor H-1B/TN/O-1) "
-            "or is open to international/OPT, return accepts_sponsorship=true."
+            "sponsorship. If the description is unclear or does not mention sponsorship, return "
+            "accepts_sponsorship=true (default accept). If the description is positive about sponsorship "
+            "(e.g., we sponsor H-1B/TN/O-1) or is open to international/OPT, return accepts_sponsorship=true."
         )
 
         messages = [
@@ -110,16 +128,89 @@ class SponsorshipFilter:
                 "reason": f"LLM error (assumed accept): {exc}",
             }
 
+        # If the LLM rejected merely due to lack of explicit mention, default to accept unless a strong negative exists.
+        if not result["accepts_sponsorship"]:
+            lowered_reason = str(result.get("reason", "")).lower()
+            no_info_markers = [
+                "does not mention",
+                "no mention",
+                "not mention",
+                "unspecified",
+                "unclear",
+                "not specified",
+                "no information",
+                "not provided",
+                "unknown",
+            ]
+            if any(marker in lowered_reason for marker in no_info_markers):
+                result = {
+                    "accepts_sponsorship": True,
+                    "reason": "LLM uncertain (no explicit denial); defaulting to accept",
+                }
+
         if result["accepts_sponsorship"]:
             self.logger.info(
-                f"Sponsorship check: ACCEPTED (sponsors visas). Reason: {result['reason']}"
+                f"Sponsorship check: ACCEPTED (sponsors visas). Reason: {self._short_reason(result['reason'])}"
             )
         else:
             self.logger.info(
-                f"Sponsorship check: REJECTED (no sponsorship). Reason: {result['reason']}"
+                f"Sponsorship check: REJECTED (no sponsorship). Reason: {self._short_reason(result['reason'])}"
             )
 
         return result
+
+    # ------------------------------------------------------------------
+    # Eligibility helpers
+    # ------------------------------------------------------------------
+    def _check_unpaid_or_volunteer(self, lowered_text: str) -> str | None:
+        if getattr(self.config, "reject_unpaid_roles", True):
+            unpaid_keywords = [
+                "unpaid",
+                "no pay",
+                "without pay",
+                "no compensation",
+                "uncompensated",
+                "stipend only",
+            ]
+            if any(k in lowered_text for k in unpaid_keywords):
+                return "Unpaid role detected"
+
+        if getattr(self.config, "reject_volunteer_roles", True):
+            volunteer_keywords = [
+                "volunteer",
+                "voluntary position",
+                "voluntary role",
+            ]
+            if any(k in lowered_text for k in volunteer_keywords):
+                return "Volunteer role detected"
+
+        return None
+
+    def _check_experience_requirement(self, lowered_text: str) -> str | None:
+        min_years = getattr(self.config, "min_required_experience_years", 0)
+        if min_years <= 0:
+            return None
+
+        import re
+
+        pattern = re.compile(
+            r"(\d+)\s*\+?\s*(?:years|year|yrs|yr)[^\n]{0,20}experience"
+        )
+        for match in pattern.finditer(lowered_text):
+            years = int(match.group(1))
+            if years > min_years:
+                return f"Experience requirement too high ({years}+ years > allowed {min_years})"
+        return None
+
+    def _check_phd_requirement(self, lowered_text: str) -> str | None:
+        allow_phd = getattr(self.config, "allow_phd_required", True)
+        if allow_phd:
+            return None
+
+        phd_keywords = ["phd", "ph.d", "doctorate", "doctoral"]
+        if any(k in lowered_text for k in phd_keywords):
+            return "PhD requirement detected"
+        return None
 
     @staticmethod
     def _has_sponsorship_signal(lowered_text: str) -> bool:
@@ -250,5 +341,16 @@ class SponsorshipFilter:
             elif hasattr(response, "content"):
                 content = getattr(response, "content")
             return json.loads(content or "{}")
+
+    @staticmethod
+    def _short_reason(reason: str) -> str:
+        """Return up to two sentences for concise logging."""
+
+        if not reason:
+            return "No reason provided"
+
+        sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
+        joined = " ".join(sentences[:2]).strip()
+        return joined or reason.strip()[:240]
 
         raise RuntimeError("OpenAI client missing chat.completions or responses API")

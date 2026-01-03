@@ -333,32 +333,51 @@ class JobListScraper:
             True if more jobs were loaded, False if at end
         """
         try:
-            # Get current job count
-            current_count = len(
-                self.driver.find_elements(
-                    By.CSS_SELECTOR, "ul.jobs-search__results-list > li"
-                )
-            )
+            # Use modern selectors; fall back to window scroll if container missing
+            selectors = [
+                "div.jobs-search-results-list",
+                "div.scaffold-layout__list-container",
+                "ul.scaffold-layout__list",
+                "ul.jobs-search__results-list",
+            ]
 
-            # Scroll to bottom of job list
-            job_list = self.driver.find_element(
-                By.CLASS_NAME, "jobs-search__results-list"
-            )
-            self.driver.execute_script(
-                "arguments[0].scrollTop = arguments[0].scrollHeight", job_list
-            )
+            container = None
+            for selector in selectors:
+                try:
+                    container = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    break
+                except Exception:
+                    continue
 
-            # Wait a bit for new jobs to load
-            time.sleep(2)
+            def count_cards() -> int:
+                try:
+                    elems = self.driver.find_elements(
+                        By.CSS_SELECTOR,
+                        "div.job-card-container, li.jobs-search-results__list-item, li.scaffold-layout__list-item",
+                    )
+                    return len(elems)
+                except Exception:
+                    return 0
 
-            # Check if new jobs were loaded
-            new_count = len(
-                self.driver.find_elements(
-                    By.CSS_SELECTOR, "ul.jobs-search__results-list > li"
-                )
-            )
+            current_count = count_cards()
+            for _ in range(10):
+                if container:
+                    self.driver.execute_script(
+                        "arguments[0].scrollTop = arguments[0].scrollHeight",
+                        container,
+                    )
+                else:
+                    self.driver.execute_script(
+                        "window.scrollTo(0, document.body.scrollHeight);"
+                    )
 
-            return new_count > current_count
+                time.sleep(1)
+                new_count = count_cards()
+                if new_count > current_count:
+                    return True
+                current_count = new_count
+
+            return False
 
         except Exception as e:
             logger.error(f"[SCRAPE_LIST] Error scrolling to load more: {e}")

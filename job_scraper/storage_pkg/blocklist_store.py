@@ -8,14 +8,16 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from config.config import DATA_DIR
+
 logger = logging.getLogger(__name__)
 
 
 class BlocklistStore:
     """Store and manage company blocklist"""
 
-    def __init__(self, data_dir: str = "data"):
-        self.data_dir = Path(data_dir)
+    def __init__(self, data_dir: str | Path | None = None):
+        self.data_dir = Path(data_dir) if data_dir else DATA_DIR
         self.data_dir.mkdir(exist_ok=True)
         self.blocklist_file = self.data_dir / "company_blocklist.json"
 

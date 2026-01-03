@@ -1,55 +1,19 @@
 {
     "roles": [
         {
-            "title": "Software Engineer",
+            "title": "AI Engineer",
             "location": "United States",
-            "experience_levels": [
-                "Internship",
-                "Entry level",
-                "Associate"
-            ],
             "remote": true,
-            "keywords": [
-                "python",
-                "backend",
-                "full-stack"
-            ],
             "enabled": true
-        },
-        {
-            "title": "Data Engineer",
-            "location": "United States",
-            "experience_levels": [
-                "Entry level",
-                "Associate"
-            ],
-            "remote": true,
-            "keywords": [
-                "data pipeline",
-                "ETL",
-                "python"
-            ],
-            "enabled": false
         },
         {
             "title": "Machine Learning Engineer",
             "location": "United States",
-            "experience_levels": [
-                "Entry level",
-                "Associate"
-            ],
             "remote": true,
-            "keywords": [
-                "ML",
-                "AI",
-                "python"
-            ],
-            "enabled": false
+            "enabled": true
         }
     ],
     "search_settings": {
-        "date_posted": "r86400",
-        "applicant_limit": 100,
-        "requires_sponsorship": true
+        "date_posted": "r3600"
     }
 }

@@ -15,11 +15,6 @@ click = importlib.import_module("click")
 OpenAI = getattr(importlib.import_module("openai"), "OpenAI")
 tabulate = getattr(importlib.import_module("tabulate"), "tabulate")
 
-try:
-    ToastNotifier = getattr(importlib.import_module("win10toast"), "ToastNotifier")
-except ModuleNotFoundError:  # Graceful fallback if toast package missing
-    ToastNotifier = None
-
 # Fix UTF-8 encoding on Windows PowerShell
 if sys.platform == "win32":
     for stream in (sys.stdout, sys.stderr):
@@ -34,11 +29,24 @@ if sys.platform == "win32":
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from config.config import LOG_DIR, Config  # noqa: E402
+from config.config import DATA_DIR, LOG_DIR, Config  # noqa: E402
 from matching.match_scorer import MatchScorer  # noqa: E402
 from matching.resume_loader import ResumeLoader  # noqa: E402
 from scraping.linkedin_scraper import LinkedInScraper  # noqa: E402
 from storage_pkg import JobStorage  # noqa: E402
+
+
+class _ToastShim:
+    """Minimal toast shim to avoid external pkg_resources dependency warnings."""
+
+    def __init__(self, logger: logging.Logger):
+        self.logger = logger
+
+    def show_toast(
+        self, title: str, msg: str, duration: int = 5, threaded: bool = True
+    ):
+        del duration, threaded  # Unused in shim
+        self.logger.info(f"Toast: {title} - {msg}")
 
 
 # Custom formatter that strips emojis for console but keeps them for file
@@ -89,7 +97,7 @@ class JobFinder:
 
     def __init__(self):
         self.config = Config()
-        self.storage = JobStorage(data_dir="data")
+        self.storage = JobStorage(data_dir=DATA_DIR)
         # LinkedIn-only workflow
         self.scrapers = [
             ("LinkedIn", LinkedInScraper()),
@@ -115,11 +123,20 @@ class JobFinder:
         )
         self.resume_text = self._load_resume_text()
         self.preferences_text = self._load_preferences()
-        self.notifier = ToastNotifier() if ToastNotifier else None
+        # Use lightweight shim to avoid win10toast/pkg_resources warning; can be replaced
+        # with a richer notifier later without warning noise.
+        self.notifier = (
+            _ToastShim(logger) if self.config.enable_toast_notifications else None
+        )
 
     def _load_resume_text(self) -> str:
         """Load resume text using ResumeLoader (full text, cached)."""
-        return self.resume_loader.load_text()
+        text = self.resume_loader.load_text()
+        if not text.strip():
+            raise RuntimeError(
+                f"Resume text not available. Provide RESUME_PATH or place a resume at {self.config.resume_path}."
+            )
+        return text
 
     def _load_preferences(self) -> str:
         """Load preferences text from PREFERENCES_PATH or data/preferences.txt."""
@@ -158,6 +175,17 @@ class JobFinder:
                 job["match_reason_rerank"] = result.get("reason_rerank", "")
                 job["match_model_used_rerank"] = result.get("model_used_rerank")
             job["match_model_used"] = result.get("model_used")
+            job["reranked"] = result.get("reranked", False)
+            job["first_score"] = result.get("first_score", result.get("score", 0.0))
+            job["match_reason_first"] = result.get("reason_first", "")
+
+            # Backfill missing title/company with LLM-inferred values when provided.
+            inferred_title = (result.get("inferred_title") or "").strip()
+            inferred_company = (result.get("inferred_company") or "").strip()
+            if not (job.get("title") or "").strip() and inferred_title:
+                job["title"] = inferred_title
+            if not (job.get("company") or "").strip() and inferred_company:
+                job["company"] = inferred_company
             return float(result.get("score", 0.0))
         except Exception as exc:
             logger.error(f"LLM scoring failed: {exc}")
@@ -307,19 +335,34 @@ class JobFinder:
             click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")
             logger.error(f"Error scraping {portal_name}: {str(e)}")
 
-    def scrape_jobs(self, max_applicants=100):
+    def scrape_jobs(self, max_applicants: int | None = None):
         """Scrape each portal: Scrape → Find People → Export → Notify"""
-        click.echo(
-            click.style(
-                "\n🔍 Starting multi-portal job scraper...", fg="cyan", bold=True
+        single_portal = len(self.scrapers) == 1
+        max_applicants = max_applicants or self.config.max_applicants
+
+        if single_portal:
+            click.echo(
+                click.style(
+                    "\n🔍 Starting LinkedIn job scraper...", fg="cyan", bold=True
+                )
             )
-        )
-        click.echo(
-            "Workflow: Scrape → Filter → Find People → Export to Excel → Notify (per portal)"
-        )
+            click.echo(
+                "Workflow: Scrape → Filter → Find People → Export to Excel → Notify"
+            )
+        else:
+            click.echo(
+                click.style(
+                    "\n🔍 Starting multi-portal job scraper...", fg="cyan", bold=True
+                )
+            )
+            click.echo(
+                "Workflow: Scrape → Filter → Find People → Export to Excel → Notify (per portal)"
+            )
         click.echo("=" * 80)
 
         all_jobs = []
+
+        num_portals = len(self.scrapers)
 
         # Process each scraper in sequence
         for portal_name, scraper in self.scrapers:
@@ -353,11 +396,18 @@ class JobFinder:
                 logger.error(f"Error scraping {portal_name}: {str(e)}")
 
         click.echo("\n" + "=" * 80)
-        click.secho(
-            f"✅ All portals processed! Total jobs scraped: {len(all_jobs)}",
-            fg="green",
-            bold=True,
-        )
+        if num_portals == 1:
+            click.secho(
+                f"✅ LinkedIn scrape finished. Total jobs scraped: {len(all_jobs)}",
+                fg="green",
+                bold=True,
+            )
+        else:
+            click.secho(
+                f"✅ {num_portals} portals processed! Total jobs scraped: {len(all_jobs)}",
+                fg="green",
+                bold=True,
+            )
 
         return all_jobs
 
@@ -424,7 +474,12 @@ def cli():
 
 
 @cli.command()
-@click.option("--max-applicants", default=100, help="Max applicants threshold")
+@click.option(
+    "--max-applicants",
+    default=None,
+    type=int,
+    help="Max applicants threshold (defaults to MAX_APPLICANTS from .env)",
+)
 def scrape(max_applicants):
     """Scrape LinkedIn for relevant positions"""
     finder = JobFinder()

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, cast
 
 from config.config import Config, get_config
@@ -48,7 +49,16 @@ class MatchScorer:
         trigger = getattr(self.config, "job_match_rerank_trigger", 8)
 
         try:
-            first_score, first_reason = self._call_llm(messages, base_model)
+            first_score, first_reason, inferred_title, inferred_company = (
+                self._call_llm(messages, base_model)
+            )
+            inferred_title = inferred_title or job_details.get("title", "")
+            inferred_company = inferred_company or job_details.get("company", "")
+            short_first_reason = self._short_reason(first_reason)
+            self.logger.info(
+                f"LLM base score {first_score:.1f} ({base_model}): {short_first_reason}",
+                extra={"llm_reason": short_first_reason},
+            )
             reranked = False
             reason_rerank = None
             model_used_rerank = None
@@ -63,11 +73,20 @@ class MatchScorer:
                         "rerank_model": rerank_model,
                         "first_score": first_score,
                         "trigger": trigger,
+                        "llm_reason": short_first_reason,
                     },
                 )
                 reranked = True
                 model_used_rerank = rerank_model
-                rerank_score, reason_rerank = self._call_llm(messages, rerank_model)
+                rerank_score, reason_rerank, rerank_title, rerank_company = (
+                    self._call_llm(messages, rerank_model)
+                )
+                inferred_title = inferred_title or rerank_title
+                inferred_company = inferred_company or rerank_company
+                self.logger.info(
+                    f"LLM rerank score {rerank_score:.1f} ({rerank_model}): {self._short_reason(reason_rerank)}",
+                    extra={"llm_reason": self._short_reason(reason_rerank)},
+                )
                 return {
                     "score": rerank_score,
                     "reason": reason_rerank,
@@ -75,6 +94,10 @@ class MatchScorer:
                     "reranked": reranked,
                     "reason_rerank": reason_rerank,
                     "model_used_rerank": model_used_rerank,
+                    "first_score": first_score,
+                    "reason_first": first_reason,
+                    "inferred_title": inferred_title,
+                    "inferred_company": inferred_company,
                 }
 
             return {
@@ -84,6 +107,10 @@ class MatchScorer:
                 "reranked": reranked,
                 "reason_rerank": reason_rerank,
                 "model_used_rerank": model_used_rerank,
+                "first_score": first_score,
+                "reason_first": first_reason,
+                "inferred_title": inferred_title,
+                "inferred_company": inferred_company,
             }
         except Exception as exc:  # pragma: no cover - defensive
             # Requirement: invalid/failed JSON → accept job and append
@@ -99,6 +126,8 @@ class MatchScorer:
                 "reranked": False,
                 "reason_rerank": None,
                 "model_used_rerank": None,
+                "first_score": fallback_score,
+                "reason_first": f"LLM error (accepted): {exc}",
             }
 
     def _build_messages(
@@ -107,7 +136,10 @@ class MatchScorer:
         description = job_details.get("description", "")
         prompt = (
             "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
-            'Consider resume and preferences. Return JSON: {"score": number, "reason": string}.'
+            "Consider resume and preferences. If the job title or company is missing/blank, infer them "
+            'from the description and return them. Return JSON only: {"score": number, "reason": string, '
+            '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
+            "supply concise inferred values."
         )
 
         return [
@@ -139,7 +171,7 @@ class MatchScorer:
 
     def _call_llm(
         self, messages: list[dict[str, str]], model: str
-    ) -> tuple[float, str]:
+    ) -> tuple[float, str, str, str]:
         """Call OpenAI using chat.completions or responses for JSON output."""
 
         if self.client is None:
@@ -158,7 +190,12 @@ class MatchScorer:
             )
             content = resp.choices[0].message.content if resp.choices else "{}"
             data = json.loads(content or "{}")
-            return float(data.get("score", 0)), data.get("reason", "")
+            return (
+                float(data.get("score", 0)),
+                data.get("reason", ""),
+                data.get("title", ""),
+                data.get("company", ""),
+            )
 
         # Fallback to responses API (matches mocks/tests style)
         if hasattr(client, "responses"):
@@ -185,6 +222,22 @@ class MatchScorer:
                 content = getattr(response, "content")
 
             data = json.loads(content or "{}")
-            return float(data.get("score", 0)), data.get("reason", "")
+            return (
+                float(data.get("score", 0)),
+                data.get("reason", ""),
+                data.get("title", ""),
+                data.get("company", ""),
+            )
 
         raise RuntimeError("OpenAI client missing chat.completions or responses API")
+
+    @staticmethod
+    def _short_reason(reason: str) -> str:
+        """Return up to two sentences for concise logging."""
+
+        if not reason:
+            return "No reason provided"
+
+        sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
+        joined = " ".join(sentences[:2]).strip()
+        return joined or reason.strip()[:240]

@@ -28,7 +28,9 @@ def make_client(payload: str) -> DummyResponsesClient:
 
 
 class TestSponsorshipFilter:
-    def test_rejects_when_no_sponsorship(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_rejects_when_no_sponsorship(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
         client = make_client(
@@ -41,10 +43,14 @@ class TestSponsorshipFilter:
         assert result["accepts_sponsorship"] is False
         assert "no sponsorship" in result["reason"].lower()
 
-    def test_accepts_when_sponsorship_offered(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_accepts_when_sponsorship_offered(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
-        client = make_client('{"accepts_sponsorship": true, "reason": "mentions visa sponsorship"}')
+        client = make_client(
+            '{"accepts_sponsorship": true, "reason": "mentions visa sponsorship"}'
+        )
 
         checker = SponsorshipFilter(openai_client=client, config=config)
         result = checker.check("We sponsor H-1B and TN visas for qualified candidates.")
@@ -52,7 +58,9 @@ class TestSponsorshipFilter:
         assert result["accepts_sponsorship"] is True
         assert "sponsor" in result["reason"].lower()
 
-    def test_disabled_flag_skips_check(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_disabled_flag_skips_check(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         monkeypatch.setenv("REQUIRES_SPONSORSHIP", "false")
         config = Config()
@@ -64,7 +72,9 @@ class TestSponsorshipFilter:
         assert result["accepts_sponsorship"] is True
         assert "disabled" in result["reason"]
 
-    def test_invalid_json_defaults_to_accept(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_invalid_json_defaults_to_accept(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
         client = make_client("not valid json")
@@ -89,14 +99,18 @@ class TestSponsorshipFilter:
         assert result["accepts_sponsorship"] is True
         assert "no sponsorship info" in result["reason"].lower()
 
-    def test_rejects_international_not_allowed(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_rejects_international_not_allowed(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
         # Strong negative phrase should short-circuit before LLM
         client = make_client('{"accepts_sponsorship": true, "reason": "irrelevant"}')
 
         checker = SponsorshipFilter(openai_client=client, config=config)
-        result = checker.check("We cannot hire international candidates or provide visas.")
+        result = checker.check(
+            "We cannot hire international candidates or provide visas."
+        )
 
         assert result["accepts_sponsorship"] is False
         assert "international" in result["reason"].lower()
@@ -107,7 +121,9 @@ class TestSponsorshipFilter:
         client = make_client('{"accepts_sponsorship": true, "reason": "irrelevant"}')
 
         checker = SponsorshipFilter(openai_client=client, config=config)
-        result = checker.check("US citizens only. Permanent work authorization required.")
+        result = checker.check(
+            "US citizens only. Permanent work authorization required."
+        )
 
         assert result["accepts_sponsorship"] is False
         assert "citizen" in result["reason"].lower()
@@ -126,3 +142,77 @@ class TestSponsorshipFilter:
 
         assert result["accepts_sponsorship"] is False
         assert "permanent" in result["reason"].lower()
+
+    def test_rejects_unpaid_when_enabled(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("This is an unpaid internship role with great exposure.")
+
+        assert result["accepts_sponsorship"] is False
+        assert "unpaid" in result["reason"].lower()
+
+    def test_allows_unpaid_when_flag_disabled(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        monkeypatch.setenv("REJECT_UNPAID_ROLES", "false")
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("This is an unpaid internship role with great exposure.")
+
+        assert result["accepts_sponsorship"] is True
+
+    def test_rejects_volunteer_when_enabled(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("Seeking volunteers for a data project.")
+
+        assert result["accepts_sponsorship"] is False
+        assert "volunteer" in result["reason"].lower()
+
+    def test_rejects_experience_above_threshold(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        monkeypatch.setenv("MIN_REQUIRED_EXPERIENCE_YEARS", "1")
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("Minimum of 3 years experience with Python required.")
+
+        assert result["accepts_sponsorship"] is False
+        assert "experience" in result["reason"].lower()
+
+    def test_allows_experience_within_threshold(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        monkeypatch.setenv("MIN_REQUIRED_EXPERIENCE_YEARS", "3")
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("1-2 years of experience preferred.")
+
+        assert result["accepts_sponsorship"] is True
+
+    def test_rejects_phd_when_not_allowed(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
+        monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
+        monkeypatch.setenv("ALLOW_PHD_REQUIRED", "false")
+        config = Config()
+
+        checker = SponsorshipFilter(openai_client=None, config=config)
+        result = checker.check("PhD required in Computer Science.")
+
+        assert result["accepts_sponsorship"] is False
+        assert "phd" in result["reason"].lower()
