@@ -40,6 +40,16 @@ ENABLE_EMAIL_NOTIFICATIONS=true
 # Browser mode
 HEADLESS=false  # set to true in CI or when you don't need a visible Chrome window
 ```
+## LLM Prompt Preferences
+
+The LinkedIn job scraper uses an LLM (Large Language Model) to score job matches. By default, the prompt includes preferences such as:
+
+- Give a score of zero if the role explicitly mentions no sponsorship or cannot hire international students.
+- Give a score of zero if the role requires a PhD/doctorate or more than 2 years of work experience.
+
+You can modify these preferences in the code to suit your requirements. Any additional preferences or requirements can be added to the LLM prompt for more customized filtering and scoring.
+
+Refer to the code in `scraping/linkedin_scraper.py` for details on how the prompt is constructed and how to add or change preferences.
 
 3) Provide inputs
 

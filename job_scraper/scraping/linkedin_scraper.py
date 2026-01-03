@@ -3,32 +3,20 @@ LinkedIn job scraper with proper UI handling and 'Viewed' status detection
 """
 
 import json
-import logging
 import math
 import os
 import re
 import time
 from typing import Any
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
 from networking.connection_requester import ConnectionRequester
 from networking.people_finder import PeopleFinder
 from selenium import webdriver
-from selenium.common.exceptions import (
-    StaleElementReferenceException,
-)
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 
 from .base_scraper import BaseScraper
-
-logger = logging.getLogger(__name__)
 
 
 class LinkedInScraper(BaseScraper):
@@ -152,6 +140,7 @@ class LinkedInScraper(BaseScraper):
         connect_pages: int | None = None,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
         team_hint: str | None = None,
+        resume_text: str = "",
     ) -> list[dict[str, Any]]:
         """Main scraping method with inline scoring/export/connect."""
         self.logger.info("=" * 60)
@@ -159,7 +148,6 @@ class LinkedInScraper(BaseScraper):
         self.logger.info("=" * 60)
 
         jobs: list[dict[str, Any]] = []
-
         configured_roles = []
         try:
             configured_roles = self.config.get_enabled_roles()
@@ -242,6 +230,7 @@ class LinkedInScraper(BaseScraper):
                     location=location,
                     experience_levels=experience_levels,
                     date_posted=date_posted,
+                    resume_text=resume_text,
                 )
                 self.logger.info(f"✅ Processed {len(page_jobs)} jobs for '{title}'")
                 jobs.extend(page_jobs)
@@ -284,306 +273,323 @@ class LinkedInScraper(BaseScraper):
         location: str = "United States",
         experience_levels: list[str] | None = None,
         date_posted: str | None = None,
+        resume_text: str = "",
     ) -> tuple[list[dict[str, Any]], bool]:
         """Scrape jobs for a single query; return (jobs, matched_flag)."""
-
         jobs: list[dict[str, Any]] = []
         matched = False
-        current_page = 1
-        total_jobs_for_query = None
         traversed_jobs = 0
+        current_page = 1
+        if not date_posted:
+            date_posted = self.config.search_settings.get("date_posted", "r86400")
+        search_url = self._build_search_url(
+            keywords=query,
+            location=location,
+            date_posted=date_posted,
+            experience_levels=experience_levels,
+            start=0,
+        )
+        self.logger.info("=" * 60)
+        self.logger.info(f"  📄 Page 1 for '{query}' (start=0)")
+        self.logger.debug(f"  Navigating to: {search_url}")
+        if not self._safe_get(search_url):
+            self.logger.error("  Could not navigate to search URL; aborting query")
+            return jobs, matched
+        # Extract total jobs for query
+        total_jobs_for_query = self._get_total_results()
+        self.logger.info(
+            f"Total jobs available for query '{query}': {total_jobs_for_query}"
+        )
 
-        try:
-            if self.driver is None or self.wait is None:
-                self.logger.error("Driver or wait not set up; aborting query")
-                return jobs, matched
-            # Use date_posted passed in, fallback to config, then default
-            if not date_posted:
-                date_posted = self.config.search_settings.get("date_posted", "r86400")
-            search_url = self._build_search_url(
-                keywords=query,
-                location=location,
-                date_posted=date_posted,
-                experience_levels=experience_levels,
-                start=0,
-            )
-            self.logger.info("=" * 60)
-            self.logger.info(f"  📄 Page 1 for '{query}' (start=0)")
-            self.logger.debug(f"  Navigating to: {search_url}")
-            if not self._safe_get(search_url):
-                self.logger.error("  Could not navigate to search URL; aborting query")
-                return jobs, matched
-            # Extract total jobs for query
-            total_jobs_for_query = self._get_total_results()
-            self.logger.info(
-                f"Total jobs available for query '{query}': {total_jobs_for_query}"
-            )
+        # Get threshold from env if not provided
+        if no_match_pages_threshold is None:
+            try:
+                no_match_pages_threshold = int(os.getenv("NO_MATCH_PAGES_THRESHOLD", 8))
+            except Exception:
+                no_match_pages_threshold = 8
 
-            # Get threshold from env if not provided
-            if no_match_pages_threshold is None:
-                try:
-                    no_match_pages_threshold = int(
-                        os.getenv("NO_MATCH_PAGES_THRESHOLD", 8)
-                    )
-                except Exception:
-                    no_match_pages_threshold = 8
-
-            no_match_pages = 0
-            while True:
-                page_state = self._get_page_state()
-                if page_state and page_state[0]:
-                    current_page = page_state[0]
-
-                search_url = self.driver.current_url
-                start = (current_page - 1) * 25
-                self.logger.info("=" * 60)
-                self.logger.info(
-                    f"  📄 Page {current_page} for '{query}' (start={start})"
+        no_match_pages = 0
+        while True:
+            page_state = self._get_page_state()
+            self.logger.debug(f"[PAGINATION] get_page_state() returned: {page_state}")
+            if page_state and page_state[0]:
+                current_page = page_state[0]
+                self.logger.debug(
+                    f"[PAGINATION] Updated current_page to: {current_page}"
                 )
 
-                try:
-                    self.wait.until(
-                        expected_conditions.presence_of_element_located(
-                            (
-                                By.CSS_SELECTOR,
-                                "ul.scaffold-layout__list, div.jobs-search-results-list",
-                            )
+            search_url = self.driver.current_url
+            start = (current_page - 1) * 25
+            self.logger.info("=" * 60)
+            self.logger.info(f"  📄 Page {current_page} for '{query}' (start={start})")
+            self.logger.debug(
+                f"[PAGINATION] Starting scrape for page {current_page}, query: '{query}', start: {start}"
+            )
+
+            try:
+                self.wait.until(
+                    expected_conditions.presence_of_element_located(
+                        (
+                            By.CSS_SELECTOR,
+                            "ul.scaffold-layout__list, div.jobs-search-results-list",
                         )
                     )
-                except Exception:
-                    self.logger.debug("  Job list did not become visible in time")
+                )
+            except Exception:
+                self.logger.debug("  Job list did not become visible in time")
 
-                self._wait_for_results_loader()
-                time.sleep(3)
-                self._scroll_job_list(target_count=25)
-                job_cards = self._get_job_cards(target_count=25)
+            self._wait_for_results_loader()
+            import time
 
-                # Only force scroll if we haven't traversed all jobs for the query
-                # If total_jobs_for_query is known and traversed_jobs + len(job_cards) >= total_jobs_for_query, do not force scroll
-                if len(job_cards) < 25:
-                    if (
-                        total_jobs_for_query is not None
-                        and (traversed_jobs + len(job_cards)) >= total_jobs_for_query
-                    ):
-                        self.logger.info(
-                            f"  All {total_jobs_for_query} jobs traversed for query '{query}'. No need to force scroll."
-                        )
-                    else:
-                        self.logger.info(
-                            f"  ⚠️ Only {len(job_cards)} job cards loaded; forcing more scrolls"
-                        )
-                        for _ in range(3):
-                            self._scroll_job_list(target_count=25)
-                            time.sleep(1)
-                            job_cards = self._get_job_cards(target_count=25)
-                            if len(job_cards) >= 25:
-                                break
+            time.sleep(3)
+            self._scroll_job_list(target_count=25)
+            job_cards = self._get_job_cards(target_count=25)
 
-                if not job_cards:
+            # Only force scroll if we haven't traversed all jobs for the query
+            # If total_jobs_for_query is known and traversed_jobs + len(job_cards) >= total_jobs_for_query, do not force scroll
+            if len(job_cards) < 25:
+                if (
+                    total_jobs_for_query is not None
+                    and (traversed_jobs + len(job_cards)) >= total_jobs_for_query
+                ):
                     self.logger.info(
-                        "  No job cards found on this page; ending scrape."
+                        f"  All {total_jobs_for_query} jobs traversed for query '{query}'. No need to force scroll."
                     )
-                    break
-
-                for idx in range(len(job_cards)):
-                    company_name = None
-                    try:
-                        self.logger.info("=" * 60)
-                        job_cards = self._get_job_cards()
-                        if idx >= len(job_cards):
+                else:
+                    self.logger.info(
+                        f"  ⚠️ Only {len(job_cards)} job cards loaded; forcing more scrolls"
+                    )
+                    for _ in range(3):
+                        self._scroll_job_list(target_count=25)
+                        time.sleep(1)
+                        job_cards = self._get_job_cards(target_count=25)
+                        if len(job_cards) >= 25:
                             break
-                        job_card = job_cards[idx]
-                        traversed_jobs += 1
-                        # Display job card number as 1/25, 2/25, etc.
-                        self.logger.info(
-                            f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
+
+            if not job_cards:
+                self.logger.info("  No job cards found on this page; ending scrape.")
+                break
+
+            for idx in range(len(job_cards)):
+                company_name = None
+                try:
+                    self.logger.info("=" * 60)
+                    job_cards = self._get_job_cards()
+                    if idx >= len(job_cards):
+                        break
+                    job_card = job_cards[idx]
+                    traversed_jobs += 1
+                    # Display job card number as 1/25, 2/25, etc.
+                    self.logger.info(
+                        f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
+                    )
+                    self.logger.debug(
+                        f"  Processing job {idx + 1}/{len(job_cards)} on page {current_page}"
+                    )
+                    if self._is_viewed(job_card):
+                        self.logger.info("    ⏭️  Skipped: Already viewed job card")
+                        continue
+                    try:
+                        self.driver.execute_script(
+                            "arguments[0].scrollIntoView(true);", job_card
                         )
-                        self.logger.debug(
-                            f"  Processing job {idx + 1}/{len(job_cards)} on page {current_page}"
-                        )
-                        if self._is_viewed(job_card):
-                            self.logger.info("    ⏭️  Skipped: Already viewed job card")
-                            continue
+                        time.sleep(0.5)
                         try:
-                            self.driver.execute_script(
-                                "arguments[0].scrollIntoView(true);", job_card
+                            link = job_card.find_element(
+                                By.CSS_SELECTOR,
+                                "a.job-card-list__title, a.app-aware-link",
                             )
-                            time.sleep(0.5)
+                            link.click()
+                        except Exception:
+                            job_card.click()
+                        self._wait_for_results_loader()
+                        time.sleep(1.2)
+                        self._scroll_right_panel()
+                        time.sleep(1)
+                        time.sleep(2)
+                        # Wait for right-pane container and a title element (anchor or h1)
+                        details_ready = False
+                        for _ in range(6):
                             try:
-                                link = job_card.find_element(
-                                    By.CSS_SELECTOR,
-                                    "a.job-card-list__title, a.app-aware-link",
-                                )
-                                link.click()
-                            except Exception:
-                                job_card.click()
-                            self._wait_for_results_loader()
-                            time.sleep(1.2)
-                            self._scroll_right_panel()
-                            time.sleep(1)
-                            time.sleep(2)
-                            # Wait for right-pane container and a title element (anchor or h1)
-                            details_ready = False
-                            for _ in range(6):
+                                # Try both anchor and non-anchor selectors
+                                title_elem = None
                                 try:
-                                    # Try both anchor and non-anchor selectors
-                                    title_elem = None
-                                    try:
-                                        title_elem = self.driver.find_element(
-                                            By.CSS_SELECTOR,
-                                            "h1 a, h1, div.job-details-jobs-unified-top-card__job-title a, div.job-details-jobs-unified-top-card__job-title",
-                                        )
-                                    except Exception:
-                                        pass
-                                    if title_elem and title_elem.text.strip():
-                                        details_ready = True
-                                        break
+                                    title_elem = self.driver.find_element(
+                                        By.CSS_SELECTOR,
+                                        "h1 a, h1, div.job-details-jobs-unified-top-card__job-title a, div.job-details-jobs-unified-top-card__job-title",
+                                    )
                                 except Exception:
                                     pass
-                                time.sleep(0.5)
-                            if not details_ready:
-                                self.logger.warning(
-                                    "    ⚠️ Job details pane not ready after click; skipping this card."
-                                )
-                                self._close_extra_tabs()
-                                self._safe_back_to_results(search_url)
-                                continue
-                        except Exception as exc:
-                            self.logger.debug(f"    Could not click job card: {exc}")
-                            continue
-                        job = self._extract_job_details()
-                        if not job:
-                            self.logger.info(
-                                "    ❌ Skipped: Could not extract job details from card"
+                                if title_elem and title_elem.text.strip():
+                                    details_ready = True
+                                    break
+                            except Exception:
+                                pass
+                            time.sleep(0.5)
+                        if not details_ready:
+                            self.logger.warning(
+                                "    ⚠️ Job details pane not ready after click; skipping this card."
                             )
                             self._close_extra_tabs()
                             self._safe_back_to_results(search_url)
                             continue
-                        self.logger.info(
-                            f"    [SCRAPED JOB] {json.dumps(job, ensure_ascii=False, indent=2)}"
-                        )
-                        applicants = job.get("applicant_count", 0)
-                        if applicants > max_applicants:
-                            self.logger.info(
-                                f"    ❌ Skipped: Too many applicants ({applicants} > {max_applicants})"
-                            )
-                            self._close_extra_tabs()
-                            self._safe_back_to_results(search_url)
-                            continue
-                        description = job.get("description", "")
-
-                        if company_name and self.blocklist.is_blocked(company_name):
-                            self.logger.info(
-                                f"    ❌ Rejected: {company_name} blocked (no downstream processing)"
-                            )
-                            self._close_extra_tabs()
-                            self._safe_back_to_results(search_url)
-                            continue
-
-                        hr_result = self.hr_checker.check(
-                            company_name or "", description=description
-                        )
-                        if hr_result.get("is_hr_company"):
-                            self.logger.info(
-                                f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
-                            )
-                            self._close_extra_tabs()
-                            self._safe_back_to_results(search_url)
-                            continue
-
-                        sponsor = self.sponsorship_filter.check(description)
-                        if not sponsor.get("accepts_sponsorship", True):
-                            self.logger.info(
-                                f"    ❌ Rejected: Sponsorship/eligibility: {self._short_reason(sponsor.get('reason', ''))}"
-                            )
-                            self._close_extra_tabs()
-                            self._safe_back_to_results(search_url)
-                            continue
-
-                        score = None
-                        if scorer:
-                            try:
-                                score = float(scorer(job))
-                            except Exception as exc:
-                                self.logger.error(f"    LLM scoring failed: {exc}")
-                                score = 0.0
-                            job["match_score"] = score
-                            reason = self._short_reason(job.get("match_reason", ""))
-                            if job.get("reranked"):
-                                rerank_reason = self._short_reason(
-                                    job.get("match_reason_rerank", "")
-                                )
-                                self.logger.info(
-                                    f"    LLM base score {job.get('first_score', score):.1f} -> rerank {score:.1f} (threshold {match_threshold}): {rerank_reason or reason}"
-                                )
-                            else:
-                                self.logger.info(
-                                    f"    LLM score {score:.1f} (threshold {match_threshold}): {reason}"
-                                )
-                            if score < match_threshold:
-                                self.logger.info(
-                                    f"    ❌ Skipped: LLM score {score:.1f} < {match_threshold}"
-                                )
-                                self._close_extra_tabs()
-                                self._safe_back_to_results(search_url)
-                                continue
-                        if storage:
-                            storage.add_job(job)
-                            try:
-                                storage.export_to_excel()
-                            except Exception as exc:
-                                self.logger.debug(f"    Excel export failed: {exc}")
-                        jobs.append(job)
-                        try:
-                            self._connect_to_people(
-                                job,
-                                connect_pages=connect_pages,
-                                delay_range=connect_delay_range,
-                                storage=storage,
-                                team_hint=team_hint,
-                            )
-                        except Exception as exc:
-                            self.logger.debug(f"    Connection attempts failed: {exc}")
-                        self._close_extra_tabs()
-                        self._safe_back_to_results(search_url)
-                        matched = True
-                        continue
-                    except StaleElementReferenceException:
-                        self.logger.debug("    Stale element, continuing...")
-                        self._close_extra_tabs()
-                        self._safe_back_to_results(search_url)
-                        continue
                     except Exception as exc:
-                        self.logger.debug(f"    Error processing job: {exc}")
+                        self.logger.debug(f"    Could not click job card: {exc}")
+                        continue
+                    job = self._extract_job_details()
+                    if not job:
+                        self.logger.info(
+                            "    ❌ Skipped: Could not extract job details from card"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+                    self.logger.info(
+                        f"    [SCRAPED JOB] {json.dumps(job, ensure_ascii=False, indent=2)}"
+                    )
+                    applicants = job.get("applicant_count", 0)
+                    if applicants > max_applicants:
+                        self.logger.info(
+                            f"    ❌ Skipped: Too many applicants ({applicants} > {max_applicants})"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+                    description = job.get("description", "")
+
+                    if company_name and self.blocklist.is_blocked(company_name):
+                        self.logger.info(
+                            f"    ❌ Rejected: {company_name} blocked (no downstream processing)"
+                        )
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
 
-                # Try to go to next page; if not possible, break
-                if not self._go_to_next_page(current_page=current_page):
+                    hr_result = self.hr_checker.check(
+                        company_name or "", description=description
+                    )
+                    if hr_result.get("is_hr_company"):
+                        self.logger.info(
+                            f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+
+                    sponsor = self.sponsorship_filter.check(description)
+                    if not sponsor.get("accepts_sponsorship", True):
+                        self.logger.info(
+                            f"    ❌ Rejected: Sponsorship/eligibility: {self._short_reason(sponsor.get('reason', ''))}"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+
+                    score = None
+                    if scorer:
+                        # Read LLM prompt template from file and format with job details and resume
+                        try:
+                            with open(
+                                os.path.join(
+                                    os.path.dirname(__file__),
+                                    "../data/LLM_base_score.txt",
+                                ),
+                                "r",
+                                encoding="utf-8",
+                            ) as f:
+                                prompt_instructions = f.read()
+                            llm_prompt = (
+                                f"Role: {job.get('title', '')}\n"
+                                f"Company: {job.get('company', '')}\n"
+                                f"Description: {job.get('description', '')}\n"
+                                f"Resume: {resume_text}\n"
+                                f"{prompt_instructions.strip()}"
+                            )
+                        except Exception as exc:
+                            self.logger.error(
+                                f"    Could not read LLM prompt template: {exc}"
+                            )
+                            llm_prompt = ""
+                        try:
+                            score = float(scorer(job, prompt=llm_prompt))
+                        except Exception as exc:
+                            self.logger.error(f"    LLM scoring failed: {exc}")
+                            score = 0.0
+                        job["match_score"] = score
+                        reason = self._short_reason(job.get("match_reason", ""))
+                        if job.get("reranked"):
+                            rerank_reason = self._short_reason(
+                                job.get("match_reason_rerank", "")
+                            )
+                            self.logger.info(
+                                f"    LLM base score {job.get('first_score', score):.1f} -> rerank {score:.1f} (threshold {match_threshold}): {rerank_reason or reason}"
+                            )
+                        else:
+                            self.logger.info(
+                                f"    LLM score {score:.1f} (threshold {match_threshold}): {reason}"
+                            )
+                        if score < match_threshold:
+                            self.logger.info(
+                                f"    ❌ Skipped: LLM score {score:.1f} < {match_threshold}"
+                            )
+                            self._close_extra_tabs()
+                            self._safe_back_to_results(search_url)
+                            continue
+                    if storage:
+                        storage.add_job(job)
+                        try:
+                            storage.export_to_excel()
+                        except Exception as exc:
+                            self.logger.debug(f"    Excel export failed: {exc}")
+                    jobs.append(job)
+                    try:
+                        self._connect_to_people(
+                            job,
+                            connect_pages=connect_pages,
+                            delay_range=connect_delay_range,
+                            storage=storage,
+                            team_hint=team_hint,
+                        )
+                    except Exception as exc:
+                        self.logger.debug(f"    Connection attempts failed: {exc}")
+                    self._close_extra_tabs()
+                    self._safe_back_to_results(search_url)
+                    matched = True
+                    continue
+                except StaleElementReferenceException:
+                    self.logger.debug("    Stale element, continuing...")
+                    self._close_extra_tabs()
+                    self._safe_back_to_results(search_url)
+                    continue
+                except Exception as exc:
+                    self.logger.debug(f"    Error processing job: {exc}")
+                    self._close_extra_tabs()
+                    self._safe_back_to_results(search_url)
+                    continue
+
+            # Try to go to next page; if not possible, break
+            if not self._go_to_next_page(current_page=current_page):
+                self.logger.info(
+                    f"  No more pages after page {current_page} for '{query}'"
+                )
+                break
+
+            current_page += 1
+
+            # Early exit: if no matches after threshold pages, break
+            if not matched:
+                no_match_pages += 1
+                if no_match_pages >= no_match_pages_threshold:
                     self.logger.info(
-                        f"  No more pages after page {current_page} for '{query}'"
+                        f"  ⏹️ No matches after {no_match_pages} pages for '{query}'; skipping to next role."
                     )
                     break
 
-                current_page += 1
+        if not matched:
+            self.logger.info(
+                f"  No matches yet after page {current_page} for '{query}'"
+            )
 
-                # Early exit: if no matches after threshold pages, break
-                if not matched:
-                    no_match_pages += 1
-                    if no_match_pages >= no_match_pages_threshold:
-                        self.logger.info(
-                            f"  ⏹️ No matches after {no_match_pages} pages for '{query}'; skipping to next role."
-                        )
-                        break
-
-            if not matched:
-                self.logger.info(
-                    f"  No matches yet after page {current_page} for '{query}'"
-                )
-
-        except Exception as exc:
-            self.logger.error(f"  Error in _scrape_query: {exc}")
         return jobs, matched
 
     @staticmethod
@@ -613,16 +619,6 @@ class LinkedInScraper(BaseScraper):
             for selector in panel_selectors:
                 try:
                     panel = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    # Ensure the panel is in view
-                    self.driver.execute_script(
-                        "arguments[0].scrollIntoView(true);", panel
-                    )
-                    time.sleep(0.3)
-                    # Wait for content to render
-                    for _ in range(3):
-                        if panel.text.strip():
-                            break
-                        time.sleep(0.3)
                     self.driver.execute_script(
                         "arguments[0].scrollTop = arguments[0].scrollHeight", panel
                     )
@@ -927,25 +923,39 @@ class LinkedInScraper(BaseScraper):
             self.logger.debug("Driver or wait not set; cannot go to next page.")
             return False
         before_url = self.driver.current_url
+        self.logger.debug(
+            f"[PAGINATION] Attempting to go to next page from URL: {before_url}, current_page: {current_page}"
+        )
 
         for attempt in range(3):
+            self.logger.debug(
+                f"[PAGINATION] Next-page navigation attempt {attempt + 1} (current_page: {current_page})"
+            )
             for selector in selectors:
                 try:
+                    self.logger.debug(f"[PAGINATION] Trying selector: {selector}")
                     button = self.wait.until(
                         expected_conditions.element_to_be_clickable(
                             (By.CSS_SELECTOR, selector)
                         )
                     )
                     button.click()
+                    self.logger.debug(
+                        f"[PAGINATION] Clicked next-page button with selector: {selector}"
+                    )
                     time.sleep(0.5)
                     break
-                except Exception:
+                except Exception as e:
+                    self.logger.debug(
+                        f"[PAGINATION] Selector failed: {selector}, error: {e}"
+                    )
                     continue
             else:
                 continue
 
             try:
                 self._wait_for_results_loader()
+                self.logger.debug("[PAGINATION] Waiting for page to advance...")
                 self.wait.until(
                     lambda d: (
                         (current_page is None)
@@ -953,15 +963,21 @@ class LinkedInScraper(BaseScraper):
                         or d.current_url != before_url
                     )
                 )
+                after_url = self.driver.current_url
+                self.logger.debug(
+                    f"[PAGINATION] Page advanced to URL: {after_url}, previous: {before_url}"
+                )
                 time.sleep(1.2)
                 return True
             except Exception as exc:
                 self.logger.debug(
-                    f"Next-page navigation attempt {attempt + 1} failed to advance: {exc}"
+                    f"[PAGINATION] Next-page navigation attempt {attempt + 1} failed to advance: {exc} (current_page: {current_page}, URL: {self.driver.current_url})"
                 )
                 time.sleep(1.0)
 
-        self.logger.warning("Could not click or advance to next page")
+        self.logger.warning(
+            f"[PAGINATION] Could not click or advance to next page (current_page: {current_page}, URL: {self.driver.current_url})"
+        )
         return False
 
     def _get_job_cards(self, target_count: int = 25) -> list:
@@ -1338,24 +1354,4 @@ class LinkedInScraper(BaseScraper):
         try:
             return text.lower() in container.text.lower()
         except Exception:
-            return False
-
-    # --- Job filtering helpers ---
-    def _is_relevant_job(self, job: dict) -> bool:
-        try:
-            location = job.get("location", "") or ""
-            description = job.get("description", "") or ""
-            title = job.get("title", "") or ""
-
-            if "intern" in title.lower():
-                return False
-            if not self._is_us_location(location):
-                return False
-            if not self._check_visa_sponsorship(description):
-                return False
-            if not self._is_posted_last_24_hours(job.get("posted_date", "")):
-                return False
-            return True
-        except Exception as exc:
-            self.logger.debug(f"Job relevance check failed: {exc}")
             return False

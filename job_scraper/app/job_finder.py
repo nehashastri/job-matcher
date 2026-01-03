@@ -158,8 +158,8 @@ class JobFinder:
                 logger.warning(f"Could not read preferences at {p}: {exc}")
         return ""
 
-    def _score_job_with_llm(self, job: dict) -> float:
-        """Use OpenAI to score job vs resume/preferences on 0-10 scale."""
+    def _score_job_with_llm(self, job: dict, prompt: str = "") -> float:
+        """Use OpenAI to score job vs resume/preferences on 0-10 scale. Accepts optional prompt for compatibility with scraper."""
         if not self.openai_client:
             logger.warning("OPENAI_API_KEY not set; defaulting match score to 0")
             return 0.0
@@ -168,6 +168,7 @@ class JobFinder:
                 resume_text=self.resume_text,
                 preferences_text=self.preferences_text,
                 job_details=job,
+                base_prompt=prompt,
             )
 
             job["match_reason"] = result.get("reason", "")

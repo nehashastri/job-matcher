@@ -1,0 +1,6 @@
+Instructions:
+- Use stricter criteria for technical fit and seniority.
+- Score the match out of 10 (float, 0-10 scale).
+- If the candidate is a strong match for the job requirements and sponsorship is possible, score highly.
+- Otherwise, lower the score and explain why.
+- Return JSON only: {"score": number, "reason": string, "title": string, "company": string}.
