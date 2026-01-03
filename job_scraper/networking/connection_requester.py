@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import logging
+import os
 import random
 import time
 from typing import Any
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -34,7 +34,7 @@ class ConnectionRequester:
         company: str,
         delay_range: tuple[float, float] = (1.0, 2.0),
         store=None,
-        max_pages: int | None = 3,
+        max_pages: int | None = None,
         use_new_tab: bool = False,
     ) -> dict[str, int]:
         """Process LinkedIn People results for up to `max_pages` pages.
@@ -55,12 +55,26 @@ class ConnectionRequester:
             "pages_processed": 0,
         }
 
-        original_handle = self._current_handle()
+        # Get max_pages from environment if not provided
+        if max_pages is None:
+            try:
+                max_pages = int(os.getenv("MAX_PEOPLE_SEARCH_PAGES", 3))
+            except Exception:
+                max_pages = 3
+
+        # Save the original window handle
+        try:
+            original_handle = self.driver.current_window_handle
+        except Exception:
+            original_handle = None
         networking_handle = self._open_networking_tab() if use_new_tab else None
 
         try:
             if networking_handle:
-                self._switch_to_handle(networking_handle)
+                try:
+                    self.driver.switch_to.window(networking_handle)
+                except Exception:
+                    pass
 
             for page_index, profiles in enumerate(
                 people_finder.iterate_pages(role, company, pages=max_pages)
@@ -131,7 +145,10 @@ class ConnectionRequester:
             if networking_handle:
                 self._close_networking_tab(networking_handle, original_handle)
             elif original_handle:
-                self._switch_to_handle(original_handle)
+                try:
+                    self.driver.switch_to.window(original_handle)
+                except Exception:
+                    pass
 
         return summary
 
@@ -300,7 +317,7 @@ class ConnectionRequester:
         try:
             if not name:
                 return None
-            self._switch_to_primary_window()
+            # No-op: was _switch_to_primary_window, not needed
             name_l = name.lower()
             xpath = (
                 "//*[contains(@data-view-name,'people-search-result') or "
@@ -316,119 +333,6 @@ class ConnectionRequester:
             return self.driver.find_element(By.XPATH, xpath)
         except Exception:
             return None
-
-    def _send_message(self, message_button, name: str, role: str, company: str) -> bool:
-        original_handle = None
-        try:
-            original_handle = self.driver.current_window_handle
-        except Exception:
-            pass
-
-        try:
-            message_button.click()
-            composer = self._wait_for_composer()
-            if not composer:
-                return False
-            textbox = self._find_composer_textarea(composer)
-            if not textbox:
-                return False
-            message_text = f"Hi {name}, I applied to {role} at {company} and would appreciate a quick connect."
-            textbox.clear()
-            textbox.send_keys(message_text)
-            if not self._click_send_message():
-                textbox.send_keys(Keys.ENTER)
-            self._close_message_overlay()
-            self._switch_to_primary_window()
-            return True
-        except Exception as exc:
-            self.logger.info(f"[CONNECT] Could not send message: {exc}")
-            self._switch_to_primary_window()
-            return False
-        finally:
-            if original_handle:
-                try:
-                    self.driver.switch_to.window(original_handle)
-                except Exception:
-                    self._switch_to_primary_window()
-
-    def _click_send_message(self) -> bool:
-        selectors = [
-            "button[aria-label='Send']",
-            "button[aria-label*='Send message']",
-            "button[data-control-name='send']",
-            "button.msg-form__send-button",
-        ]
-        for selector in selectors:
-            try:
-                btn = self.wait.until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
-                )
-                btn.click()
-                return True
-            except Exception:
-                continue
-        return False
-
-    def _find_composer_textarea(self, composer):
-        selectors = [
-            "div[contenteditable='true'][role='textbox']",
-            "div.msg-form__contenteditable",
-            "div.msg-form__contenteditable p",
-            "div.msg-overlay-conversation-bubble--is-active div[contenteditable='true']",
-        ]
-        for selector in selectors:
-            try:
-                elems = composer.find_elements(By.CSS_SELECTOR, selector)
-                visible = [e for e in elems if e.is_displayed()]
-                if visible:
-                    return visible[0]
-            except Exception:
-                continue
-        return None
-
-    def _add_note(self, note_text: str) -> None:
-        try:
-            add_note_selectors = [
-                "button[aria-label='Add a note']",
-                "button[aria-label='Add note']",
-                "button[aria-label*='Add note']",
-                "button[data-control-name='invite_dialog_add_note']",
-            ]
-            for selector in add_note_selectors:
-                try:
-                    add_note_btn = self.wait.until(
-                        EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
-                    )
-                    add_note_btn.click()
-                    break
-                except Exception:
-                    continue
-
-            textarea_selectors = [
-                "textarea",
-                "textarea[name='message']",
-                "textarea[id='custom-message']",
-                "textarea[name='customMessage']",
-                "textarea[aria-label*='Add a note']",
-                "textarea[aria-label*='Note']",
-            ]
-            textarea = None
-            for selector in textarea_selectors:
-                try:
-                    textarea = self.wait.until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
-                    )
-                    if textarea:
-                        break
-                except Exception:
-                    continue
-            if not textarea:
-                self.logger.info("[CONNECT] Note textarea not found")
-                return
-            textarea.clear()
-            textarea.send_keys(note_text)
-        except Exception as exc:
-            self.logger.debug(f"[CONNECT] Could not add note: {exc}")
 
     def _send_invite(self) -> bool:
         selectors = [
@@ -488,7 +392,7 @@ class ConnectionRequester:
         try:
             if not profile_url:
                 return None
-            self._switch_to_primary_window()
+            # No-op: was _switch_to_primary_window, not needed
             profile_id = profile_url.split("/")[-1].split("?")[0]
             xpath = (
                 "//a[contains(@href, '"
@@ -541,59 +445,6 @@ class ConnectionRequester:
         except Exception:
             time.sleep(1)
 
-    def _close_message_overlay(self) -> None:
-        """Close the LinkedIn messaging overlay if it is open."""
-        try:
-            close_selectors = [
-                "button[aria-label='Dismiss']",
-                "button.msg-overlay-bubble-header__control",
-                "button[aria-label*='Close']",
-                "button[data-control-name='overlay.close']",
-            ]
-            for selector in close_selectors:
-                try:
-                    btn = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if btn.is_displayed() and btn.is_enabled():
-                        btn.click()
-                        return
-                except Exception:
-                    continue
-
-            try:
-                body = self.driver.find_element(By.TAG_NAME, "body")
-                body.send_keys(Keys.ESCAPE)
-            except Exception:
-                pass
-        except Exception:
-            self.logger.debug("[CONNECT] Could not close message overlay")
-
-    def _switch_to_primary_window(self) -> None:
-        try:
-            if self.primary_handle and self.primary_handle in getattr(
-                self.driver, "window_handles", []
-            ):
-                self.driver.switch_to.window(self.primary_handle)
-                return
-            handles = getattr(self.driver, "window_handles", [])
-            if handles:
-                self.primary_handle = handles[0]
-                self.driver.switch_to.window(self.primary_handle)
-        except Exception:
-            pass
-
-    def _current_handle(self):
-        try:
-            return self.driver.current_window_handle
-        except Exception:
-            return None
-
-    def _switch_to_handle(self, handle) -> None:
-        try:
-            if handle:
-                self.driver.switch_to.window(handle)
-        except Exception:
-            pass
-
     def _open_networking_tab(self):
         try:
             if not self.driver:
@@ -623,4 +474,10 @@ class ConnectionRequester:
         except Exception:
             pass
         finally:
-            self._switch_to_handle(fallback or self.primary_handle)
+            # Switch back to fallback or primary_handle if possible
+            target = fallback or getattr(self, "primary_handle", None)
+            if target:
+                try:
+                    self.driver.switch_to.window(target)
+                except Exception:
+                    pass
