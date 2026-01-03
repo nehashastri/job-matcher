@@ -176,8 +176,25 @@ class ConnectionRequester:
         if connect_btn:
             try:
                 connect_btn.click()
-                connected = True
-                self.logger.info("[CONNECT] Match: connect clicked for %s", name)
+                # After clicking connect, try to click 'Send without a note'.
+                if self._send_invite():
+                    self.logger.info(
+                        "[CONNECT] Match: 'Send without a note' clicked for %s", name
+                    )
+                    connected = True
+                    self.logger.info("[CONNECT] Match: connect clicked for %s", name)
+                else:
+                    # If 'Send without a note' not found, try to close the modal
+                    if self._close_connect_modal():
+                        self.logger.info(
+                            "[CONNECT] Match: connect modal closed for %s (no send)",
+                            name,
+                        )
+                    else:
+                        self.logger.info(
+                            "[CONNECT] Match: connect modal could not be closed for %s",
+                            name,
+                        )
             except Exception as exc:
                 self.logger.debug(
                     f"[CONNECT] Could not click connect for {name}: {exc}"
@@ -218,6 +235,26 @@ class ConnectionRequester:
         if connect_btn:
             try:
                 connect_btn.click()
+                # After clicking connect, try to click 'Send without a note'.
+                connected = False
+                if self._send_invite():
+                    self.logger.info(
+                        "[CONNECT] Non-match: 'Send without a note' clicked for %s",
+                        name,
+                    )
+                    connected = True
+                else:
+                    # If 'Send without a note' not found, try to close the modal
+                    if self._close_connect_modal():
+                        self.logger.info(
+                            "[CONNECT] Non-match: connect modal closed for %s (no send)",
+                            name,
+                        )
+                    else:
+                        self.logger.info(
+                            "[CONNECT] Non-match: connect modal could not be closed for %s",
+                            name,
+                        )
                 self.logger.info("[CONNECT] Non-match: connect clicked for %s", name)
                 self._record_connection(
                     store,
@@ -228,21 +265,45 @@ class ConnectionRequester:
                     company,
                     is_match=False,
                     message_available=False,
-                    connected=True,
-                    status="ConnectClickedNonMatch",
+                    connected=connected,
+                    status="ConnectClickedNonMatch"
+                    if connected
+                    else "ConnectModalClosedNonMatch",
                 )
                 return "connect_clicked_non_match", None
             except Exception as exc:
                 self.logger.debug(
                     f"[CONNECT] Could not click connect for {name}: {exc}"
                 )
+                return None, None
+        else:
+            # Visibility/logging when no connect action was taken
+            self.logger.info(
+                "[CONNECT] Non-match: no connect button for %s (skipping)", name
+            )
+            return None, None
 
-        # Visibility/logging when no connect action was taken
-        self.logger.info(
-            "[CONNECT] Non-match: no connect button for %s (skipping)", name
-        )
-
-        return None, None
+    def _close_connect_modal(self) -> bool:
+        """Try to close the LinkedIn connect modal if present."""
+        try:
+            # Look for the close/dismiss button in the modal
+            selectors = [
+                "button.artdeco-modal__dismiss",
+                "button[aria-label='Dismiss']",
+                "button[data-test-modal-close-btn]",
+            ]
+            for selector in selectors:
+                try:
+                    btn = self.wait.until(
+                        EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                    )
+                    btn.click()
+                    return True
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        return False
 
     def _should_ignore_profile(self, profile: dict[str, Any]) -> bool:
         name = (profile.get("name") or "").strip().lower()
@@ -258,6 +319,7 @@ class ConnectionRequester:
             "a[aria-label*='Message']",
             "button[data-control-name='message']",
         ]
+        # First pass: direct selectors
         for selector in selectors:
             try:
                 btn = card.find_element(By.CSS_SELECTOR, selector)
@@ -265,6 +327,19 @@ class ConnectionRequester:
                     return btn
             except Exception:
                 continue
+        # Second pass: scan for visible text or aria-label containing 'message'
+        try:
+            candidates = card.find_elements(By.CSS_SELECTOR, "button, a, span, div")
+            for c in candidates:
+                try:
+                    label = (c.get_attribute("aria-label") or "").lower()
+                    text = (c.text or "").lower()
+                    if ("message" in label or "message" in text) and c.is_enabled():
+                        return c
+                except Exception:
+                    continue
+        except Exception:
+            pass
         return None
 
     def _find_connect_button_in_card(self, card):
@@ -275,7 +350,7 @@ class ConnectionRequester:
             "button[aria-label*='Invite']",
             "button[aria-label*='connect with']",
             "button.artdeco-button--secondary",
-            "a[aria-label*='Invite'][href*='search-custom-invite'],",
+            "a[aria-label*='Invite'][href*='search-custom-invite']",
             "a[aria-label*='Connect']",
             "a[href*='search-custom-invite']",
         ]
@@ -289,23 +364,24 @@ class ConnectionRequester:
             except Exception:
                 continue
 
-        # Second pass: scan any buttons/links with visible text or label containing "connect"
+        # Second pass: scan any buttons/links/spans/divs with visible text or label containing "connect" or "invite"
         try:
-            candidates = card.find_elements(By.CSS_SELECTOR, "button, a, span")
+            candidates = card.find_elements(By.CSS_SELECTOR, "button, a, span, div")
             for c in candidates:
                 try:
                     label = (c.get_attribute("aria-label") or "").lower()
                     text = (c.text or "").lower()
                     href = (c.get_attribute("href") or "").lower()
                     if (
-                        "connect" in label
-                        or "invite" in label
-                        or "connect" in text
-                        or "invite" in text
-                        or "search-custom-invite" in href
-                    ):
-                        if c.is_enabled():
-                            return c
+                        (
+                            "connect" in label
+                            or "invite" in label
+                            or "connect" in text
+                            or "invite" in text
+                        )
+                        or ("search-custom-invite" in href)
+                    ) and c.is_enabled():
+                        return c
                 except Exception:
                     continue
         except Exception:

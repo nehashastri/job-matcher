@@ -1,0 +1,8 @@
+Instructions:
+- Give a score of zero if:
+	- The role explicitly mentions no sponsorship or cannot hire international students.
+	- The role requires a PhD/doctorate or more than 2 years of work experience.
+	- The role requires high security clearance or U.S. Citizenship.
+	- The company is a spam, staffing, or recruiting company (based on a quick search).
+- Otherwise, compare the resume (provided below) with the job description and score the match out of 10.
+- Return JSON only: {"score": number, "reason": string, "title": string, "company": string}.

@@ -22,7 +22,14 @@ class MatchScorer:
         self.logger = logger or get_logger(__name__)
         self.client: Any | None = openai_client or self._maybe_create_client()
 
-    def score(self, resume_text: str, preferences_text: str, job_details: dict) -> dict:
+    def score(
+        self,
+        resume_text: str,
+        preferences_text: str,
+        job_details: dict,
+        base_prompt: "str | None" = None,
+        rerank_prompt: "str | None" = None,
+    ) -> dict:
         """Score a job against resume/preferences.
 
         Returns dict with keys: score, reason, model_used, reranked (bool),
@@ -42,10 +49,32 @@ class MatchScorer:
                 "model_used_rerank": None,
             }
 
-        messages = self._build_messages(resume_text, preferences_text, job_details)
+        # Load prompts from file if not provided
+        if base_prompt is None:
+            try:
+                with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
+                    base_prompt = f.read().strip()
+            except Exception:
+                base_prompt = (
+                    "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
+                    "Consider resume and preferences. If the job title or company is missing/blank, infer them "
+                    'from the description and return them. Return JSON only: {"score": number, "reason": string, '
+                    '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
+                    "supply concise inferred values."
+                )
+        if rerank_prompt is None:
+            try:
+                with open("data/LLM_rerank_score.txt", "r", encoding="utf-8") as f:
+                    rerank_prompt = f.read().strip()
+            except Exception:
+                rerank_prompt = base_prompt
+
+        messages = self._build_messages(
+            resume_text, preferences_text, job_details, prompt=base_prompt
+        )
 
         base_model = self.config.openai_model or "gpt-4o-mini"
-        rerank_model = self.config.openai_model_rerank or base_model
+        rerank_model = self.config.openai_model_rerank or "gpt-4o"
         trigger = getattr(self.config, "job_match_rerank_trigger", 8)
 
         try:
@@ -78,8 +107,11 @@ class MatchScorer:
                 )
                 reranked = True
                 model_used_rerank = rerank_model
+                rerank_messages = self._build_messages(
+                    resume_text, preferences_text, job_details, prompt=rerank_prompt
+                )
                 rerank_score, reason_rerank, rerank_title, rerank_company = (
-                    self._call_llm(messages, rerank_model)
+                    self._call_llm(rerank_messages, rerank_model)
                 )
                 inferred_title = inferred_title or rerank_title
                 inferred_company = inferred_company or rerank_company
@@ -131,17 +163,21 @@ class MatchScorer:
             }
 
     def _build_messages(
-        self, resume_text: str, preferences_text: str, job_details: dict
+        self,
+        resume_text: str,
+        preferences_text: str,
+        job_details: dict,
+        prompt: "str | None" = None,
     ) -> list[dict[str, str]]:
         description = job_details.get("description", "")
-        prompt = (
-            "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
-            "Consider resume and preferences. If the job title or company is missing/blank, infer them "
-            'from the description and return them. Return JSON only: {"score": number, "reason": string, '
-            '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
-            "supply concise inferred values."
-        )
-
+        if prompt is None:
+            prompt = (
+                "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
+                "Consider resume and preferences. If the job title or company is missing/blank, infer them "
+                'from the description and return them. Return JSON only: {"score": number, "reason": string, '
+                '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
+                "supply concise inferred values."
+            )
         return [
             {"role": "system", "content": prompt},
             {
