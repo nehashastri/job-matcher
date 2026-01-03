@@ -43,7 +43,14 @@ def _fake_role_runner_factory(
             if job.get("match_score", 0) < threshold:
                 continue
 
-            store.add_job(job)
+            role_tag = role.get("title", "")
+            job_for_role = {
+                **job,
+                # Give each role a unique ID suffix so pagination/tests can assert per-role saves
+                "id": f"{job.get('id', '')}-{role_tag}",
+            }
+
+            store.add_job(job_for_role)
             for conn in connections:
                 store.add_linkedin_connection(
                     {
@@ -52,7 +59,7 @@ def _fake_role_runner_factory(
                         "role": job.get("title", ""),
                     }
                 )
-            accepted.append(job)
+            accepted.append(job_for_role)
 
         email_calls.append(
             {

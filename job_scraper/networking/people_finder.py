@@ -255,6 +255,19 @@ class PeopleFinder:
                 "a[data-view-name='search-result-lockup-title'], a.app-aware-link",
             )
             profile_url = link_elem.get_attribute("href") if link_elem else ""
+            if not profile_url:
+                try:
+                    # Fallback: look for standard LinkedIn profile anchors
+                    fallback_links = card.find_elements(
+                        By.CSS_SELECTOR, "a[href*='/in/'], a[href*='miniProfileUrn']"
+                    )
+                    for link in fallback_links:
+                        href = link.get_attribute("href")
+                        if href:
+                            profile_url = href
+                            break
+                except Exception:
+                    pass
             name = self._safe_text(
                 card,
                 "a[data-view-name='search-result-lockup-title'], span.entity-result__title-text span[aria-hidden='true']",
@@ -281,6 +294,9 @@ class PeopleFinder:
                     is_role_match=is_match,
                 )
                 return profile.to_dict()
+            self.logger.info(
+                "[PEOPLE_SEARCH] Skipping card with no identifiable data (url/name/title missing)"
+            )
         except Exception as exc:
             self.logger.debug(f"[PEOPLE_SEARCH] Failed to parse profile card: {exc}")
         return None
@@ -290,7 +306,11 @@ class PeopleFinder:
             next_selectors = [
                 "button[data-testid='pagination-controls-next-button-visible']",
                 "button[aria-label='Next']",
+                "button[aria-label='Next page']",
+                "button[aria-label='Next Page']",
                 "button.artdeco-pagination__button--next",
+                "a[aria-label='Next']",
+                "a[aria-label='Next page']",
             ]
             for selector in next_selectors:
                 try:

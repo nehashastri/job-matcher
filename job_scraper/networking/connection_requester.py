@@ -83,6 +83,13 @@ class ConnectionRequester:
 
                     card = self._find_card_by_url(profile_url)
                     if not card:
+                        card = self._find_card_by_name(name)
+                    if not card:
+                        self.logger.info(
+                            "[CONNECT] Skip: could not locate card for %s (url=%s)",
+                            name,
+                            profile_url or "missing",
+                        )
                         summary["skipped"] += 1
                         continue
 
@@ -288,6 +295,27 @@ class ConnectionRequester:
             pass
 
         return None
+
+    def _find_card_by_name(self, name: str):
+        try:
+            if not name:
+                return None
+            self._switch_to_primary_window()
+            name_l = name.lower()
+            xpath = (
+                "//*[contains(@data-view-name,'people-search-result') or "
+                "contains(@class,'reusable-search__result-container') or "
+                "contains(@class,'search-result__occluded-item') or "
+                "contains(@class,'entity-result')]"
+                "[.//span[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), \""
+                + name_l
+                + "\")] or .//a[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), \""
+                + name_l
+                + '")]]'
+            )
+            return self.driver.find_element(By.XPATH, xpath)
+        except Exception:
+            return None
 
     def _send_message(self, message_button, name: str, role: str, company: str) -> bool:
         original_handle = None

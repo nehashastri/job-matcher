@@ -2,64 +2,51 @@
 
 Automation that logs into LinkedIn, scrapes roles, filters them with rules and LLM checks, scores fit against your resume, and alerts you when a good match is found. Designed to run locally without an orchestrator service.
 
-## What it does
-- Scrape LinkedIn search results (left-pane lists and right-pane details) with Selenium + Chrome.
-- Apply company blocklist and HR-company detection; optionally reject roles that do not sponsor visas.
-- Score matches with OpenAI models against your resume; configurable rerank on a stronger model.
-- Persist accepted jobs to Excel and send email notifications; optionally collect people to connect with.
+## What you can configure
+- Toggle sponsorship and HR filters: `REQUIRES_SPONSORSHIP`, `REJECT_HR_COMPANIES`.
+- Control scraping scope: `MAX_JOBS_PER_ROLE`, `MAX_APPLICANTS`, `SCRAPE_INTERVAL_MINUTES`, `HEADLESS` mode.
+- Tune scoring: `JOB_MATCH_THRESHOLD`, `JOB_MATCH_RERANK_BAND`, `OPENAI_MODEL`, `OPENAI_MODEL_RERANK`.
+- Data inputs: `data/roles.json` for roles, `data/company_blocklist.json` for blocked companies, `data/resume.docx` for your resume (all gitignored; use the *.example files as templates).
 
-## Core workflow (Phases 1–7)
-- Auth/session: [auth/linkedin_auth.py](auth/linkedin_auth.py) and [auth/session_manager.py](auth/session_manager.py).
-- Search URL builder: [scraping/search_builder.py](scraping/search_builder.py).
-- Scraping: [scraping/job_list_scraper.py](scraping/job_list_scraper.py) (JobSummary) and [scraping/job_detail_scraper.py](scraping/job_detail_scraper.py) (JobDetails).
-- Filtering: [filtering/blocklist.py](filtering/blocklist.py) and [matching/hr_checker.py](matching/hr_checker.py).
-- Sponsorship: [matching/sponsorship_filter.py](matching/sponsorship_filter.py).
-- Matching: [matching/resume_loader.py](matching/resume_loader.py) and [matching/match_scorer.py](matching/match_scorer.py).
-- Networking: [networking/people_finder.py](networking/people_finder.py) and [networking/connection_requester.py](networking/connection_requester.py).
-- Notifications: [notifications/email_notifier.py](notifications/email_notifier.py).
-- Storage: [storage_pkg/matched_jobs_store.py](storage_pkg/matched_jobs_store.py) and [storage_pkg/blocklist_store.py](storage_pkg/blocklist_store.py).
+## How it works
+1) Sign in and keep the session alive. The scraper logs in (headless or visible Chrome) and reuses the session while it runs.
+2) Build LinkedIn search URLs per role. It applies your filters (location, date posted, experience, remote, sponsorship flag) and opens the results.
+3) Paginate and load job cards. For each page it scrolls until the list is full (25 cards on non-final pages), waits for loaders to finish, and dedupes cards by `data-job-id`.
+4) Skip already viewed cards. Anything marked as viewed is ignored when `SKIP_VIEWED_JOBS` is true.
+5) Open each new job and scrape details. The right pane is scraped for title, company, location, applicants, posting date, description, and the canonical job URL.
+6) Filter companies. Blocklisted names/patterns are dropped. An HR/staffing detector (LLM) can reject staffing firms when enabled.
+7) Filter for sponsorship. If `REQUIRES_SPONSORSHIP` is true, a sponsorship LLM check rejects roles that say “no sponsorship” or “US only”.
+8) Score the fit. The resume text is compared to the job description with an LLM. Scores ≥ threshold are kept (optionally reranked with a stronger model near the threshold).
+9) Store accepted jobs. Accepted roles are written to `data/jobs.xlsx` with metadata and timestamps.
+10) (Optional) Network on LinkedIn People search. For accepted roles, the networking module can search people at the company and log connection attempts in `data/linkedin_connections.xlsx`.
+11) Notify you. An email can be sent via Gmail SMTP summarizing the job and connection counts.
+12) Repeat for the next page and the next role on the schedule.
 
-## Key files and folders
-- [app/job_finder.py](app/job_finder.py): CLI entry that wires scraping, scoring, storage, and notifications (no external orchestrator).
-- [scraping/linkedin_scraper.py](scraping/linkedin_scraper.py): LinkedIn-specific end-to-end scraper.
-- [models.py](models.py): Domain dataclasses (JobSummary, JobDetails, ProfileCard).
-- [project_config/pixi.toml](project_config/pixi.toml) and [project_config/pyproject.toml](project_config/pyproject.toml): tooling and dependency setup.
-- [data/](data): runtime inputs/outputs (roles.json, company_blocklist.json, jobs.xlsx, linkedin_connections.xlsx).
-
-## Run
-```powershell
-cd "d:\Projects\Job List\job_scraper"
-pixi -C project_config install
-Copy-Item project_config/.env.template .env
-
-# Single scrape over configured roles
-pixi -C project_config run scrape
-
-# Continuous loop (interval from .env)
-pixi -C project_config run loop
+## Directory layout
+```
+job_scraper/
+├── app/                     # entry points (main CLI in job_finder.py)
+├── auth/                    # LinkedIn login + session management
+├── cli/                     # legacy CLI glue
+├── config/                  # config loader, logging setup
+├── data/                    # gitignored user data/outputs; *.example templates here
+├── filtering/               # blocklist utilities
+├── matching/                # HR checker, sponsorship filter, resume loader, match scorer
+├── networking/              # people finder and connection requester
+├── notifications/           # email notifier
+├── scraping/                # search builder, list/detail scrapers, LinkedIn orchestrator
+├── scheduler/               # polling loop orchestration
+├── storage_pkg/             # Excel-backed stores for jobs and connections
+├── tests/                   # unit and integration tests
+├── project_config/          # tooling (pixi.toml, pyproject.toml, .env.template)
+├── logs/                    # runtime logs (gitignored)
+├── README.md                # this guide
+├── SETUP.md                 # setup steps
+├── ARCHITECTURE.md          # architecture notes
+├── IMPLEMENTATION_PLAN.md   # phased build plan
+├── PROJECT_STRUCTURE.md     # module overview
+├── COPILOT.md               # agent instructions
+└── .github/workflows/ci.yml # CI (lint + tests)
 ```
 
-Place your resume at data/resume.docx and update data/roles.json plus data/company_blocklist.json before running.
 
-## Configuration
-- Environment: set values in .env (OpenAI keys, LinkedIn creds, email SMTP, thresholds, polling interval).
-- Sponsorship/HR/eligibility: toggle REQUIRES_SPONSORSHIP, REJECT_HR_COMPANIES, REJECT_UNPAID_ROLES, REJECT_VOLUNTEER_ROLES, MIN_REQUIRED_EXPERIENCE_YEARS, ALLOW_PHD_REQUIRED in .env/config.
-- Match scoring: OPENAI_MODEL, OPENAI_MODEL_RERANK, JOB_MATCH_THRESHOLD, JOB_MATCH_RERANK_BAND.
-
-## Outputs
-- [data/jobs.xlsx](data/jobs.xlsx) for accepted jobs.
-- [data/linkedin_connections.xlsx](data/linkedin_connections.xlsx) for networking records.
-- [data/company_blocklist.json](data/company_blocklist.json) and [data/roles.json](data/roles.json) for inputs.
-- [logs/job_finder.log](logs/job_finder.log) (created at runtime).
-
-## Testing
-```powershell
-pixi -C project_config run test
-# or
-pixi run python -m pytest
-```
-
-## Troubleshooting
-- Login failures: recheck LINKEDIN_EMAIL/LINKEDIN_PASSWORD; solve any CAPTCHA manually.
-- OpenAI errors: confirm OPENAI_API_KEY, model names, and network access.
-- Empty results: relax filters in data/roles.json or lower JOB_MATCH_THRESHOLD.

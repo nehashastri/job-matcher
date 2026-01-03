@@ -8,22 +8,23 @@ import math
 import os
 import re
 import time
-from typing import Any, cast
+from typing import Any
 
-from config.config import get_config
-from filtering.blocklist import Blocklist
-from matching.hr_checker import HRChecker
-from matching.sponsorship_filter import SponsorshipFilter
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 from networking.connection_requester import ConnectionRequester
 from networking.people_finder import PeopleFinder
 from selenium import webdriver
 from selenium.common.exceptions import (
     StaleElementReferenceException,
-    TimeoutException,
 )
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.ui import WebDriverWait
 
 from .base_scraper import BaseScraper
 
@@ -38,9 +39,18 @@ class LinkedInScraper(BaseScraper):
         self.base_url = "https://www.linkedin.com"
         self.user_email = os.getenv("LINKEDIN_EMAIL", "")
         self.user_password = os.getenv("LINKEDIN_PASSWORD", "")
+        from typing import cast
+
+        from selenium.webdriver.support.ui import WebDriverWait
+
         self.driver = cast(webdriver.Chrome, None)
         self.authenticated = False
         self.wait = cast(WebDriverWait, None)
+
+        from config.config import get_config
+        from filtering.blocklist import Blocklist
+        from matching.hr_checker import HRChecker
+        from matching.sponsorship_filter import SponsorshipFilter
 
         self.config = get_config()
         self.blocklist = Blocklist(config=self.config, logger=self.logger)
@@ -68,7 +78,7 @@ class LinkedInScraper(BaseScraper):
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option("useAutomationExtension", False)
 
-            if self.config.headless:
+            if getattr(self.config, "headless", False):
                 options.add_argument("--headless=new")
                 options.add_argument("--disable-gpu")
                 options.add_argument("--window-size=1920,1080")
@@ -76,6 +86,8 @@ class LinkedInScraper(BaseScraper):
                 options.add_argument("--disable-dev-shm-usage")
 
             self.driver = webdriver.Chrome(options=options)
+            from selenium.webdriver.support.ui import WebDriverWait
+
             self.wait = WebDriverWait(self.driver, 15)
             self.logger.debug("Chrome WebDriver initialized (fresh profile)")
         except Exception as exc:
@@ -84,6 +96,8 @@ class LinkedInScraper(BaseScraper):
 
     def _login(self) -> bool:
         """Login to LinkedIn"""
+        from selenium.common.exceptions import TimeoutException
+
         if not self.user_email or not self.user_password:
             return False
 
@@ -125,7 +139,6 @@ class LinkedInScraper(BaseScraper):
             except TimeoutException:
                 self.logger.error("❌ Login failed")
                 return False
-
         except Exception as exc:
             self.logger.error(f"❌ Login error: {exc}")
             return False
@@ -153,14 +166,7 @@ class LinkedInScraper(BaseScraper):
         except Exception:
             configured_roles = []
 
-        queries = [
-            role.get("title", "").strip()
-            for role in configured_roles
-            if role.get("enabled", True) and role.get("title")
-        ]
-        queries = [q for i, q in enumerate(queries) if q and q not in queries[:i]]
-
-        if not queries:
+        if not configured_roles:
             self.logger.warning(
                 "No enabled roles found in roles.json; skipping LinkedIn scrape."
             )
@@ -171,28 +177,34 @@ class LinkedInScraper(BaseScraper):
                 self.logger.warning("Cannot proceed without login")
                 return jobs
 
-            self.logger.info(f"📋 Scraping {len(queries)} job queries...")
+            self.logger.info(f"📋 Scraping {len(configured_roles)} job queries...")
 
-            for query in queries:
-                try:
-                    self.logger.info(f"🔎 Searching for: '{query}'")
-                    page_jobs, matched = self._scrape_query(
-                        query,
-                        max_applicants,
-                        scorer=scorer,
-                        match_threshold=match_threshold,
-                        storage=storage,
-                        connect_pages=connect_pages,
-                        connect_delay_range=connect_delay_range,
-                        team_hint=team_hint,
-                        max_pages=8,
-                    )
-                    self.logger.info(
-                        f"✅ Processed {len(page_jobs)} jobs for '{query}'"
-                    )
-                    jobs.extend(page_jobs)
-                except Exception as exc:
-                    self.logger.error(f"❌ Error scraping '{query}': {exc}")
+            seen_titles = set()
+            for role in configured_roles:
+                title = role.get("title", "").strip()
+                if not title or title in seen_titles:
+                    continue
+                seen_titles.add(title)
+                location = role.get("location", "United States")
+                experience_levels = role.get("experience_levels")
+                self.logger.info(
+                    f"🔎 Searching for: '{title}' | Location: '{location}' | Experience: {experience_levels}"
+                )
+                page_jobs, matched = self._scrape_query(
+                    title,
+                    max_applicants,
+                    scorer=scorer,
+                    match_threshold=match_threshold,
+                    storage=storage,
+                    connect_pages=connect_pages,
+                    connect_delay_range=connect_delay_range,
+                    team_hint=team_hint,
+                    no_match_pages_threshold=8,
+                    location=location,
+                    experience_levels=experience_levels,
+                )
+                self.logger.info(f"✅ Processed {len(page_jobs)} jobs for '{title}'")
+                jobs.extend(page_jobs)
 
             self.logger.info("=" * 60)
             self.logger.info(f"✨ LinkedIn scrape complete: {len(jobs)} jobs total")
@@ -211,6 +223,13 @@ class LinkedInScraper(BaseScraper):
 
         return jobs
 
+    def setup_driver(self, driver: webdriver.Chrome, wait_time: float = 10.0):
+        """Set up the Selenium driver and WebDriverWait."""
+        from selenium.webdriver.support.ui import WebDriverWait
+
+        self.driver = driver
+        self.wait = WebDriverWait(self.driver, wait_time)
+
     def _scrape_query(
         self,
         query: str,
@@ -221,47 +240,62 @@ class LinkedInScraper(BaseScraper):
         connect_pages: int | None = 3,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
         team_hint: str | None = None,
-        max_pages: int = 8,
+        no_match_pages_threshold: int | None = None,
+        location: str = "United States",
+        experience_levels: list[str] | None = None,
     ) -> tuple[list[dict[str, Any]], bool]:
-        """Scrape jobs for a single query; up to max_pages; return (jobs, matched_flag)."""
+        """Scrape jobs for a single query; return (jobs, matched_flag)."""
 
         jobs: list[dict[str, Any]] = []
         matched = False
-        total_pages: int | None = None
         current_page = 1
+        total_jobs_for_query = None
+        traversed_jobs = 0
 
         try:
-            search_url = self._build_search_url(query, start=0)
+            if self.driver is None or self.wait is None:
+                self.logger.error("Driver or wait not set up; aborting query")
+                return jobs, matched
+            # Use date_posted from config.search_settings if available
+            date_posted = self.config.search_settings.get("date_posted", "r86400")
+            search_url = self._build_search_url(
+                location=location,
+                date_posted=date_posted,
+                experience_levels=experience_levels,
+                start=0,
+            )
             self.logger.info("=" * 60)
-            self.logger.info(f"  📄 Page 1/{max_pages} for '{query}' (start=0)")
+            self.logger.info(f"  📄 Page 1 for '{query}' (start=0)")
             self.logger.debug(f"  Navigating to: {search_url}")
             if not self._safe_get(search_url):
                 self.logger.error("  Could not navigate to search URL; aborting query")
                 return jobs, matched
+            # Extract total jobs for query
+            total_jobs_for_query = self._get_total_results()
+            self.logger.info(
+                f"Total jobs available for query '{query}': {total_jobs_for_query}"
+            )
 
-            while current_page <= max_pages:
+            # Get threshold from env if not provided
+            if no_match_pages_threshold is None:
+                try:
+                    no_match_pages_threshold = int(
+                        os.getenv("NO_MATCH_PAGES_THRESHOLD", 8)
+                    )
+                except Exception:
+                    no_match_pages_threshold = 8
+
+            no_match_pages = 0
+            while True:
                 page_state = self._get_page_state()
-                if page_state:
-                    if page_state[0]:
-                        current_page = page_state[0]
-                    if total_pages is None and page_state[1]:
-                        total_pages = min(max_pages, page_state[1])
+                if page_state and page_state[0]:
+                    current_page = page_state[0]
 
-                if total_pages is None:
-                    total_results = self._get_total_results()
-                    if total_results:
-                        computed_pages = math.ceil(total_results / 25)
-                        total_pages = min(max_pages, computed_pages)
-                        self.logger.info(
-                            f"  ℹ️ Total results={total_results}; pages={computed_pages}; processing up to {total_pages}"
-                        )
-
-                is_last_page = total_pages is not None and current_page >= total_pages
                 search_url = self.driver.current_url
                 start = (current_page - 1) * 25
                 self.logger.info("=" * 60)
                 self.logger.info(
-                    f"  📄 Page {current_page}/{total_pages or max_pages} for '{query}' (start={start})"
+                    f"  📄 Page {current_page} for '{query}' (start={start})"
                 )
 
                 try:
@@ -276,48 +310,51 @@ class LinkedInScraper(BaseScraper):
                 except Exception:
                     self.logger.debug("  Job list did not become visible in time")
 
+                self._wait_for_results_loader()
                 time.sleep(3)
                 self._scroll_job_list(target_count=25)
                 job_cards = self._get_job_cards(target_count=25)
 
-                if len(job_cards) < 25 and not is_last_page:
-                    self.logger.info(
-                        f"  ⚠️ Only {len(job_cards)} job cards loaded; forcing more scrolls"
-                    )
-                    for _ in range(3):
-                        self._scroll_job_list(target_count=25)
-                        time.sleep(1)
-                        job_cards = self._get_job_cards(target_count=25)
-                        if len(job_cards) >= 25:
-                            break
+                # Only force scroll if we haven't traversed all jobs for the query
+                # If total_jobs_for_query is known and traversed_jobs + len(job_cards) >= total_jobs_for_query, do not force scroll
+                if len(job_cards) < 25:
+                    if (
+                        total_jobs_for_query is not None
+                        and (traversed_jobs + len(job_cards)) >= total_jobs_for_query
+                    ):
+                        self.logger.info(
+                            f"  All {total_jobs_for_query} jobs traversed for query '{query}'. No need to force scroll."
+                        )
+                    else:
+                        self.logger.info(
+                            f"  ⚠️ Only {len(job_cards)} job cards loaded; forcing more scrolls"
+                        )
+                        for _ in range(3):
+                            self._scroll_job_list(target_count=25)
+                            time.sleep(1)
+                            job_cards = self._get_job_cards(target_count=25)
+                            if len(job_cards) >= 25:
+                                break
 
-                if len(job_cards) < 25 and not is_last_page:
-                    self.logger.warning(
-                        f"  ❌ Expected 25 job cards on non-last page {current_page} but got {len(job_cards)}; skipping page to stay aligned"
-                    )
-                    if not self._go_to_next_page():
-                        break
-                    current_page += 1
-                    continue
-
-                self.logger.info(
-                    f"  📦 Found {len(job_cards)} job cards for '{query}' on page {current_page}"
-                )
                 if not job_cards:
-                    if is_last_page:
-                        break
-                    if not self._go_to_next_page():
-                        break
-                    current_page += 1
-                    continue
+                    self.logger.info(
+                        "  No job cards found on this page; ending scrape."
+                    )
+                    break
 
                 for idx in range(len(job_cards)):
+                    company_name = None
                     try:
                         self.logger.info("=" * 60)
                         job_cards = self._get_job_cards()
                         if idx >= len(job_cards):
                             break
                         job_card = job_cards[idx]
+                        traversed_jobs += 1
+                        # Display job card number as 1/25, 2/25, etc.
+                        self.logger.info(
+                            f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
+                        )
                         self.logger.debug(
                             f"  Processing job {idx + 1}/{len(job_cards)} on page {current_page}"
                         )
@@ -337,11 +374,37 @@ class LinkedInScraper(BaseScraper):
                                 link.click()
                             except Exception:
                                 job_card.click()
-                            time.sleep(2)
+                            self._wait_for_results_loader()
+                            time.sleep(1.2)
                             self._scroll_right_panel()
                             time.sleep(1)
-                            self._open_full_job_page()
                             time.sleep(2)
+                            # Wait for right-pane container and a title element (anchor or h1)
+                            details_ready = False
+                            for _ in range(6):
+                                try:
+                                    # Try both anchor and non-anchor selectors
+                                    title_elem = None
+                                    try:
+                                        title_elem = self.driver.find_element(
+                                            By.CSS_SELECTOR,
+                                            "h1 a, h1, div.job-details-jobs-unified-top-card__job-title a, div.job-details-jobs-unified-top-card__job-title",
+                                        )
+                                    except Exception:
+                                        pass
+                                    if title_elem and title_elem.text.strip():
+                                        details_ready = True
+                                        break
+                                except Exception:
+                                    pass
+                                time.sleep(0.5)
+                            if not details_ready:
+                                self.logger.warning(
+                                    "    ⚠️ Job details pane not ready after click; skipping this card."
+                                )
+                                self._close_extra_tabs()
+                                self._safe_back_to_results(search_url)
+                                continue
                         except Exception as exc:
                             self.logger.debug(f"    Could not click job card: {exc}")
                             continue
@@ -356,7 +419,6 @@ class LinkedInScraper(BaseScraper):
                         self.logger.info(
                             f"    [SCRAPED JOB] {json.dumps(job, ensure_ascii=False, indent=2)}"
                         )
-                        company_name = (job.get("company") or "").strip()
                         applicants = job.get("applicant_count", 0)
                         if applicants > max_applicants:
                             self.logger.info(
@@ -376,7 +438,7 @@ class LinkedInScraper(BaseScraper):
                             continue
 
                         hr_result = self.hr_checker.check(
-                            company_name, description=description
+                            company_name or "", description=description
                         )
                         if hr_result.get("is_hr_company"):
                             self.logger.info(
@@ -454,23 +516,27 @@ class LinkedInScraper(BaseScraper):
                         self._safe_back_to_results(search_url)
                         continue
 
-                if is_last_page:
-                    break
-
-                if total_pages is not None and current_page >= total_pages:
-                    break
-
-                if current_page >= max_pages:
-                    break
-
-                if not self._go_to_next_page():
+                # Try to go to next page; if not possible, break
+                if not self._go_to_next_page(current_page=current_page):
+                    self.logger.info(
+                        f"  No more pages after page {current_page} for '{query}'"
+                    )
                     break
 
                 current_page += 1
 
+                # Early exit: if no matches after threshold pages, break
+                if not matched:
+                    no_match_pages += 1
+                    if no_match_pages >= no_match_pages_threshold:
+                        self.logger.info(
+                            f"  ⏹️ No matches after {no_match_pages} pages for '{query}'; skipping to next role."
+                        )
+                        break
+
             if not matched:
                 self.logger.info(
-                    f"  No matches yet after page {current_page}/{total_pages or max_pages} for '{query}'"
+                    f"  No matches yet after page {current_page} for '{query}'"
                 )
 
         except Exception as exc:
@@ -491,8 +557,11 @@ class LinkedInScraper(BaseScraper):
         return joined or reason.strip()[:240]
 
     def _scroll_right_panel(self):
-        """Scroll the right job details panel to the bottom to load all content."""
+        """Scroll the right job details panel to the bottom to load all content, ensuring visibility first."""
         try:
+            if self.driver is None:
+                self.logger.debug("Driver not set; cannot scroll right panel.")
+                return
             panel_selectors = [
                 "div.jobs-search__job-details--container",
                 "div.jobs-details__main-content",
@@ -501,6 +570,16 @@ class LinkedInScraper(BaseScraper):
             for selector in panel_selectors:
                 try:
                     panel = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    # Ensure the panel is in view
+                    self.driver.execute_script(
+                        "arguments[0].scrollIntoView(true);", panel
+                    )
+                    time.sleep(0.3)
+                    # Wait for content to render
+                    for _ in range(3):
+                        if panel.text.strip():
+                            break
+                        time.sleep(0.3)
                     self.driver.execute_script(
                         "arguments[0].scrollTop = arguments[0].scrollHeight", panel
                     )
@@ -514,52 +593,23 @@ class LinkedInScraper(BaseScraper):
     def _safe_back_to_results(self, search_url: str):
         """Return to results page after viewing a job."""
         try:
-            self.driver.back()
-            time.sleep(2)
+            if self.driver is not None:
+                self.driver.back()
+                time.sleep(2)
+            else:
+                raise Exception("Driver is None")
         except Exception:
             try:
                 self._safe_get(search_url)
             except Exception:
                 self.logger.debug("Could not navigate back to results")
 
-    def _open_full_job_page(self) -> None:
-        """From the right pane, click the job title to open the full page; handle new tab."""
-        original_window = self.driver.current_window_handle
-        try:
-            title_selectors = [
-                "a.top-card-layout__title",
-                "a.job-details-jobs-unified-top-card__job-title",
-                "a.jobs-unified-top-card__job-title",
-                "a.job-card-list__title",
-            ]
-            link = None
-            for selector in title_selectors:
-                try:
-                    link = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if link:
-                        break
-                except Exception:
-                    continue
-            if not link:
-                self.logger.debug("    Could not find job title link to open full page")
-                return
-            link_href = link.get_attribute("href")
-            self.logger.debug(f"    Opening full job page: {link_href}")
-            link.click()
-            time.sleep(2)
-            handles = self.driver.window_handles
-            if len(handles) > 1:
-                self.driver.switch_to.window(handles[-1])
-        except Exception as exc:
-            self.logger.debug(f"    Could not open full job page: {exc}")
-            try:
-                self.driver.switch_to.window(original_window)
-            except Exception:
-                pass
-
     def _close_extra_tabs(self):
         """Close all tabs except the first/main one."""
         try:
+            if self.driver is None:
+                self.logger.debug("Driver not set; cannot close extra tabs.")
+                return
             handles = self.driver.window_handles
             if len(handles) <= 1:
                 return
@@ -574,28 +624,55 @@ class LinkedInScraper(BaseScraper):
         except Exception as exc:
             self.logger.debug(f"    Could not close extra tabs: {exc}")
 
-    def _build_search_url(self, query: str, start: int = 0) -> str:
-        """Build LinkedIn job search URL with filters and pagination offset"""
+    def _build_search_url(
+        self,
+        location: str = "United States",
+        date_posted: str = "r86400",
+        experience_levels: list[str] | None = None,
+        start: int = 0,
+    ) -> str:
+        if experience_levels is None:
+            experience_levels = ["Entry level", "Associate"]
+        """Build LinkedIn job search URL with explicit filters for keywords, location, date_posted (f_TPR), and experience_levels (f_E)."""
+        from urllib.parse import quote
+
         base = f"{self.base_url}/jobs/search/?"
-        params = [
-            f"keywords={query.replace(' ', '%20')}",
-            "location=United%20States",
-            "f_TPR=r86400",
-            "f_E=1%2C2%2C3",
-            "sortBy=DD",
-            f"start={start}",
-        ]
+        params = []
+        if location:
+            params.append(f"location={quote(location)}")
+        if date_posted:
+            params.append(f"f_TPR={date_posted}")
+        if experience_levels:
+            # Map experience_levels to LinkedIn codes
+            exp_map = {
+                "Internship": "1",
+                "Entry level": "2",
+                "Associate": "3",
+                "Mid-Senior level": "4",
+                "Director": "5",
+                "Executive": "6",
+            }
+            codes = [exp_map.get(level) for level in experience_levels]
+            codes = [code for code in codes if code is not None]
+            if codes:
+                params.append(f"f_E={','.join(codes)}")
+        params.append("sortBy=DD")
+        if start:
+            params.append(f"start={start}")
         return base + "&".join(params)
 
     def _scroll_job_list(self, target_count: int = 25):
         """Scroll the job list to load up to target_count cards with extra retries."""
 
         try:
+            if self.driver is None:
+                self.logger.debug("Driver not set; cannot scroll job list.")
+                return
             selectors = [
                 "div.jobs-search-results-list",
-                "div.scaffold-layout__list-container",
                 "ul.scaffold-layout__list",
                 "[data-search-results-container]",
+                "section[data-view-id='job-search-results']",
             ]
 
             container = None
@@ -609,7 +686,7 @@ class LinkedInScraper(BaseScraper):
             last_count = len(self._get_job_cards(target_count=target_count))
             stagnant_rounds = 0
 
-            for _ in range(20):
+            for _ in range(24):
                 if target_count and last_count >= target_count:
                     break
 
@@ -624,22 +701,22 @@ class LinkedInScraper(BaseScraper):
                         "window.scrollTo(0, document.body.scrollHeight);"
                     )
 
-                time.sleep(0.9)
+                time.sleep(0.6)
                 self._wait_for_results_loader()
                 new_count = len(self._get_job_cards(target_count=target_count))
 
                 if new_count <= last_count:
                     stagnant_rounds += 1
                     try:
-                        self.driver.execute_script("window.scrollBy(0, 800);")
+                        self.driver.execute_script("window.scrollBy(0, 600);")
                     except Exception:
                         pass
-                    time.sleep(0.4)
+                    time.sleep(0.3)
                     new_count = len(self._get_job_cards(target_count=target_count))
                 else:
                     stagnant_rounds = 0
 
-                if new_count == last_count and stagnant_rounds >= 3:
+                if new_count == last_count and stagnant_rounds >= 4:
                     # Likely no more items to load
                     break
 
@@ -650,13 +727,30 @@ class LinkedInScraper(BaseScraper):
     def _wait_for_results_loader(self):
         """Best-effort wait for the results loader to clear after scrolling."""
         try:
-            loader_selector = "div.jobs-search-results-list__loader"
-            for _ in range(3):
-                loaders = self.driver.find_elements(By.CSS_SELECTOR, loader_selector)
-                active = any(loader.is_displayed() for loader in loaders)
+            if self.driver is None:
+                return
+            loader_selectors = [
+                "div.jobs-search-results-list__loader",
+                "div.artdeco-loader",
+                "div.scaffold-layout__list-spinner",
+                "div[data-test-results-loader]",
+            ]
+
+            for _ in range(6):
+                active = False
+                for selector in loader_selectors:
+                    try:
+                        loaders = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                        if any(loader.is_displayed() for loader in loaders):
+                            active = True
+                            break
+                    except Exception:
+                        continue
+
                 if not active:
                     break
-                time.sleep(0.3)
+
+                time.sleep(0.25)
         except Exception:
             # Non-fatal; continue without blocking
             pass
@@ -664,9 +758,13 @@ class LinkedInScraper(BaseScraper):
     def _get_page_state(self) -> tuple[int | None, int | None]:
         """Return (current_page, total_pages) from the pagination state element."""
 
+        if self.driver is None:
+            return None, None
         selectors = [
             "p.jobs-search-pagination__page-state",
             "div.jobs-search-pagination__page-state",
+            "div[data-test-pagination-page-state]",
+            "li.artdeco-pagination__indicator--number",
         ]
         try:
             for selector in selectors:
@@ -679,11 +777,40 @@ class LinkedInScraper(BaseScraper):
                 if not text:
                     continue
 
-                match = re.search(r"page\s+(\d+)\s+of\s+(\d+)", text)
-                if match:
-                    current = int(match.group(1))
-                    total = int(match.group(2))
-                    return current, total
+                patterns = [
+                    r"page\s+(\d+)\s+of\s+(\d+)",
+                    r"(\d+)\s*/\s*(\d+)",
+                ]
+
+                for pattern in patterns:
+                    match = re.search(pattern, text)
+                    if match:
+                        current = int(match.group(1))
+                        total = int(match.group(2))
+                        return current, total
+
+            # Fallback: infer from numbered pagination indicators
+            try:
+                indicators = self.driver.find_elements(
+                    By.CSS_SELECTOR, "li.artdeco-pagination__indicator--number"
+                )
+                active = [
+                    el
+                    for el in indicators
+                    if (el.get_attribute("aria-current") or "").lower() == "true"
+                    or "active" in (el.get_attribute("class") or "")
+                ]
+                if indicators and active:
+                    current_num = int((active[0].text or "0").strip() or 0)
+                    totals = [
+                        int((el.text or "0").strip())
+                        for el in indicators
+                        if (el.text or "").strip().isdigit()
+                    ]
+                    if totals:
+                        return current_num or None, max(totals)
+            except Exception:
+                pass
         except Exception as exc:
             self.logger.debug(f"Could not parse page state: {exc}")
 
@@ -692,9 +819,14 @@ class LinkedInScraper(BaseScraper):
     def _get_total_results(self) -> int:
         """Parse the total results count from the subtitle element."""
 
+        if self.driver is None:
+            return 0
         selectors = [
             "div.jobs-search-results-list__subtitle span",
             "div.jobs-search-results-list__subtitle",
+            "span.results-context-header__job-count",
+            "h1>span[data-test-search-result]",
+            "h1>span",
         ]
 
         try:
@@ -714,40 +846,90 @@ class LinkedInScraper(BaseScraper):
                     match = re.search(r"([0-9,]+)\s+result", text.lower())
                     if match:
                         return int(match.group(1).replace(",", ""))
+
+                    match = re.search(r"([0-9,]+)\s+job", text.lower())
+                    if match:
+                        return int(match.group(1).replace(",", ""))
         except Exception as exc:
             self.logger.debug(f"Could not parse total results: {exc}")
 
         return 0
 
-    def _go_to_next_page(self) -> bool:
-        """Click the next-page button; return True if navigation was attempted."""
+    @staticmethod
+    def _compute_total_pages(
+        total_results: int, page_size: int = 25, cap: int | None = None
+    ) -> int:
+        """Compute page count with optional cap for predictable pagination math."""
+
+        if total_results <= 0 or page_size <= 0:
+            return 0
+
+        pages = math.ceil(total_results / page_size)
+        if cap is not None:
+            pages = min(pages, cap)
+
+        return pages
+
+    def _go_to_next_page(self, current_page: int | None = None) -> bool:
+        """Click the next-page button with retries and wait for the page to advance."""
 
         selectors = [
             "button.jobs-search-pagination__button--next",
             "button[aria-label='View next page']",
+            "button[aria-label='Next']",
+            "li.artdeco-pagination__indicator--number+li button",
         ]
 
-        for selector in selectors:
-            try:
-                button = self.wait.until(
-                    expected_conditions.element_to_be_clickable(
-                        (By.CSS_SELECTOR, selector)
+        if self.driver is None or self.wait is None:
+            self.logger.debug("Driver or wait not set; cannot go to next page.")
+            return False
+        before_url = self.driver.current_url
+
+        for attempt in range(3):
+            for selector in selectors:
+                try:
+                    button = self.wait.until(
+                        expected_conditions.element_to_be_clickable(
+                            (By.CSS_SELECTOR, selector)
+                        )
                     )
-                )
-                button.click()
-                time.sleep(2)
-                return True
-            except Exception:
+                    button.click()
+                    time.sleep(0.5)
+                    break
+                except Exception:
+                    continue
+            else:
                 continue
 
-        self.logger.debug("Could not click next-page button")
+            try:
+                self._wait_for_results_loader()
+                self.wait.until(
+                    lambda d: (
+                        (current_page is None)
+                        or (self._get_page_state()[0] not in [None, current_page])
+                        or d.current_url != before_url
+                    )
+                )
+                time.sleep(1.2)
+                return True
+            except Exception as exc:
+                self.logger.debug(
+                    f"Next-page navigation attempt {attempt + 1} failed to advance: {exc}"
+                )
+                time.sleep(1.0)
+
+        self.logger.warning("Could not click or advance to next page")
         return False
 
     def _get_job_cards(self, target_count: int = 25) -> list:
         """Collect up to target_count unique, visible job card elements."""
 
+        if self.driver is None:
+            return []
         selectors = [
             "[data-job-id]",
+            "article[data-job-id]",
+            "div[data-view-id='job-card']",
             "div.job-card-container",
             "div.job-card-container--clickable",
             "div.base-card",
@@ -770,6 +952,7 @@ class LinkedInScraper(BaseScraper):
                     key = (
                         elem.get_attribute("data-job-id")
                         or elem.get_attribute("data-occludable-job-id")
+                        or elem.get_attribute("data-entity-urn")
                         or elem.get_attribute("id")
                         or getattr(elem, "id", None)
                     )
@@ -814,15 +997,23 @@ class LinkedInScraper(BaseScraper):
             return False
 
     def _extract_job_details(self) -> dict[str, Any] | None:
-        """Extract job details from the job details panel"""
+        """Extract job details from the job details panel, using broader selectors and logging when pane is empty."""
         try:
+            if self.driver is None:
+                self.logger.debug("Driver not set; cannot extract job details.")
+                return None
             details: dict[str, Any] = {}
+            # Broaden selectors: include non-anchor h1/h2 for title, span/div for company
             title_selectors = [
                 "div.job-details-jobs-unified-top-card__job-title h1 a",
                 "h1.job-details-jobs-unified-top-card__job-title a",
                 "h1.jobs-unified-top-card__job-title a",
                 "h1.t-24.t-bold.inline a",
                 "h2.t-24",
+                "h1.job-details-jobs-unified-top-card__job-title",
+                "h1.jobs-unified-top-card__job-title",
+                "h1.t-24.t-bold.inline",
+                "h1",
             ]
             details["title"] = self._safe_find_text_multi(title_selectors)
             company_selectors = [
@@ -830,12 +1021,17 @@ class LinkedInScraper(BaseScraper):
                 "a.job-details-jobs-unified-top-card__company-name",
                 "a.jobs-unified-top-card__company-name",
                 "span.jobs-unified-top-card__company-name",
+                "div.job-details-jobs-unified-top-card__company-name",
+                "span.jobs-unified-top-card__company-name",
+                "div.jobs-unified-top-card__company-name",
+                "span.t-16.t-black.t-bold",
             ]
             details["company"] = self._safe_find_text_multi(company_selectors)
             location_selectors = [
                 "span.jobs-unified-top-card__location",
                 "span.job-details-jobs-unified-top-card__location",
                 "span.jobs-unified-top-card__bullet",
+                "span.t-14.t-black.t-normal",
             ]
             details["location"] = (
                 self._safe_find_text_multi(location_selectors) or "United States"
@@ -854,12 +1050,19 @@ class LinkedInScraper(BaseScraper):
             details["posted_date"] = self._parse_posted_date()
             details["match_score"] = 0
             details["source"] = "LinkedIn"
+            # Log if title or company is empty for debugging
+            if not details["title"] or not details["company"]:
+                self.logger.warning(
+                    "    ⚠️ Job details extraction: missing title or company after all selectors."
+                )
             return details
         except Exception as exc:
             self.logger.debug(f"Error extracting job details: {exc}")
             return None
 
     def _get_job_description(self) -> str:
+        if self.driver is None:
+            return ""
         selectors = [
             "div.show-more-less-html__markup",
             "div.jobs-box__html-content",
@@ -877,6 +1080,8 @@ class LinkedInScraper(BaseScraper):
 
     def _safe_find_text(self, selector: str) -> str:
         try:
+            if self.driver is None:
+                return ""
             element = self.driver.find_element(By.CSS_SELECTOR, selector)
             return element.text.strip()
         except Exception:
@@ -884,6 +1089,8 @@ class LinkedInScraper(BaseScraper):
 
     def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
         """Navigate to a URL with lightweight retries to reduce flakiness in headless runs."""
+        if self.driver is None:
+            return False
         for attempt in range(retries):
             try:
                 self.driver.get(url)
@@ -896,6 +1103,8 @@ class LinkedInScraper(BaseScraper):
         return False
 
     def _safe_find_text_multi(self, selectors: list[str]) -> str:
+        if self.driver is None:
+            return ""
         for selector in selectors:
             try:
                 element = self.driver.find_element(By.CSS_SELECTOR, selector)
@@ -907,6 +1116,8 @@ class LinkedInScraper(BaseScraper):
         return ""
 
     def _parse_applicants(self) -> int:
+        if self.driver is None:
+            return 0
         selectors = [
             "span.jobs-premium-applicant-insights__list-num",
             "li.jobs-premium-applicant-insights__list-item",
@@ -934,6 +1145,8 @@ class LinkedInScraper(BaseScraper):
         return 0
 
     def _parse_posted_date(self) -> str:
+        if self.driver is None:
+            return ""
         selectors = [
             "span.jobs-unified-top-card__posted-date",
             "span.jobs-unified-top-card__subtitle-primary-grouping",
@@ -949,6 +1162,8 @@ class LinkedInScraper(BaseScraper):
         return ""
 
     def _is_viewed_from_details(self) -> bool:
+        if self.driver is None:
+            return False
         selectors = ["span.jobs-unified-top-card__application-link--viewed"]
         for selector in selectors:
             try:
@@ -958,90 +1173,6 @@ class LinkedInScraper(BaseScraper):
             except Exception:
                 continue
         return False
-
-    def _has_easy_apply(self) -> bool:
-        selectors = ["button.jobs-apply-button--top-card"]
-        for selector in selectors:
-            try:
-                element = self.driver.find_element(By.CSS_SELECTOR, selector)
-                text = element.text.lower()
-                if "easy apply" in text:
-                    return True
-            except Exception:
-                continue
-        return False
-
-    def _parse_company_followers(self) -> int | None:
-        selectors = ["a.topcard__org-name-link"]
-        for selector in selectors:
-            try:
-                element = self.driver.find_element(By.CSS_SELECTOR, selector)
-                title = element.get_attribute("title")
-                match = re.search(r"([0-9,]+) followers", title or "")
-                if match:
-                    return int(match.group(1).replace(",", ""))
-            except Exception:
-                continue
-        return None
-
-    def _parse_benefits(self) -> list[str]:
-        selectors = ["ul.core-section-container__content"]
-        for selector in selectors:
-            try:
-                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                for elem in elements:
-                    if "benefit" in elem.text.lower():
-                        items = elem.find_elements(By.TAG_NAME, "li")
-                        return [
-                            item.text.strip() for item in items if item.text.strip()
-                        ]
-            except Exception:
-                continue
-        return []
-
-    def _parse_seniority_level(self) -> str:
-        selectors = ["li.jobs-unified-top-card__job-insight"]
-        for selector in selectors:
-            try:
-                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                for elem in elements:
-                    text = elem.text.lower()
-                    if "seniority level" in text:
-                        return text.replace("seniority level", "").strip()
-            except Exception:
-                continue
-        return ""
-
-    def _parse_company_size(self) -> str:
-        selectors = ["li.jobs-unified-top-card__job-insight"]
-        for selector in selectors:
-            try:
-                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                for elem in elements:
-                    text = elem.text.lower()
-                    if "employees" in text:
-                        return text.strip()
-            except Exception:
-                continue
-        return ""
-
-    def _parse_industries(self) -> list[str]:
-        selectors = ["li.jobs-unified-top-card__job-insight"]
-        for selector in selectors:
-            try:
-                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                for elem in elements:
-                    text = elem.text.lower()
-                    if "industry" in text:
-                        parts = [
-                            p.strip()
-                            for p in text.replace("industry", "").split(",")
-                            if p.strip()
-                        ]
-                        return parts
-            except Exception:
-                continue
-        return []
 
     def _check_visa_sponsorship(self, description: str) -> bool:
         return self._sponsors_visa(description, title="", company="")
@@ -1066,7 +1197,7 @@ class LinkedInScraper(BaseScraper):
                 )
                 return
 
-            if not self._login():
+            if self.driver is None or self.wait is None:
                 return
 
             people_finder = PeopleFinder(self.driver, self.wait, self.logger)
@@ -1074,7 +1205,13 @@ class LinkedInScraper(BaseScraper):
                 self.driver, self.wait, self.logger
             )
 
-            pages = connect_pages if connect_pages is not None else 3
+            if connect_pages is not None:
+                pages = connect_pages
+            else:
+                try:
+                    pages = int(os.getenv("CONNECT_PAGES_THRESHOLD", 3))
+                except Exception:
+                    pages = 3
 
             summary = connection_requester.run_on_people_search(
                 people_finder,
@@ -1083,7 +1220,7 @@ class LinkedInScraper(BaseScraper):
                 delay_range=delay_range,
                 store=storage,
                 max_pages=pages,
-                use_new_tab=self.config.networking_allow_new_tab,
+                use_new_tab=False,
             )
             self.logger.info(
                 "    [CONNECT] Requests: "
@@ -1103,6 +1240,8 @@ class LinkedInScraper(BaseScraper):
 
     def _safe_click(self, selector: str):
         try:
+            if self.wait is None or self.driver is None:
+                return False
             element = self.wait.until(
                 expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, selector))
             )
@@ -1113,6 +1252,8 @@ class LinkedInScraper(BaseScraper):
 
     def _scroll_element(self, selector: str):
         try:
+            if self.driver is None:
+                return False
             element = self.driver.find_element(By.CSS_SELECTOR, selector)
             self.driver.execute_script(
                 "arguments[0].scrollTop = arguments[0].scrollHeight", element
@@ -1123,6 +1264,8 @@ class LinkedInScraper(BaseScraper):
 
     def _save_job(self):
         try:
+            if self.driver is None:
+                return False
             selectors = ["button.jobs-save-button", "button.jobs-save-button--save"]
             for selector in selectors:
                 try:
@@ -1136,41 +1279,9 @@ class LinkedInScraper(BaseScraper):
             self.logger.debug(f"Could not save job: {exc}")
         return False
 
-    def _get_people_also_viewed(self) -> list[str]:
-        selectors = ["a.job-view-layout__companies-list"]
-        profiles: list[str] = []
-        try:
-            elements = self.driver.find_elements(By.CSS_SELECTOR, selectors[0])
-            for element in elements:
-                href = element.get_attribute("href")
-                if href and "linkedin.com/company" in href:
-                    profiles.append(href)
-        except Exception as exc:
-            self.logger.debug(f"Could not get people-also-viewed: {exc}")
-        return profiles
-
-    def _parse_company_info(self) -> dict:
-        info: dict[str, str | None] = {
-            "company_link": None,
-            "company_description": None,
-        }
-        try:
-            link_elem = self.driver.find_element(
-                By.CSS_SELECTOR, "a.topcard__org-name-link"
-            )
-            info["company_link"] = link_elem.get_attribute("href")
-        except Exception:
-            info["company_link"] = None
-        try:
-            desc_elem = self.driver.find_element(
-                By.CSS_SELECTOR, "div.jobs-company__box .jobs-box__html-content"
-            )
-            info["company_description"] = desc_elem.text.strip()
-        except Exception:
-            info["company_description"] = None
-        return info
-
     def _safe_back(self, retries: int = 3):
+        if self.driver is None:
+            return
         for _ in range(retries):
             try:
                 self.driver.back()

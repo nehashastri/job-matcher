@@ -1,0 +1,25 @@
+{
+    "roles": [
+        {
+            "title": "Software Engineer",
+            "location": "United States",
+            "experience_levels": [
+                "Entry level",
+                "Associate"
+            ],
+            "enabled": true
+        },
+        {
+            "title": "Data Engineer",
+            "location": "United States",
+            "experience_levels": [
+                "Associate",
+                "Mid-Senior level"
+            ],
+            "enabled": true
+        }
+    ],
+    "search_settings": {
+        "date_posted": "r86400"
+    }
+}
