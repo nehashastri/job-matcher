@@ -45,7 +45,11 @@ class EmailNotifier:
         )
 
     def send_job_notification(
-        self, job_data: Dict[str, Any], connection_count: int = 0
+        self,
+        job_data: Dict[str, Any],
+        connection_count: int = 0,
+        match_profiles=None,
+        non_match_profiles=None,
     ) -> bool:
         """
         Send email notification for a matched job
@@ -65,55 +69,130 @@ class EmailNotifier:
             logger.error("Email configuration invalid, cannot send notification")
             return False
 
+        import os
+
+        press_connect = os.getenv("PRESS_CONNECT", "True").lower() in [
+            "true",
+            "1",
+            "yes",
+        ]
         try:
             role_contacts = self._load_role_contacts(
                 job_data.get("title", ""), job_data.get("company", "")
             )
-
-            # Compose email
             subject = self._compose_subject(job_data)
-            body = self._compose_body(job_data, connection_count, role_contacts)
-
-            # Create message
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
             msg["From"] = self.email_from
             msg["To"] = self.email_to
-
-            # Attach plain text and HTML versions
-            msg.attach(MIMEText(body, "plain"))
-            msg.attach(
-                MIMEText(
-                    self._compose_html_body(job_data, connection_count, role_contacts),
-                    "html",
+            if press_connect:
+                body = self._compose_body(job_data, connection_count, role_contacts)
+                msg.attach(MIMEText(body, "plain"))
+                msg.attach(
+                    MIMEText(
+                        self._compose_html_body(
+                            job_data, connection_count, role_contacts
+                        ),
+                        "html",
+                    )
                 )
-            )
-
-            # Send email
+            else:
+                body = self._compose_no_connect_body(
+                    job_data, match_profiles, non_match_profiles
+                )
+                msg.attach(MIMEText(body, "plain"))
+                msg.attach(
+                    MIMEText(
+                        self._compose_no_connect_html_body(
+                            job_data, match_profiles, non_match_profiles
+                        ),
+                        "html",
+                    )
+                )
             self._send_email(msg)
-
             logger.info(
                 f"✅ Email notification sent for job: {job_data.get('title', 'Unknown')}"
             )
             return True
 
-        except smtplib.SMTPAuthenticationError as e:
-            logger.error(f"❌ SMTP authentication failed: {e}")
-            logger.error("Check SMTP_USERNAME and SMTP_PASSWORD in .env")
-            return False
-
         except smtplib.SMTPException as e:
             logger.error(f"❌ SMTP error occurred: {e}")
             return False
-
         except Exception as e:
             logger.error(f"❌ Unexpected error sending email: {e}")
             return False
 
+    def _compose_no_connect_body(self, job_data, match_profiles, non_match_profiles):
+        title = job_data.get("title", "Unknown")
+        company = job_data.get("company", "Unknown")
+        location = job_data.get("location", "Unknown")
+        match_score = job_data.get("match_score", 0)
+        job_url = job_data.get("job_url", "")
+        applicants = job_data.get("applicants", "Unknown")
+        posted_date = job_data.get("posted_date", "Unknown")
+        seniority = job_data.get("seniority", "Unknown")
+        remote = job_data.get("remote", "Unknown")
+        body = f"Job: {title}\nCompany: {company}\nLocation: {location}\nScore: {match_score}\nApplicants: {applicants}\nPosted: {posted_date}\nSeniority: {seniority}\nRemote: {remote}\n"
+        body += "\nMatch Profiles:\n"
+        if match_profiles:
+            for p in match_profiles:
+                body += f"- {p.get('name', 'Unknown')} ({p.get('title', '')}) {p.get('profile_url', '')}\n"
+        else:
+            body += "None\n"
+        body += "\nNon-Match Profiles:\n"
+        if non_match_profiles:
+            for p in non_match_profiles:
+                body += f"- {p.get('name', 'Unknown')} ({p.get('title', '')}) {p.get('profile_url', '')}\n"
+        else:
+            body += "None\n"
+        body += f"\nJob URL: {job_url}\n---\nThis is an automated notification from the Job Scraper.\n"
+        return body
+
+    def _compose_no_connect_html_body(
+        self, job_data, match_profiles, non_match_profiles
+    ):
+        title = job_data.get("title", "Unknown")
+        company = job_data.get("company", "Unknown")
+        location = job_data.get("location", "Unknown")
+        match_score = job_data.get("match_score", 0)
+        job_url = job_data.get("job_url", "")
+        applicants = job_data.get("applicants", "Unknown")
+        posted_date = job_data.get("posted_date", "Unknown")
+        seniority = job_data.get("seniority", "Unknown")
+        remote = job_data.get("remote", "Unknown")
+        score_color = "#28a745" if match_score >= 8 else "#ffc107"
+        html = f"""
+        <h2>Job: {title}</h2>
+        <p><strong>Company:</strong> {company}<br>
+        <strong>Location:</strong> {location}<br>
+        <strong>Score:</strong> <span style='color:{score_color}'>{match_score}</span><br>
+        <strong>Applicants:</strong> {applicants}<br>
+        <strong>Posted:</strong> {posted_date}<br>
+        <strong>Seniority:</strong> {seniority}<br>
+        <strong>Remote:</strong> {remote}<br>
+        <strong>Job URL:</strong> <a href="{job_url}">{job_url}</a></p>
+        <h3>Match Profiles:</h3>
+        <ul>
+        """
+        if match_profiles:
+            for p in match_profiles:
+                html += f"<li>{p.get('name', 'Unknown')} ({p.get('title', '')}) <a href='{p.get('profile_url', '')}'>{p.get('profile_url', '')}</a></li>"
+        else:
+            html += "<li>None</li>"
+        html += "</ul><h3>Non-Match Profiles:</h3><ul>"
+        if non_match_profiles:
+            for p in non_match_profiles:
+                html += f"<li>{p.get('name', 'Unknown')} ({p.get('title', '')}) <a href='{p.get('profile_url', '')}'>{p.get('profile_url', '')}</a></li>"
+        else:
+            html += "<li>None</li>"
+        html += (
+            "</ul><hr><p>This is an automated notification from the Job Scraper.</p>"
+        )
+        return html
+
     def _validate_config(self) -> bool:
         """
         Validate email configuration
-
         Returns:
             bool: True if config is valid, False otherwise
         """

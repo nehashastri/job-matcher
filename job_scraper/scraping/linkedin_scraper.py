@@ -308,7 +308,8 @@ class LinkedInScraper(BaseScraper):
             except Exception:
                 no_match_pages_threshold = 8
 
-        no_match_pages = 0
+        # Track number of jobs rejected due to blocklist or HR company per page
+        rejected_blocklist_hr_count = 0
         while True:
             page_state = self._get_page_state()
             self.logger.debug(f"[PAGINATION] get_page_state() returned: {page_state}")
@@ -457,10 +458,19 @@ class LinkedInScraper(BaseScraper):
                         continue
                     description = job.get("description", "")
 
-                    if company_name and self.blocklist.is_blocked(company_name):
+                    # Normalize company name for blocklist check
+                    normalized_company = (
+                        company_name.strip().lower() if company_name else ""
+                    )
+                    # Check blocklist with normalized name and original name
+                    if company_name and (
+                        self.blocklist.is_blocked(company_name)
+                        or self.blocklist.is_blocked(normalized_company)
+                    ):
                         self.logger.info(
                             f"    ❌ Rejected: {company_name} blocked (no downstream processing)"
                         )
+                        rejected_blocklist_hr_count += 1
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
@@ -472,6 +482,7 @@ class LinkedInScraper(BaseScraper):
                         self.logger.info(
                             f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
                         )
+                        rejected_blocklist_hr_count += 1
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
@@ -503,7 +514,8 @@ class LinkedInScraper(BaseScraper):
                                 f"Company: {job.get('company', '')}\n"
                                 f"Description: {job.get('description', '')}\n"
                                 f"Resume: {resume_text}\n"
-                                f"{prompt_instructions.strip()}"
+                                f"{prompt_instructions.strip()}\n"
+                                "If you identify that the company is a recruiting agency, staffing firm, or similar to 'Jobs via Dice', 'Lensa', or any job portal, return a score of 0 and set match_reason to 'Add to blocklist'."
                             )
                         except Exception as exc:
                             self.logger.error(
@@ -517,6 +529,13 @@ class LinkedInScraper(BaseScraper):
                             score = 0.0
                         job["match_score"] = score
                         reason = self._short_reason(job.get("match_reason", ""))
+                        # If LLM says to add to blocklist, add company
+                        if reason == "Add to blocklist":
+                            self.blocklist.add(company_name or "")
+                            self.logger.info(
+                                f"    🚫 Added {company_name} to blocklist via LLM match_reason."
+                            )
+                            rejected_blocklist_hr_count += 1
                         if job.get("reranked"):
                             rerank_reason = self._short_reason(
                                 job.get("match_reason_rerank", "")
@@ -576,14 +595,12 @@ class LinkedInScraper(BaseScraper):
 
             current_page += 1
 
-            # Early exit: if no matches after threshold pages, break
-            if not matched:
-                no_match_pages += 1
-                if no_match_pages >= no_match_pages_threshold:
-                    self.logger.info(
-                        f"  ⏹️ No matches after {no_match_pages} pages for '{query}'; skipping to next role."
-                    )
-                    break
+            # Early exit: if all 25 jobs on page are rejected due to blocklist or HR company, skip to next role
+            if rejected_blocklist_hr_count >= 25:
+                self.logger.info(
+                    f"  ⏹️ All 25 jobs on page rejected due to blocklist/HR company for '{query}'; skipping to next role."
+                )
+                break
 
         if not matched:
             self.logger.info(
@@ -1265,32 +1282,10 @@ class LinkedInScraper(BaseScraper):
             )
 
             if connect_pages is not None:
-                pages = connect_pages
-            else:
-                try:
-                    pages = int(os.getenv("CONNECT_PAGES_THRESHOLD", 3))
-                except Exception:
-                    pages = 3
+                pass
 
-            summary = connection_requester.run_on_people_search(
-                people_finder,
-                role=role,
-                company=company,
-                delay_range=delay_range,
-                store=storage,
-                max_pages=pages,
-                use_new_tab=False,
-            )
-            self.logger.info(
-                "    [CONNECT] Requests: "
-                f"message_available={summary['message_available']} connect_match={summary['connect_clicked_match']} "
-                f"connect_non_match={summary['connect_clicked_non_match']} skipped={summary['skipped']} "
-                f"failed={summary['failed']} pages={summary['pages_processed']}"
-            )
-            if summary.get("pages_processed", 0) < pages:
-                self.logger.info(
-                    f"    [CONNECT] Stopped after {summary.get('pages_processed', 0)} page(s); target was {pages}."
-                )
+            profiles = people_finder.scrape_people_cards(role, company)
+            connection_requester.connect_matches(profiles, delay_range=delay_range)
         except Exception as exc:
             self.logger.debug(f"    Could not connect to people: {exc}")
         finally:

@@ -12,15 +12,45 @@ from openai import OpenAI
 
 
 class MatchScorer:
+    @staticmethod
+    def update_profiles_with_llm_results(
+        profiles: list[dict], llm_results: dict
+    ) -> list[dict]:
+        """
+        Overwrite company and title fields in profiles with values from LLM results.
+        Expects llm_results to have 'matches' and 'non_matches', each a list of dicts with 'name', 'title', 'company', 'profile_url'.
+        Returns updated profiles list.
+        """
+        updated = []
+        for group in ["matches", "non_matches"]:
+            for llm_profile in llm_results.get(group, []):
+                # Find matching profile by name and profile_url
+                match = next(
+                    (
+                        p
+                        for p in profiles
+                        if p.get("name") == llm_profile.get("name")
+                        and p.get("profile_url") == llm_profile.get("profile_url")
+                    ),
+                    None,
+                )
+                if match:
+                    match["company"] = llm_profile.get(
+                        "company", match.get("company", "")
+                    )
+                    match["title"] = llm_profile.get("title", match.get("title", ""))
+                    updated.append(match)
+        return updated
+
     def __init__(
         self,
-        config: Config | None = None,
-        openai_client: Any | None = None,
+        config: "Config | None" = None,
+        openai_client: Any = None,
         logger=None,
     ):
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
-        self.client: Any | None = openai_client or self._maybe_create_client()
+        self.client = openai_client or self._maybe_create_client()
 
     def score(
         self,
@@ -195,7 +225,7 @@ class MatchScorer:
             },
         ]
 
-    def _maybe_create_client(self) -> OpenAI | None:
+    def _maybe_create_client(self) -> Any:
         api_key = getattr(self.config, "openai_api_key", "")
         if not api_key:
             return None
@@ -205,9 +235,7 @@ class MatchScorer:
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
-    def _call_llm(
-        self, messages: list[dict[str, str]], model: str
-    ) -> tuple[float, str, str, str]:
+    def _call_llm(self, messages: list[dict[str, str]], model: str) -> tuple:
         """Call OpenAI using chat.completions or responses for JSON output."""
 
         if self.client is None:

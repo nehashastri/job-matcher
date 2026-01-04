@@ -16,6 +16,32 @@ from job_scraper.models import ProfileCard
 
 
 class PeopleFinder:
+    def scrape_people_cards(self, role: str, company: str) -> list[dict[str, str]]:
+        """
+        Scrape LinkedIn People cards for a given role at a company.
+        Returns a list of dicts with keys: name, title, profile_url.
+        Number of pages is configurable via the MAX_PEOPLE_SEARCH_PAGES env variable (default 3).
+        """
+        import os
+
+        max_pages = int(os.getenv("MAX_PEOPLE_SEARCH_PAGES", 3))
+        cards: list[dict[str, str]] = []
+        try:
+            for page_profiles in self.iterate_pages(role, company, pages=max_pages):
+                for profile in page_profiles:
+                    # Only keep name, title, profile_url
+                    card = {
+                        "name": profile.get("name", ""),
+                        "title": profile.get("title", ""),
+                        "profile_url": profile.get("profile_url", ""),
+                    }
+                    cards.append(card)
+        except Exception as exc:
+            self.logger.error(
+                f"[PEOPLE_SEARCH] Error during scrape_people_cards: {exc}"
+            )
+        return cards
+
     """Search LinkedIn People results for a given role at a company."""
 
     def __init__(
