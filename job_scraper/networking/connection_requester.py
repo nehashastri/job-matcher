@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import logging
-import os
 import random
 import time
-from typing import Any
+from typing import Any, Optional
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,130 +26,220 @@ class ConnectionRequester:
         except Exception:
             self.primary_handle = None
 
-    def run_on_people_search(
+    # Navigation (self.driver.get or window switching) is only allowed within connect_matches and connect_non_matches.
+    # All other functions must not perform navigation to profile URLs.
+
+    def connect_matches(
         self,
-        people_finder,
-        role: str,
-        company: str,
+        matches: list[dict[str, str]],
         delay_range: tuple[float, float] = (1.0, 2.0),
-        store=None,
-        max_pages: int | None = None,
-        use_new_tab: bool = False,
-    ) -> dict[str, int]:
-        """Process LinkedIn People results for up to `max_pages` pages.
-
-        Behavior (Phase 6 spec):
-        - For role matches: record presence of Message button (do not send) and, if
-          Connect is present, click Connect and record the action.
-        - For non-matches: if Connect is present, click Connect and record.
-        - No notes/messages are sent in Phase 6; only actions/availability are stored.
+    ) -> None:
         """
-
-        summary = {
-            "message_available": 0,
-            "connect_clicked_match": 0,
-            "connect_clicked_non_match": 0,
-            "skipped": 0,
-            "failed": 0,
-            "pages_processed": 0,
-        }
-
-        # Get max_pages from environment if not provided
-        if max_pages is None:
-            try:
-                max_pages = int(os.getenv("MAX_PEOPLE_SEARCH_PAGES", 3))
-            except Exception:
-                max_pages = 3
-
-        # Save the original window handle
-        try:
-            original_handle = self.driver.current_window_handle
-        except Exception:
-            original_handle = None
-        networking_handle = self._open_networking_tab() if use_new_tab else None
-
-        try:
-            if networking_handle:
-                try:
-                    self.driver.switch_to.window(networking_handle)
-                except Exception:
-                    pass
-
-            for page_index, profiles in enumerate(
-                people_finder.iterate_pages(role, company, pages=max_pages)
-            ):
-                summary["pages_processed"] += 1
+        For each matched profile, visit the profile URL, click connect, handle 'Send without note' dialog, log actions, and close tab.
+        """
+        for profile in matches:
+            url = profile.get("profile_url", "")
+            name = profile.get("name", "")
+            if not url:
                 self.logger.info(
-                    "[CONNECT] Page %s: processing %s profiles",
-                    page_index + 1,
-                    len(profiles),
+                    f"[CONNECT_MATCH] No profile_url for {name}, skipping."
                 )
-
-                for profile in profiles:
-                    if self._should_ignore_profile(profile):
-                        continue
-
-                    name = (profile.get("name") or "").strip() or "there"
-                    title = (profile.get("title") or "").strip()
-                    profile_url = profile.get("profile_url", "")
-                    is_match = bool(profile.get("is_role_match"))
-
-                    card = self._find_card_by_url(profile_url)
-                    if not card:
-                        card = self._find_card_by_name(name)
-                    if not card:
-                        self.logger.info(
-                            "[CONNECT] Skip: could not locate card for %s (url=%s)",
-                            name,
-                            profile_url or "missing",
-                        )
-                        summary["skipped"] += 1
-                        continue
-
+                continue
+            self.driver.execute_script(f"window.open('{url}', '_blank');")
+            new_handle = self.driver.window_handles[-1]
+            self.driver.switch_to.window(new_handle)
+            time.sleep(1)
+            try:
+                connect_btn = self._find_connect_button_on_profile()
+                if connect_btn:
+                    connect_btn.click()
+                    time.sleep(1)
                     try:
-                        if is_match:
-                            handled, message_hit = self._handle_match(
-                                card,
-                                name,
-                                title,
-                                role,
-                                company,
-                                profile_url,
-                                store,
+                        modal = self.driver.find_element(
+                            By.CSS_SELECTOR,
+                            "div.artdeco-modal.send-invite[role='dialog']",
+                        )
+                        if modal:
+                            self.logger.info(
+                                f"[CONNECT_MATCH] Connect modal detected for {name}"
+                            )
+                    except Exception:
+                        pass
+                    if self._send_invite():
+                        self.logger.info(
+                            f"[CONNECT_MATCH] 'Send without a note' button clicked for {name}"
+                        )
+                    else:
+                        if self._close_connect_modal():
+                            self.logger.info(
+                                f"[CONNECT_MATCH] Connect modal closed for {name} (no send)"
                             )
                         else:
-                            handled, message_hit = self._handle_non_match(
-                                card,
-                                name,
-                                title,
-                                role,
-                                company,
-                                profile_url,
-                                store,
+                            self.logger.info(
+                                f"[CONNECT_MATCH] Connect modal could not be closed for {name}"
                             )
+                else:
+                    self.logger.info(f"[CONNECT_MATCH] No connect button for {name}")
+            except Exception as exc:
+                self.logger.error(f"[CONNECT_MATCH] Error for {name}: {exc}")
+            finally:
+                self.driver.close()
+                self.driver.switch_to.window(self.primary_handle)
+            self._random_delay(*delay_range)
 
-                        if message_hit:
-                            summary["message_available"] += 1
-                        if handled:
-                            summary[handled] += 1
-                        if not handled and not message_hit:
-                            summary["skipped"] += 1
-                    except Exception as exc:
-                        self.logger.debug(f"[CONNECT] Error on profile '{name}': {exc}")
-                        summary["failed"] += 1
+    def connect_non_matches(
+        self,
+        non_matches: list[dict[str, str]],
+        delay_range: tuple[float, float] = (1.0, 2.0),
+    ) -> None:
+        """
+        For each non-matched profile, visit the profile URL, click connect, handle 'Send without note' dialog, log actions, and close tab.
+        """
+        for profile in non_matches:
+            url = profile.get("profile_url", "")
+            name = profile.get("name", "")
+            if not url:
+                self.logger.info(
+                    f"[CONNECT_NON_MATCH] No profile_url for {name}, skipping."
+                )
+                continue
+            self.driver.execute_script(f"window.open('{url}', '_blank');")
+            new_handle = self.driver.window_handles[-1]
+            self.driver.switch_to.window(new_handle)
+            time.sleep(1)
+            try:
+                connect_btn = self._find_connect_button_on_profile()
+                if connect_btn:
+                    connect_btn.click()
+                    time.sleep(1)
+                    try:
+                        modal = self.driver.find_element(
+                            By.CSS_SELECTOR,
+                            "div.artdeco-modal.send-invite[role='dialog']",
+                        )
+                        if modal:
+                            self.logger.info(
+                                f"[CONNECT_NON_MATCH] Connect modal detected for {name}"
+                            )
+                    except Exception:
+                        pass
+                    if self._send_invite():
+                        self.logger.info(
+                            f"[CONNECT_NON_MATCH] 'Send without a note' button clicked for {name}"
+                        )
+                    else:
+                        if self._close_connect_modal():
+                            self.logger.info(
+                                f"[CONNECT_NON_MATCH] Connect modal closed for {name} (no send)"
+                            )
+                        else:
+                            self.logger.info(
+                                f"[CONNECT_NON_MATCH] Connect modal could not be closed for {name}"
+                            )
+                else:
+                    self.logger.info(
+                        f"[CONNECT_NON_MATCH] No connect button for {name}"
+                    )
+            except Exception as exc:
+                self.logger.error(f"[CONNECT_NON_MATCH] Error for {name}: {exc}")
+            finally:
+                self.driver.close()
+                self.driver.switch_to.window(self.primary_handle)
+            self._random_delay(*delay_range)
 
-                    self._random_delay(*delay_range)
+    def _find_connect_button_on_profile(self):
+        selectors = [
+            "button[aria-label*='Connect']",
+            "button[data-control-name='connect']",
+            "button[aria-label='Connect']",
+            "button[aria-label*='Invite']",
+            "button[aria-label*='connect with']",
+            "button.artdeco-button--secondary",
+            "a[aria-label*='Invite'][href*='search-custom-invite']",
+            "a[aria-label*='Connect']",
+            "a[href*='search-custom-invite']",
+        ]
+        for selector in selectors:
+            try:
+                btn = self.driver.find_element(By.CSS_SELECTOR, selector)
+                if btn and btn.is_enabled():
+                    return btn
+            except Exception:
+                continue
+        return None
 
-        finally:
-            if networking_handle:
-                self._close_networking_tab(networking_handle, original_handle)
-            elif original_handle:
-                try:
-                    self.driver.switch_to.window(original_handle)
-                except Exception:
-                    pass
+    def llm_match_profiles(
+        self,
+        profiles: list[dict[str, str]],
+        role_query: str,
+        prompt_path: Optional[str] = None,
+    ) -> dict:
+        """
+        Call OpenAI LLM to organize profiles into matches and non-matches.
+        Stores prompt and response for traceability.
+        Returns dict: {"matches": [...], "non_matches": [...], "llm_response": ...}
+        """
+        import json
+        import os
+        from datetime import datetime
 
-        return summary
+        import openai
+
+        # Load prompt template
+        if prompt_path is None:
+            prompt_path = os.path.join(
+                os.path.dirname(__file__), "../data/LLM_base_score.txt"
+            )
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt_template = f.read()
+
+        # Prepare prompt
+        prompt = prompt_template.format(
+            role_query=role_query,
+            profiles=json.dumps(profiles, ensure_ascii=False, indent=2),
+        )
+
+        # Log prompt for traceability
+        log_dir = os.path.join(os.path.dirname(__file__), "../data")
+        os.makedirs(log_dir, exist_ok=True)
+        prompt_log_path = os.path.join(
+            log_dir, f"llm_prompt_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        )
+        with open(prompt_log_path, "w", encoding="utf-8") as f:
+            f.write(prompt)
+
+        # Call OpenAI LLM (v1.x API)
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2,
+                max_tokens=2048,
+            )
+            llm_content = response.choices[0].message.content
+        except Exception as exc:
+            self.logger.error(f"[LLM_MATCH] OpenAI API error: {exc}")
+            llm_content = "{}"
+
+        # Log response for traceability
+        llm_content = llm_content or "{}"
+        response_log_path = os.path.join(
+            log_dir, f"llm_response_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
+        with open(response_log_path, "w", encoding="utf-8") as f:
+            f.write(llm_content)
+
+        # Parse LLM response
+        try:
+            result = json.loads(llm_content)
+        except Exception as exc:
+            self.logger.error(f"[LLM_MATCH] Failed to parse LLM response: {exc}")
+            result = {"matches": [], "non_matches": [], "llm_response": llm_content}
+
+        return result
+
+    # The run_on_people_search and match logic will be replaced by LLM-based matching and connect actions.
+    # Remove _handle_match, _handle_non_match, and all uses of is_role_match, match, or similar flags.
 
     def _handle_match(
         self,
@@ -172,14 +261,27 @@ class ConnectionRequester:
 
         if message_available:
             self.logger.info("[CONNECT] Match: message available for %s", name)
+            # Only log, do not click message button
 
         if connect_btn:
             try:
                 connect_btn.click()
+                # After clicking connect, check for modal dialog
+                try:
+                    modal = self.driver.find_element(
+                        By.CSS_SELECTOR, "div.artdeco-modal.send-invite[role='dialog']"
+                    )
+                    if modal:
+                        self.logger.info(
+                            "[CONNECT] Match: connect modal detected for %s", name
+                        )
+                except Exception:
+                    pass
                 # After clicking connect, try to click 'Send without a note'.
                 if self._send_invite():
                     self.logger.info(
-                        "[CONNECT] Match: 'Send without a note' clicked for %s", name
+                        "[CONNECT] Match: 'Send without a note' button clicked for %s",
+                        name,
                     )
                     connected = True
                     self.logger.info("[CONNECT] Match: connect clicked for %s", name)
@@ -219,6 +321,7 @@ class ConnectionRequester:
 
         handled = "connect_clicked_match" if connected else None
         message_result = "message_available" if message_available else None
+        # Remove misplaced code block and ensure correct return type
         return handled, message_result
 
     def _handle_non_match(
@@ -231,15 +334,30 @@ class ConnectionRequester:
         profile_url: str,
         store,
     ) -> tuple[str | None, str | None]:
+        message_btn = self._find_message_button_in_card(card)
         connect_btn = self._find_connect_button_in_card(card)
+        if message_btn:
+            self.logger.info("[CONNECT] Non-match: message available for %s", name)
+            # Only log, do not click message button
         if connect_btn:
             try:
                 connect_btn.click()
+                # After clicking connect, check for modal dialog
+                try:
+                    modal = self.driver.find_element(
+                        By.CSS_SELECTOR, "div.artdeco-modal.send-invite[role='dialog']"
+                    )
+                    if modal:
+                        self.logger.info(
+                            "[CONNECT] Non-match: connect modal detected for %s", name
+                        )
+                except Exception:
+                    pass
                 # After clicking connect, try to click 'Send without a note'.
                 connected = False
                 if self._send_invite():
                     self.logger.info(
-                        "[CONNECT] Non-match: 'Send without a note' clicked for %s",
+                        "[CONNECT] Non-match: 'Send without a note' button clicked for %s",
                         name,
                     )
                     connected = True
@@ -314,6 +432,7 @@ class ConnectionRequester:
         return False
 
     def _find_message_button_in_card(self, card):
+        logger = getattr(self, "logger", logging.getLogger(__name__))
         selectors = [
             "button[aria-label*='Message']",
             "a[aria-label*='Message']",
@@ -324,6 +443,9 @@ class ConnectionRequester:
             try:
                 btn = card.find_element(By.CSS_SELECTOR, selector)
                 if btn and btn.is_enabled():
+                    logger.info(
+                        "[MESSAGE] Button detected in card via selector: %s", selector
+                    )
                     return btn
             except Exception:
                 continue
@@ -335,6 +457,9 @@ class ConnectionRequester:
                     label = (c.get_attribute("aria-label") or "").lower()
                     text = (c.text or "").lower()
                     if ("message" in label or "message" in text) and c.is_enabled():
+                        logger.info(
+                            "[MESSAGE] Button detected in card via candidate scan"
+                        )
                         return c
                 except Exception:
                     continue
@@ -343,6 +468,7 @@ class ConnectionRequester:
         return None
 
     def _find_connect_button_in_card(self, card):
+        logger = getattr(self, "logger", logging.getLogger(__name__))
         selectors = [
             "button[aria-label*='Connect']",
             "button[data-control-name='connect']",
@@ -360,6 +486,9 @@ class ConnectionRequester:
             try:
                 btn = card.find_element(By.CSS_SELECTOR, selector)
                 if btn and btn.is_enabled():
+                    logger.info(
+                        "[CONNECT] Button detected in card via selector: %s", selector
+                    )
                     return btn
             except Exception:
                 continue
@@ -381,6 +510,9 @@ class ConnectionRequester:
                         )
                         or ("search-custom-invite" in href)
                     ) and c.is_enabled():
+                        logger.info(
+                            "[CONNECT] Button detected in card via candidate scan"
+                        )
                         return c
                 except Exception:
                     continue
