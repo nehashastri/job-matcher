@@ -16,9 +16,23 @@ logger = logging.getLogger(__name__)
 
 
 class EmailNotifier:
-    """Minimal email notification for accepted jobs and relevant profiles."""
+    """
+    Minimal email notification for accepted jobs and relevant profiles.
+    Attributes:
+        smtp_server (str): SMTP server address
+        smtp_port (int): SMTP server port
+        smtp_username (str): SMTP username
+        smtp_password (str): SMTP password
+        email_from (str): Sender email address
+        email_to (str): Recipient email address
+        smtp_use_ssl (bool): Whether to use SSL for SMTP
+        enabled (bool): Whether email notifications are enabled
+    """
 
     def __init__(self):
+        """
+        Initialize EmailNotifier and load SMTP/email configuration from environment variables.
+        """
         self.smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_username = os.getenv("SMTP_USERNAME", "")
@@ -39,6 +53,14 @@ class EmailNotifier:
     def send_job_notification(
         self, job_data: dict, match_profiles: Optional[list[dict[str, str]]] = None
     ) -> bool:
+        """
+        Send an email notification for an accepted job and relevant profiles.
+        Args:
+            job_data (dict): Job data to include in the email
+            match_profiles (Optional[list[dict[str, str]]]): List of matched profiles
+        Returns:
+            bool: True if email sent, False otherwise
+        """
         if not self.enabled:
             logger.info("Email notifications disabled, skipping")
             return False

@@ -2,7 +2,7 @@
 name = "job-scraper"
 version = "0.1.0"
 description = "LinkedIn job scraper with LLM matching and Windows notifications"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Your Name Here <your@email.com>"] # Fill in your details
 channels = ["conda-forge"]
 platforms = ["win-64"]
 

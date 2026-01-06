@@ -1,4 +1,12 @@
-"""Selenium session management utilities for LinkedIn sessions."""
+"""
+Selenium session management utilities for LinkedIn sessions.
+
+Features:
+- Create and manage Chrome webdriver sessions
+- Persist and reuse cookies for LinkedIn authentication
+- Support for headless mode, custom user agent, and window size
+- Handles driver installation via webdriver-manager if available
+"""
 
 from __future__ import annotations
 
@@ -44,7 +52,16 @@ else:  # pragma: no cover - typing only
 
 
 class SessionManager:
-    """Create and manage a Chrome webdriver session, plus cookie persistence."""
+    """
+    Create and manage a Chrome webdriver session, plus cookie persistence.
+    Attributes:
+        headless (bool): Whether to run Chrome in headless mode
+        user_agent (str | None): Custom user agent string
+        window_size (str): Window size for Chrome browser
+        driver_path (str | None): Path to Chrome driver executable
+        cookie_path (Path): Path to store LinkedIn cookies
+        _driver (ChromeWebDriver | None): Selenium WebDriver instance
+    """
 
     def __init__(
         self,
@@ -54,6 +71,15 @@ class SessionManager:
         driver_path: str | None = None,
         cookie_path: Path = Path(__file__).parent.parent / "data/.linkedin_cookies.pkl",
     ) -> None:
+        """
+        Initialize SessionManager.
+        Args:
+            headless (bool): Run Chrome in headless mode
+            user_agent (str | None): Custom user agent string
+            window_size (str): Window size for Chrome browser
+            driver_path (str | None): Path to Chrome driver executable
+            cookie_path (Path): Path to store LinkedIn cookies
+        """
         self.headless = headless
         self.user_agent = user_agent
         self.window_size = window_size
@@ -62,7 +88,13 @@ class SessionManager:
         self._driver: ChromeWebDriver | None = None
 
     def start(self) -> ChromeWebDriver:
-        """Start (or return existing) Chrome webdriver."""
+        """
+        Start (or return existing) Chrome webdriver.
+        Returns:
+            ChromeWebDriver: Selenium WebDriver instance
+        Raises:
+            RuntimeError: If Selenium is not installed or driver fails to initialize
+        """
         if self._driver:
             return self._driver
 
@@ -102,10 +134,21 @@ class SessionManager:
         return self._driver
 
     def get_driver(self) -> ChromeWebDriver:
-        """Ensure a webdriver is available."""
+        """
+        Ensure a webdriver is available.
+        Returns:
+            ChromeWebDriver: Selenium WebDriver instance
+        """
         return self.start()
 
     def _build_options(self) -> Any:
+        """
+        Build Chrome options for Selenium WebDriver.
+        Returns:
+            Any: ChromeOptions instance with configured arguments
+        Raises:
+            RuntimeError: If ChromeOptions is not available
+        """
         if webdriver is None:
             raise RuntimeError(
                 "Selenium is not installed. Install dependencies via pixi before running authentication."
@@ -129,8 +172,15 @@ class SessionManager:
         return options
 
     # Cookie handling -----------------------------------------------------------------
+
     def load_cookies(self, cookie_path: Path | None = None) -> bool:
-        """Load cookies into the current session. Returns True if loaded."""
+        """
+        Load cookies into the current session.
+        Args:
+            cookie_path (Path | None): Path to cookie file
+        Returns:
+            bool: True if cookies loaded, False otherwise
+        """
         driver = self.get_driver()
         path = cookie_path or self.cookie_path
         if not path.exists():
@@ -149,7 +199,11 @@ class SessionManager:
         return True
 
     def save_cookies(self, cookie_path: Path | None = None) -> None:
-        """Persist cookies from the current session."""
+        """
+        Persist cookies from the current session.
+        Args:
+            cookie_path (Path | None): Path to save cookie file
+        """
         driver = self.get_driver()
         path = cookie_path or self.cookie_path
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -157,7 +211,10 @@ class SessionManager:
             pickle.dump(driver.get_cookies(), f)
 
     def quit(self) -> None:
-        """Cleanly shut down the webdriver."""
+        """
+        Cleanly shut down the webdriver.
+        Releases resources and closes browser.
+        """
         if self._driver:
             try:
                 self._driver.quit()

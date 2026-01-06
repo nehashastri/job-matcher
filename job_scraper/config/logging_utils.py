@@ -1,5 +1,8 @@
 """
-Logging utilities with daily rotation and optional structlog support
+Logging utilities with daily rotation and optional structlog support.
+
+Provides custom formatters for structured logging, category labeling, and emoji removal for Windows consoles.
+Includes setup functions for configuring logging handlers and formatters.
 """
 
 import logging
@@ -12,7 +15,10 @@ import structlog
 
 
 class StructuredFormatter(logging.Formatter):
-    """Custom formatter with structured output and category labels"""
+    """
+    Custom formatter with structured output and category labels.
+    Adds a category label to each log record based on logger name.
+    """
 
     CATEGORY_MAP = {
         "auth": "LOGIN",
@@ -41,7 +47,10 @@ class StructuredFormatter(logging.Formatter):
 
 
 class ConsoleFormatter(StructuredFormatter):
-    """Formatter that removes emojis for console output on Windows"""
+    """
+    Formatter that removes emojis for console output on Windows.
+    Inherits category labeling from StructuredFormatter.
+    """
 
     def format(self, record):
         formatted = super().format(record)

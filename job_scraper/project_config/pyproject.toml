@@ -3,9 +3,9 @@ name = "job-scraper"
 version = "0.1.0"
 description = "LinkedIn job scraper with LLM matching and Windows notifications"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Your Name Here", email = "your@email.com"} # Fill in your details
 ]
-readme = "../ARCHITECTURE.md"
+readme = "README.md" # Update as needed
 requires-python = ">=3.10,<3.13"
 license = {text = "MIT"}
 

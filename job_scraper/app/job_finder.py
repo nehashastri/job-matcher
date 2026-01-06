@@ -1,31 +1,38 @@
 """
 Main CLI application for LinkedIn job scraping with LLM matching
-and Windows toast notifications
+and Windows toast notifications.
+
+This script provides a command-line interface (CLI) for scraping LinkedIn jobs, scoring them using LLMs, and sending notifications. It includes:
+- JobFinder class: Main logic for scraping, scoring, and notification
+- CLI commands: scrape, show_jobs, stats, export, loop
 """
 
-# All imports at the top
-import logging
-import sys
-import time
-from datetime import datetime
-from logging.handlers import TimedRotatingFileHandler
-from pathlib import Path
+# Standard library imports
+import logging  # For logging messages to file and console
+import sys  # For system-specific parameters and functions
+import time  # For time-related functions
+from datetime import datetime  # For date and time operations
+from logging.handlers import TimedRotatingFileHandler  # For rotating log files
+from pathlib import Path  # For filesystem path operations
 
-import click
-from config.config import DATA_DIR, LOG_DIR, Config
-from matching.match_scorer import MatchScorer
-from matching.resume_loader import ResumeLoader
-from openai import OpenAI
-from scraping.linkedin_scraper import LinkedInScraper
-from storage_pkg import JobStorage
-from tabulate import tabulate
+# Third-party imports
+import click  # For CLI commands and options
 
-# Add project root to path for imports
+# Project-specific imports
+from config.config import DATA_DIR, LOG_DIR, Config  # Configuration and paths
+from matching.match_scorer import MatchScorer  # LLM-based job matching
+from matching.resume_loader import ResumeLoader  # Loads resume text
+from openai import OpenAI  # OpenAI API client
+from scraping.linkedin_scraper import LinkedInScraper  # LinkedIn scraping logic
+from storage_pkg import JobStorage  # Job storage and CSV export
+from tabulate import tabulate  # For pretty-printing tables in CLI
+
+# Add project root to sys.path for module imports
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
 # Setup logging handlers for daily rotation
-log_filename = f"{LOG_DIR}/job_finder.log"
+log_filename = f"{LOG_DIR}/job_finder.log"  # Log file path
 file_handler = TimedRotatingFileHandler(
     log_filename, when="midnight", interval=1, backupCount=7, encoding="utf-8"
 )
@@ -40,22 +47,44 @@ console_handler.setFormatter(
     logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 )
 
+# Configure root logger to use both file and console handlers
 logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # Module-level logger
 
 
 class JobFinder:
-    """Main job finder application"""
+    """
+    Main job finder application.
+
+    Handles scraping jobs, scoring them with LLM, storing results, and sending notifications.
+    Attributes:
+        config (Config): Project configuration and settings.
+        storage (JobStorage): Handles job storage and CSV export.
+        scrapers (list): List of tuples (portal_name, scraper_instance).
+        match_threshold (float): Minimum score to consider a job relevant.
+        openai_key (str): API key for OpenAI.
+        base_model (str): OpenAI model for base scoring.
+        rerank_model (str): OpenAI model for reranking.
+        rerank_band (float): Score band for reranking.
+        openai_client (OpenAI): OpenAI API client instance.
+        resume_loader (ResumeLoader): Loads resume text.
+        match_scorer (MatchScorer): Scores jobs using LLM.
+        resume_text (str): Cached resume text.
+    """
 
     def __init__(self):
-        self.config = Config()
+        # Load configuration settings
+        self.config = Config()  # Loads config from file/env
+        # Initialize job storage (writes jobs to CSV)
         self.storage = JobStorage(data_dir=DATA_DIR)
-        # LinkedIn-only workflow
+        # List of job portal scrapers (currently LinkedIn only)
         self.scrapers = [
             ("LinkedIn", LinkedInScraper()),
         ]
+        # Minimum score to consider a job relevant
         self.match_threshold = self.config.job_match_threshold
+        # OpenAI API key and model names
         self.openai_key = self.config.openai_api_key
         self.base_model = self.config.openai_model
         self.rerank_model = self.config.openai_model_rerank
@@ -70,14 +99,23 @@ class JobFinder:
             logger.warning(f"Failed to initialize OpenAI client: {e}")
             self.openai_client = None
 
+        # ResumeLoader loads resume text from file
         self.resume_loader = ResumeLoader(config=self.config, logger=logger)
+        # MatchScorer uses LLM to score jobs
         self.match_scorer = MatchScorer(
             config=self.config, openai_client=self.openai_client, logger=logger
         )
+        # Cached resume text for scoring
         self.resume_text = self._load_resume_text()
 
     def _load_resume_text(self) -> str:
-        """Load resume text using ResumeLoader (full text, cached)."""
+        """
+        Load resume text using ResumeLoader (full text, cached).
+        Returns:
+            str: Resume text loaded from file.
+        Raises:
+            RuntimeError: If resume text is missing or empty.
+        """
         text = self.resume_loader.load_text()
         if not text.strip():
             raise RuntimeError(
@@ -86,7 +124,14 @@ class JobFinder:
         return text
 
     def _score_job_with_llm(self, job: dict, prompt: str = "") -> float:
-        """Use OpenAI to score job vs resume on 0-10 scale. Always uses .txt file prompt if not provided."""
+        """
+        Use OpenAI to score job vs resume on 0-10 scale.
+        Args:
+            job (dict): Job details to score.
+            prompt (str): Optional prompt for LLM scoring.
+        Returns:
+            float: Score from 0.0 to 10.0 indicating match quality.
+        """
         if not self.openai_client:
             logger.warning("OPENAI_API_KEY not set; defaulting match score to 0")
             return 0.0
@@ -102,6 +147,7 @@ class JobFinder:
                 job_details=job,
                 base_prompt=prompt,
             )
+            # Attach LLM scoring details to job dict
             job["match_reason"] = result.get("reason", "")
             if result.get("reranked"):
                 job["match_reason_rerank"] = result.get("reason_rerank", "")
@@ -123,6 +169,14 @@ class JobFinder:
             return 0.0
 
     def _normalize_job(self, portal_name: str, job: dict) -> dict:
+        """
+        Normalize job dictionary for storage/export.
+        Args:
+            portal_name (str): Name of job portal.
+            job (dict): Raw job data.
+        Returns:
+            dict: Normalized job data for CSV/database.
+        """
         return {
             "Title": job.get("title", ""),
             "Company": job.get("company", ""),
@@ -132,12 +186,24 @@ class JobFinder:
         }
 
     def _notify_job(self, job: dict):
-        """Log job notification info."""
+        """
+        Log job notification info.
+        Args:
+            job (dict): Job data to notify/log.
+        """
         message = f"{job.get('title', '')} @ {job.get('company', '')} ({job.get('location', '')})"
         logger.info(f"Notify: {message}")
 
     def _process_jobs(self, portal_name: str, jobs: list, scraper=None) -> list:
-        """Score, filter, store, find people, and notify for each job."""
+        """
+        Score, filter, store, find people, and notify for each job.
+        Args:
+            portal_name (str): Name of job portal.
+            jobs (list): List of job dicts.
+            scraper: Scraper instance (optional).
+        Returns:
+            list: List of matched jobs.
+        """
         matched = []
         for job in jobs:
             score = self._score_job_with_llm(job)
@@ -155,7 +221,12 @@ class JobFinder:
         return matched
 
     def scrape_single_portal(self, portal_name, max_applicants=100):
-        """Scrape a single job portal: Scrape → Find People → Export → Notify"""
+        """
+        Scrape a single job portal: Scrape → Find People → Export → Notify
+        Args:
+            portal_name (str): Name of portal to scrape.
+            max_applicants (int): Max applicants filter.
+        """
         click.echo(click.style(f"\n🔍 Scraping {portal_name}...", fg="cyan", bold=True))
         click.echo("Workflow: Scrape → Filter → Find People → Export to CSV → Notify")
         click.echo("=" * 80)
@@ -196,7 +267,13 @@ class JobFinder:
             logger.error(f"Error scraping {portal_name}: {str(e)}")
 
     def scrape_jobs(self, max_applicants: int | None = None):
-        """Scrape LinkedIn: Scrape → Find People → Export → Notify"""
+        """
+        Scrape LinkedIn: Scrape → Find People → Export → Notify
+        Args:
+            max_applicants (int | None): Max applicants filter.
+        Returns:
+            list: All jobs scraped and processed.
+        """
         max_applicants = max_applicants or self.config.max_applicants
         click.echo(
             click.style("\n🔍 Starting LinkedIn job scraper...", fg="cyan", bold=True)
@@ -239,7 +316,11 @@ class JobFinder:
         return all_jobs
 
     def show_new_jobs(self, hours=24):
-        """Display new jobs from last N hours"""
+        """
+        Display new jobs from last N hours.
+        Args:
+            hours (int): Number of hours to look back for new jobs.
+        """
         jobs = self.storage.get_all_jobs()
 
         if not jobs:
@@ -272,7 +353,12 @@ class JobFinder:
 
     # --- Simplified continuous loop runner ---
     def run_loop(self, interval_minutes=15, max_applicants=100):
-        """Continuously run all portal workflows with a sleep between cycles."""
+        """
+        Continuously run all portal workflows with a sleep between cycles.
+        Args:
+            interval_minutes (int): Minutes between each scrape cycle.
+            max_applicants (int): Max applicants filter for jobs.
+        """
         click.echo(
             click.style(
                 f"\n▶️  Continuous loop every {interval_minutes} minutes (Ctrl+C to stop)",
@@ -296,7 +382,10 @@ class JobFinder:
 
 @click.group()
 def cli():
-    """Job Scraper CLI - Find jobs and automate LinkedIn outreach"""
+    """
+    Job Scraper CLI - Find jobs and automate LinkedIn outreach.
+    This is the main entry point for CLI commands.
+    """
     pass
 
 
@@ -308,7 +397,11 @@ def cli():
     help="Max applicants threshold (defaults to MAX_APPLICANTS from .env)",
 )
 def scrape(max_applicants):
-    """Scrape LinkedIn for relevant positions"""
+    """
+    Scrape LinkedIn for relevant positions.
+    Args:
+        max_applicants (int): Max applicants filter for jobs.
+    """
     finder = JobFinder()
     finder.scrape_jobs(max_applicants=max_applicants)
 
@@ -316,14 +409,21 @@ def scrape(max_applicants):
 @cli.command()
 @click.option("--hours", default=24, help="Show jobs from last N hours")
 def show_jobs(hours):
-    """Show recent jobs from database"""
+    """
+    Show recent jobs from database.
+    Args:
+        hours (int): Number of hours to look back for jobs.
+    """
     finder = JobFinder()
     finder.show_new_jobs(hours=hours)
 
 
 @cli.command()
 def stats():
-    """Show job statistics"""
+    """
+    Show job statistics.
+    Displays statistics about jobs scraped and stored.
+    """
     finder = JobFinder()
     stats_data = finder.storage.get_stats()
 
@@ -337,7 +437,10 @@ def stats():
 
 @cli.command()
 def export():
-    """Export jobs to CSV (already automatic)."""
+    """
+    Export jobs to CSV (already automatic).
+    This command is informational; jobs are exported automatically.
+    """
     click.echo("\n📊 Jobs are automatically exported to CSV...")
     click.secho("✅ Jobs are automatically saved to data/jobs.csv", fg="green")
 
@@ -348,7 +451,12 @@ def export():
     "--max-applicants", default=100, help="Max applicants filter (default: 100)"
 )
 def loop(interval, max_applicants):
-    """Run scraper continuously in a loop."""
+    """
+    Run scraper continuously in a loop.
+    Args:
+        interval (int): Minutes between scrapes.
+        max_applicants (int): Max applicants filter for jobs.
+    """
     finder = JobFinder()
     iteration = 1
 
@@ -393,4 +501,5 @@ def loop(interval, max_applicants):
 
 
 if __name__ == "__main__":
+    # Entry point for CLI execution
     cli()

@@ -1,0 +1,4 @@
+John Doe
+Software Engineer
+Summary: Experienced developer with a passion for building scalable applications.
+Skills: Python, SQL, Cloud, Communication
