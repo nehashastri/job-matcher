@@ -7,16 +7,38 @@ from config.config import Config, get_config
 from config.logging_utils import get_logger
 from utils.model_utils import short_reason
 
-"""LLM-backed job/resume match scorer with optional rerank pass."""
+"""
+LLM-backed job/resume match scorer with optional rerank pass.
+
+Scores job/resume matches using LLM, supports reranking with a second model.
+Integrates with OpenAI, config, and logging utilities.
+"""
 
 
 class MatchScorer:
+    """
+    Scores job/resume matches using LLM, supports reranking with a second model.
+    Attributes:
+        config (Config): Configuration instance
+        logger: Logger instance
+        client: OpenAI client for LLM queries
+    """
+
     def _build_messages(
         self,
         resume_text: str,
         job_details: dict,
         prompt: "str | None" = None,
     ) -> list[dict[str, str]]:
+        """
+        Build messages for LLM prompt for job/resume matching.
+        Args:
+            resume_text (str): Resume text
+            job_details (dict): Job details
+            prompt (str | None): Optional prompt override
+        Returns:
+            list[dict[str, str]]: Messages for LLM chat completion
+        """
         description = job_details.get("description", "")
         if prompt is None:
             prompt = (
@@ -41,6 +63,11 @@ class MatchScorer:
         ]
 
     def _maybe_create_client(self) -> Any:
+        """
+        Create OpenAI client if API key is available.
+        Returns:
+            Any: OpenAI client instance or None
+        """
         api_key = getattr(self.config, "openai_api_key", "")
         if not api_key:
             return None
@@ -60,6 +87,11 @@ class MatchScorer:
         Overwrite company and title fields in profiles with values from LLM results.
         Expects llm_results to have 'matches', a list of dicts with 'name', 'title', 'company', 'profile_url'.
         Returns updated profiles list (matches only).
+        Args:
+            profiles (list[dict]): List of profile dicts
+            llm_results (dict): LLM result dict with company/title
+        Returns:
+            list[dict]: Updated profiles
         """
         updated = []
         for llm_profile in llm_results.get("matches", []):
@@ -96,10 +128,9 @@ class MatchScorer:
         base_prompt: "str | None" = None,
         rerank_prompt: "str | None" = None,
     ) -> dict:
-        """Score a job against resume/preferences.
-
-        Returns dict with keys: score, reason, model_used, reranked (bool),
-        reason_rerank, model_used_rerank.
+        """
+        Score a job against resume/preferences.
+        Returns dict with keys: score, reason, model_used, reranked (bool), reason_rerank, model_used_rerank.
         """
 
         if not self.client:
@@ -227,7 +258,9 @@ class MatchScorer:
             return None
 
     def _call_llm(self, messages: list[dict[str, str]], model: str) -> tuple:
-        """Call OpenAI using chat.completions or responses for JSON output."""
+        """
+        Call OpenAI using chat.completions or responses for JSON output.
+        """
 
         if self.client is None:
             raise RuntimeError("OpenAI client not initialized")

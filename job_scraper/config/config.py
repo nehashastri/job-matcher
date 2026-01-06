@@ -1,6 +1,8 @@
 """
-Configuration management for job scraper
-Loads settings from .env and provides typed access to configuration values
+Configuration management for job scraper.
+
+Loads settings from .env and provides typed access to configuration values.
+Handles environment variables, JSON config files, and directory setup.
 """
 
 import json
@@ -14,9 +16,9 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 # Base directories
-BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-LOG_DIR = BASE_DIR / "logs"
+BASE_DIR = Path(__file__).parent.parent  # Project root directory
+DATA_DIR = BASE_DIR / "data"  # Data storage directory
+LOG_DIR = BASE_DIR / "logs"  # Log files directory
 
 # Ensure required folders exist
 DATA_DIR.mkdir(exist_ok=True)
@@ -24,14 +26,28 @@ LOG_DIR.mkdir(exist_ok=True)
 
 
 class Config:
-    """Configuration manager for job scraper"""
+    """
+    Configuration manager for job scraper.
+    Loads and validates configuration from environment variables and JSON files.
+    Provides typed access to all config values.
+    """
 
     def __init__(self):
+        """
+        Initialize Config instance and load all configuration sources.
+        """
         self._load_env_config()
         self._load_json_config()
 
     def _resolve_path(self, env_var: str, default: Path) -> Path:
-        """Resolve a path from env; treat relative values as repo-root relative."""
+        """
+        Resolve a path from environment variable; treat relative values as repo-root relative.
+        Args:
+            env_var (str): Name of environment variable
+            default (Path): Default path if env var is not set
+        Returns:
+            Path: Resolved absolute path
+        """
         value = os.getenv(env_var)
         if not value:
             return default
@@ -43,7 +59,10 @@ class Config:
         return (BASE_DIR / candidate).resolve()
 
     def _load_env_config(self):
-        """Load configuration from environment variables"""
+        """
+        Load configuration from environment variables.
+        Sets OpenAI keys, model names, and job match thresholds.
+        """
         # OpenAI
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         # Small/fast model for first-pass scoring

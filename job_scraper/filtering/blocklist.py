@@ -1,8 +1,15 @@
-"""Company blocklist matching and persistence.
+"""
+Company blocklist matching and persistence.
 
 Implements exact and pattern-based company filtering with lightweight
 JSON-backed persistence. Blocklist entries are case-insensitive and
 support simple wildcards ("*") or raw regular expressions.
+
+Features:
+- Exact and pattern-based company filtering
+- JSON-backed persistence for blocklist
+- Case-insensitive matching
+- Wildcard and regex support
 """
 
 from __future__ import annotations
@@ -17,7 +24,15 @@ from config.logging_utils import get_logger
 
 
 class Blocklist:
-    """Company blocklist with exact/regex matching and persistence."""
+    """
+    Company blocklist with exact/regex matching and persistence.
+    Attributes:
+        config (Config): Configuration instance
+        logger: Logger instance
+        file_path (Path): Path to blocklist JSON file
+        blocked (list[str]): List of exact blocked company names
+        patterns (list[str]): List of pattern/regex blocked companies
+    """
 
     def __init__(
         self,
@@ -25,9 +40,18 @@ class Blocklist:
         config: Config | None = None,
         logger=None,
     ):
+        """
+        Initialize Blocklist instance and load blocklist from disk.
+        Args:
+            file_path (str | Path | None): Path to blocklist file
+            config (Config | None): Configuration instance
+            logger: Logger instance
+        """
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
-        self.file_path = Path(file_path) if file_path else Path(self.config.blocklist_path)
+        self.file_path = (
+            Path(file_path) if file_path else Path(self.config.blocklist_path)
+        )
         self.blocked: list[str] = []
         self.patterns: list[str] = []
         self._load()
@@ -35,8 +59,15 @@ class Blocklist:
     # -----------------------------
     # Public API
     # -----------------------------
+
     def is_blocked(self, company: str) -> bool:
-        """Return True if the company matches an exact name or pattern."""
+        """
+        Return True if the company matches an exact name or pattern.
+        Args:
+            company (str): Company name to check
+        Returns:
+            bool: True if blocked, False otherwise
+        """
 
         if not company:
             return False
@@ -56,7 +87,12 @@ class Blocklist:
         return False
 
     def add(self, company: str) -> bool:
-        """Add a company to the blocklist and persist it to disk.
+        """
+        Add a company to the blocklist and persist it to disk.
+        Args:
+            company (str): Company name to add
+        Returns:
+            bool: True if added, False otherwise
 
         Returns True when a new company was added.
         """
@@ -93,12 +129,16 @@ class Blocklist:
                 self.patterns = list(self._clean_list(data.get("patterns", [])))
             else:
                 # Fall back to config-loaded values if file is missing
-                self.blocked = list(self._clean_list(getattr(self.config, "blocklist", [])))
+                self.blocked = list(
+                    self._clean_list(getattr(self.config, "blocklist", []))
+                )
                 self.patterns = list(
                     self._clean_list(getattr(self.config, "blocklist_patterns", []))
                 )
         except Exception as exc:  # pragma: no cover - defensive path
-            self.logger.warning(f"Failed to load blocklist from {self.file_path}: {exc}")
+            self.logger.warning(
+                f"Failed to load blocklist from {self.file_path}: {exc}"
+            )
             self.blocked, self.patterns = [], []
 
     def _persist(self) -> None:
@@ -120,7 +160,9 @@ class Blocklist:
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
         except Exception as exc:  # pragma: no cover - defensive path
-            self.logger.warning(f"Failed to persist blocklist to {self.file_path}: {exc}")
+            self.logger.warning(
+                f"Failed to persist blocklist to {self.file_path}: {exc}"
+            )
 
     def _matches_exact(self, company: str) -> bool:
         return any(company.lower() == item.lower() for item in self.blocked)

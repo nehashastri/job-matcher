@@ -1,4 +1,9 @@
-"""LLM-backed sponsorship eligibility filter."""
+"""
+LLM-backed sponsorship eligibility filter.
+
+Checks whether a role offers visa sponsorship using an LLM and rule-based heuristics.
+Integrates with OpenAI and config for eligibility decisions.
+"""
 
 from __future__ import annotations
 
@@ -12,7 +17,13 @@ from openai import OpenAI
 
 
 class SponsorshipFilter:
-    """Check whether a role offers visa sponsorship using an LLM."""
+    """
+    Check whether a role offers visa sponsorship using an LLM.
+    Attributes:
+        config (Config): Configuration instance
+        logger: Logger instance
+        client: OpenAI client for LLM queries
+    """
 
     def __init__(
         self,
@@ -20,6 +31,13 @@ class SponsorshipFilter:
         config: Config | None = None,
         logger=None,
     ):
+        """
+        Initialize SponsorshipFilter.
+        Args:
+            openai_client (Any | None): OpenAI client for LLM queries
+            config (Config | None): Configuration instance
+            logger: Logger instance
+        """
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
         self.client: Any | None = openai_client or self._maybe_create_client()
@@ -27,8 +45,14 @@ class SponsorshipFilter:
     def check(
         self, job_description: str, requires_sponsorship: bool | None = None
     ) -> dict[str, Any]:
-        """Return sponsorship/eligibility decision as {"accepts_sponsorship": bool, "reason": str}."""
-
+        """
+        Return sponsorship/eligibility decision as {"accepts_sponsorship": bool, "reason": str}.
+        Args:
+            job_description (str): Job description text
+            requires_sponsorship (bool | None): If True, check for sponsorship
+        Returns:
+            dict[str, Any]: Decision and reason
+        """
         needs_sponsorship = requires_sponsorship
         if needs_sponsorship is None:
             needs_sponsorship = getattr(self.config, "requires_sponsorship", True)

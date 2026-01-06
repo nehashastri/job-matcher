@@ -10,11 +10,23 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from utils.model_utils import short_reason
 
-"""LLM-backed HR/staffing company detection."""
+"""
+LLM-backed HR/staffing company detection.
+
+Detects HR/staffing companies using LLM and auto-blocklists them if detected.
+Integrates with Blocklist and OpenAI for company classification.
+"""
 
 
 class HRChecker:
-    """Detect HR/staffing companies via LLM and auto-blocklist."""
+    """
+    Detect HR/staffing companies via LLM and auto-blocklist.
+    Attributes:
+        config (Config): Configuration instance
+        logger: Logger instance
+        blocklist (Blocklist): Blocklist instance for company filtering
+        client: OpenAI client for LLM queries
+    """
 
     def __init__(
         self,
@@ -23,6 +35,14 @@ class HRChecker:
         blocklist: Blocklist | None = None,
         logger=None,
     ):
+        """
+        Initialize HRChecker instance.
+        Args:
+            openai_client (Any | None): OpenAI client for LLM queries
+            config (Config | None): Configuration instance
+            blocklist (Blocklist | None): Blocklist instance
+            logger: Logger instance
+        """
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
         self.blocklist = blocklist or Blocklist(config=self.config, logger=self.logger)
@@ -34,9 +54,14 @@ class HRChecker:
         description: str = "",
         accept_hr_companies: bool | None = None,
     ) -> dict[str, Any]:
-        """Check if company is an HR/staffing firm.
-
-        Returns a dict: {"is_hr_company": bool, "reason": str}
+        """
+        Check if company is an HR/staffing firm.
+        Args:
+            company (str): Company name to check
+            description (str): Job/company description
+            accept_hr_companies (bool | None): If True, skip HR filtering
+        Returns:
+            dict[str, Any]: {"is_hr_company": bool, "reason": str}
         If the company is detected as HR (or on error), it is auto-added to the blocklist.
         """
 

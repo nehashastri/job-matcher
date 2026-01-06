@@ -13,12 +13,28 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-"""LinkedIn People search helper for Phase 6 networking."""
+"""
+LinkedIn People search helper for Phase 6 networking.
+
+Scrapes LinkedIn People cards for networking, matches profiles using LLM, and provides helper utilities for extracting text from cards.
+"""
 
 
 class PeopleFinder:
+    """
+    Helper for scraping LinkedIn People cards and matching profiles using LLM.
+    """
+
     @staticmethod
     def safe_text(card, selector: str) -> str:
+        """
+        Extracts text from a card using a CSS selector, tries multiple selectors if comma-separated.
+        Args:
+            card: Selenium WebElement for the card
+            selector (str): CSS selector(s), comma-separated
+        Returns:
+            str: Extracted text or empty string
+        """
         selectors = [part.strip() for part in selector.split(",")]
         for sel in selectors:
             try:
@@ -32,6 +48,11 @@ class PeopleFinder:
         """
         Scrape LinkedIn People cards for a given role at a company.
         Returns a list of dicts with keys: name, title, profile_url, company, reason (matches only).
+        Args:
+            role (str): Job role to search for
+            company (str): Company name
+        Returns:
+            list[dict[str, str]]: List of matched profiles
         """
         import os
 

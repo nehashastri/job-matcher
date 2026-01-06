@@ -17,9 +17,20 @@ T = TypeVar("T")
 
 
 class BaseScraper(ABC):
-    """Base class for all job scrapers"""
+    """
+    Base class for all job scrapers.
+    Attributes:
+        source_name (str): Name of the job source
+        logger: Logger instance for the scraper
+        no_visa_keywords (list[str]): List of keywords indicating no visa sponsorship
+    """
 
     def __init__(self, source_name: str):
+        """
+        Initialize BaseScraper.
+        Args:
+            source_name (str): Name of the job source
+        """
         self.source_name = source_name
         self.logger = logging.getLogger(f"scraper.{source_name}")
         self.no_visa_keywords = [
@@ -40,7 +51,11 @@ class BaseScraper(ABC):
 
     @abstractmethod
     def scrape(self) -> list[dict[str, Any]]:
-        """Scrape jobs from the source"""
+        """
+        Scrape jobs from the source.
+        Returns:
+            list[dict[str, Any]]: List of job dicts
+        """
         raise NotImplementedError
 
     def _retry_on_stale_element(

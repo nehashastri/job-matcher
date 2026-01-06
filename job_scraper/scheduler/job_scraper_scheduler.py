@@ -1,4 +1,9 @@
-"""Polling scheduler for the job scraper pipeline (Phase 8)."""
+"""
+Polling scheduler for the job scraper pipeline (Phase 8).
+
+Runs the scrape → match → notify loop on an interval, supports dependency injection for tests.
+Handles logging, configuration, and sleep interval management.
+"""
 
 from __future__ import annotations
 
@@ -25,11 +30,18 @@ RoleRunner = Callable[[dict[str, Any]], Any]
 
 
 class JobScraperScheduler:
-    """Run the scrape → match → notify loop on an interval.
+    """
+    Run the scrape → match → notify loop on an interval.
 
     The scheduler is intentionally dependency-injectable for tests; callers can supply a
     custom role runner function and sleep function to avoid touching Selenium or the
     filesystem during unit tests.
+    Attributes:
+        config (Config): Configuration instance
+        interval_minutes (float): Polling interval in minutes
+        sleep_fn (Callable[[float], None]): Sleep function (default: time.sleep)
+        _stop_requested (bool): Flag to stop scheduler
+        logger (logging.Logger): Logger instance
     """
 
     def __init__(
@@ -40,6 +52,15 @@ class JobScraperScheduler:
         logger: logging.Logger | None = None,
         sleep_fn: Callable[[float], None] = time.sleep,
     ) -> None:
+        """
+        Initialize JobScraperScheduler.
+        Args:
+            config (Config | None): Configuration instance
+            role_runner (RoleRunner | None): Custom role runner function
+            poll_interval_minutes (float | None): Polling interval override
+            logger (logging.Logger | None): Logger instance
+            sleep_fn (Callable[[float], None]): Sleep function
+        """
         self.config = config or Config()
         self.interval_minutes = (
             poll_interval_minutes
@@ -62,7 +83,7 @@ class JobScraperScheduler:
 
         # Allow tests to inject a lightweight runner; otherwise fall back to the real scraper.
         self.role_runner: RoleRunner = role_runner or self._jobfinder_role_runner
-        self._job_finder: JobFinder | None = None
+        self._job_finder = None  # type: ignore[var-annotated]
 
     # ---------------------------------------------------------------------
     # Lifecycle
