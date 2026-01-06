@@ -84,19 +84,22 @@ class SponsorshipFilter:
                 "reason": "No sponsorship info present; assumed accept",
             }
 
-        prompt = (
-            "You are evaluating sponsorship for a candidate on F-1 STEM OPT who will need "
-            "continued work authorization (e.g., H-1B or similar). From the job description, "
-            'decide if the employer supports work visas. Return JSON only: {"accepts_sponsorship": '
-            'true|false, "reason": "brief explanation"}. Reject ONLY when the description explicitly '
-            "denies sponsorship or requires unrestricted work authorization. Treat any of these as NOT sponsoring: "
-            "no visa sponsorship, cannot hire international candidates, US citizens only, must have "
-            "permanent work authorization/GC/USC, no OPT/CPT, must already be authorized without "
-            "sponsorship. If the description is unclear or does not mention sponsorship, return "
-            "accepts_sponsorship=true (default accept). If the description is positive about sponsorship "
-            "(e.g., we sponsor H-1B/TN/O-1) or is open to international/OPT, return accepts_sponsorship=true."
-        )
-
+        try:
+            with open("data/LLM_sponsorship_check.txt", "r", encoding="utf-8") as f:
+                prompt = f.read().strip()
+        except Exception:
+            prompt = (
+                "You are evaluating sponsorship for a candidate on F-1 STEM OPT who will need "
+                "continued work authorization (e.g., H-1B or similar). From the job description, "
+                'decide if the employer supports work visas. Return JSON only: {"accepts_sponsorship": '
+                'true|false, "reason": "brief explanation"}. Reject ONLY when the description explicitly '
+                "denies sponsorship or requires unrestricted work authorization. Treat any of these as NOT sponsoring: "
+                "no visa sponsorship, cannot hire international candidates, US citizens only, must have "
+                "permanent work authorization/GC/USC, no OPT/CPT, must already be authorized without "
+                "sponsorship. If the description is unclear or does not mention sponsorship, return "
+                "accepts_sponsorship=true (default accept). If the description is positive about sponsorship "
+                "(e.g., we sponsor H-1B/TN/O-1) or is open to international/OPT, return accepts_sponsorship=true."
+            )
         messages = [
             {"role": "system", "content": prompt},
             {"role": "user", "content": job_description[:4000]},
@@ -342,6 +345,9 @@ class SponsorshipFilter:
                 content = getattr(response, "content")
             return json.loads(content or "{}")
 
+        # Always return a dict on all code paths
+        return {}
+
     @staticmethod
     def _short_reason(reason: str) -> str:
         """Return up to two sentences for concise logging."""
@@ -352,5 +358,3 @@ class SponsorshipFilter:
         sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
         joined = " ".join(sentences[:2]).strip()
         return joined or reason.strip()[:240]
-
-        raise RuntimeError("OpenAI client missing chat.completions or responses API")

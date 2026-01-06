@@ -10,6 +10,7 @@ from config.config import Config, get_config
 from config.logging_utils import get_logger
 from filtering.blocklist import Blocklist
 from openai import OpenAI
+from openai.types.chat import ChatCompletionMessageParam
 
 
 class HRChecker:
@@ -63,18 +64,20 @@ class HRChecker:
             return {"is_hr_company": True, "reason": "Company already on blocklist"}
 
         # Build LLM request
-        prompt = (
-            'Determine if the company "{company_name}" is a staffing, recruitment, HR, or temp '
-            'agency firm. Return JSON: {{"is_hr_company": true/false, "reason": "brief explanation"}}.'
-        )
-        messages = [
-            {"role": "system", "content": prompt.format(company_name=company_name)},
+        try:
+            with open("data/LLM_hr_check.txt", "r", encoding="utf-8") as f:
+                prompt_template = f.read().strip()
+        except Exception:
+            prompt_template = (
+                'Determine if the company "{company_name}" is a staffing, recruitment, HR, or temp '
+                'agency firm. Return JSON: {{"is_hr_company": true/false, "reason": "brief explanation"}}.'
+            )
+        prompt = prompt_template.format(company_name=company_name)
+        messages: list[ChatCompletionMessageParam] = [
+            {"role": "system", "content": prompt},
             {
                 "role": "user",
-                "content": (
-                    f"Company: {company_name}\n"
-                    f"Context: {description[:4000] if description else 'No additional context provided.'}"
-                ),
+                "content": f"Company: {company_name}\nContext: {description[:4000] if description else 'No additional context provided.'}",
             },
         ]
 
@@ -132,13 +135,16 @@ class HRChecker:
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
-    def _call_llm(self, messages: list[dict[str, str]]) -> dict[str, Any]:
-        """Call OpenAI using available API style (responses or chat.completions)."""
-
+    def _call_llm(self, messages: list[ChatCompletionMessageParam]) -> dict[str, Any]:
+        """Call OpenAI using chat.completions API only."""
         model = self.config.openai_model or "gpt-4o-mini"
-
-        # Prefer newer chat.completions API if available
-        if hasattr(self.client, "chat") and hasattr(self.client.chat, "completions"):
+        if (
+            not self.client
+            or not hasattr(self.client, "chat")
+            or not hasattr(self.client.chat, "completions")
+        ):
+            raise RuntimeError("OpenAI client missing chat.completions API")
+        try:
             resp = self.client.chat.completions.create(
                 model=model,
                 messages=messages,
@@ -147,37 +153,9 @@ class HRChecker:
             )
             content = resp.choices[0].message.content if resp.choices else "{}"
             return json.loads(content or "{}")
-
-        # Fallback to older responses API (used in tests/mocks)
-        if hasattr(self.client, "responses"):
-            responses_obj = self.client.responses
-            if callable(responses_obj):
-                responses_obj = responses_obj()
-
-            response = responses_obj.create(
-                model=model,
-                messages=messages,
-                response_format={"type": "json_object"},
-                temperature=0,
-            )
-
-            content = ""
-            output = getattr(response, "output", None)
-            if output and len(output) > 0:
-                first_output = output[0]
-                inner_content = getattr(first_output, "content", None)
-                if inner_content and len(inner_content) > 0:
-                    text_candidate = getattr(inner_content[0], "text", "")
-                    content = (
-                        text_candidate
-                        if isinstance(text_candidate, str)
-                        else str(text_candidate)
-                    )
-            elif hasattr(response, "content"):
-                content = getattr(response, "content")
-            return json.loads(content or "{}")
-
-        raise RuntimeError("OpenAI client missing chat.completions or responses API")
+        except Exception as exc:
+            self.logger.error(f"OpenAI API call failed: {exc}")
+            return {}
 
     @staticmethod
     def _short_reason(reason: str) -> str:

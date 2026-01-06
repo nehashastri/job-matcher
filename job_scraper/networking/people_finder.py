@@ -1,31 +1,32 @@
-"""LinkedIn People search helper for Phase 6 networking."""
-
 from __future__ import annotations
 
+import json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Any, Generator
 from urllib.parse import quote_plus
 
+from openai import OpenAI
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from job_scraper.models import ProfileCard
+"""LinkedIn People search helper for Phase 6 networking."""
 
 
 class PeopleFinder:
     def scrape_people_cards(self, role: str, company: str) -> list[dict[str, str]]:
         """
         Scrape LinkedIn People cards for a given role at a company.
-        Returns a list of dicts with keys: name, title, profile_url.
-        Number of pages is configurable via the MAX_PEOPLE_SEARCH_PAGES env variable (default 3).
+        Returns a list of dicts with keys: name, title, profile_url, company, reason (matches only).
         """
         import os
 
         max_pages = int(os.getenv("MAX_PEOPLE_SEARCH_PAGES", 3))
-        cards: list[dict[str, str]] = []
+        all_profiles: list[dict[str, str]] = []
+        query = f"{role} at {company}".strip()
         try:
             for page_profiles in self.iterate_pages(role, company, pages=max_pages):
                 for profile in page_profiles:
@@ -34,15 +35,84 @@ class PeopleFinder:
                         "name": profile.get("name", ""),
                         "title": profile.get("title", ""),
                         "profile_url": profile.get("profile_url", ""),
+                        "company": company,
                     }
-                    cards.append(card)
+                    all_profiles.append(card)
         except Exception as exc:
             self.logger.error(
                 f"[PEOPLE_SEARCH] Error during scrape_people_cards: {exc}"
             )
-        return cards
+        # Batch LLM call for all profiles
+        matches = self._llm_batch_profile_match(all_profiles, query)
+        return matches
 
-    """Search LinkedIn People results for a given role at a company."""
+    def _llm_batch_profile_match(
+        self, profiles: list[dict[str, str]], query: str
+    ) -> list[dict[str, str]]:
+        """
+        Use LLM to decide which LinkedIn profile cards match the search query, using only the title field.
+        Returns a list of matched profiles with all required columns.
+        """
+        try:
+            with open("data/LLM_people_match.txt", "r", encoding="utf-8") as f:
+                prompt = f.read().strip()
+        except Exception:
+            prompt = (
+                "You are given a list of LinkedIn profile cards, each with: name, title, profile_url. "
+                "You are also given the original search query (role at company). "
+                "For each profile, decide if this person is a match for the search query, based ONLY on the title field. "
+                'Return JSON only: {"matches": [ {"name": ..., "title": ..., "profile_url": ..., "company": ..., "is_match": true, "reason": "..."}, ... ]}. '
+                'Only include profiles in the "matches" list if their title clearly matches the role in the query. Otherwise, exclude them. '
+                "Do not return non-matches. For each match, include all columns: name, title, profile_url, company, and reason."
+            )
+        # Prepare LLM input
+        profiles_json = json.dumps(profiles, ensure_ascii=False)
+        from openai.types.chat import (
+            ChatCompletionSystemMessageParam,
+            ChatCompletionUserMessageParam,
+        )
+
+        messages: list[
+            ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam
+        ] = [
+            ChatCompletionSystemMessageParam(role="system", content=str(prompt)),
+            ChatCompletionUserMessageParam(
+                role="user", content=str(f"Query: {query}\nProfiles: {profiles_json}")
+            ),
+        ]
+        # Use OpenAI client (assume API key in env/config)
+        api_key = getattr(self, "openai_api_key", None) or os.getenv(
+            "OPENAI_API_KEY", ""
+        )
+        if not api_key:
+            self.logger.error("No OpenAI API key configured for LLM profile match.")
+            return []
+        client = OpenAI(api_key=api_key)
+        try:
+            resp = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                temperature=0,
+                response_format={"type": "json_object"},
+            )
+            content = resp.choices[0].message.content if resp.choices else "{}"
+            data = json.loads(content or "{}")
+            matches = data.get("matches", [])
+            # Only return profiles with is_match True and all required columns
+            return [
+                {
+                    "name": m.get("name", ""),
+                    "title": m.get("title", ""),
+                    "profile_url": m.get("profile_url", ""),
+                    "company": m.get("company", ""),
+                    "reason": m.get("reason", ""),
+                }
+                for m in matches
+                if m.get("is_match", False)
+            ]
+        except Exception as exc:
+            self.logger.error(f"LLM batch profile match failed: {exc}")
+            return []
 
     def __init__(
         self, driver, wait: WebDriverWait, logger: logging.Logger | None = None
@@ -51,27 +121,6 @@ class PeopleFinder:
         self.wait = wait
         self.logger = logger or logging.getLogger(__name__)
         self.base_url = "https://www.linkedin.com"
-
-    def search(
-        self, role: str, company: str, pages: int | None = None
-    ) -> list[dict[str, Any]]:
-        """Search LinkedIn People for `role at company` and return profile dictionaries.
-
-        This aggregates results across pages (bounded by `pages` when provided).
-        Use `iterate_pages` when you need to act on each page before paginating.
-        """
-        profiles: list[dict[str, Any]] = []
-        try:
-            for page_index, page_profiles in enumerate(
-                self.iterate_pages(role, company, pages=pages)
-            ):
-                profiles.extend(page_profiles)
-                self.logger.info(
-                    f"[PEOPLE_SEARCH] Page {page_index + 1}: {len(page_profiles)} profiles scraped"
-                )
-        except Exception as exc:
-            self.logger.error(f"[PEOPLE_SEARCH] Error during search: {exc}")
-        return profiles
 
     def iterate_pages(
         self, role: str, company: str, pages: int | None = None
@@ -144,10 +193,43 @@ class PeopleFinder:
         except Exception as exc:
             self.logger.debug(f"[PEOPLE_SEARCH] Could not click People filter: {exc}")
 
+    def _click_next_page(self) -> bool:
+        """
+        Clicks the 'Next' button on LinkedIn people search results, if present.
+        Returns True if next page was clicked, False otherwise.
+        """
+        try:
+            next_btn_selectors = [
+                "button[aria-label='Next']",
+                "button[aria-label='Next page']",
+                "button[aria-label='Next Page']",
+                "button[data-test-pagination-page-btn='next']",
+            ]
+            for selector in next_btn_selectors:
+                try:
+                    btn = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    if btn.is_enabled():
+                        btn.click()
+                        time.sleep(1)
+                        return True
+                except Exception:
+                    continue
+            self.logger.debug(
+                "[PEOPLE_SEARCH] No next button found; stopping pagination"
+            )
+            return False
+        except Exception as exc:
+            self.logger.debug(f"[PEOPLE_SEARCH] Could not paginate: {exc}")
+            return False
+
     # Removed unused legacy function _search_via_bar
 
-    def _scrape_current_page(self, role: str, company: str) -> list[dict[str, Any]]:
-        profiles: list[dict[str, Any]] = []
+    def _scrape_current_page(self, role: str, company: str) -> list[dict[str, str]]:
+        """
+        Scrape all profile cards on the current page, returning a list of profile dicts
+        with direct references to card, connect button, and message button.
+        """
+        profiles = []
         try:
             self.wait.until(
                 EC.presence_of_element_located(
@@ -161,17 +243,15 @@ class PeopleFinder:
             self.logger.info("[PEOPLE_SEARCH] No results container found on page")
             self._dump_page(f"people_page_{int(time.time())}.html")
             return profiles
-
         cards = self.driver.find_elements(
             By.CSS_SELECTOR,
-            "[data-view-name='people-search-result'], li.reusable-search__result-container, div.reusable-search__result-container, div.search-result__occluded-item",
+            "[data-view-name='people-search-result'], li.reusable-search__result-container, div.reusable-search__result-container, div.search-result__occluded_item",
         )
         if not cards:
             cards = self.driver.find_elements(
                 By.CSS_SELECTOR,
                 "div.entity-result, div.search-result__info, div.entity-result__content",
             )
-
         if not cards:
             try:
                 body_text = self.driver.find_element(By.TAG_NAME, "body").text
@@ -188,10 +268,11 @@ class PeopleFinder:
                 self._dump_page(f"people_page_{int(time.time())}.html")
         else:
             self.logger.info(f"[PEOPLE_SEARCH] Found {len(cards)} cards on page")
-
         for card in cards:
             profile = self._extract_profile(card, role, company)
-            if profile:
+            if profile and (
+                profile["profile_url"] or profile["name"] or profile["title"]
+            ):
                 profiles.append(profile)
         return profiles
 
@@ -258,90 +339,56 @@ class PeopleFinder:
         except Exception as exc:
             self.logger.debug(f"[PEOPLE_SEARCH] Failed counting selectors: {exc}")
 
-    def _extract_profile(self, card, role: str, company: str) -> dict[str, Any] | None:
+    def _extract_profile(self, card, role: str, company: str) -> dict[str, str] | None:
+        """
+        Extracts minimal profile info from a LinkedIn people search card.
+        Returns a dict with name, title, profile_url only.
+        """
+        name = ""
+        profile_url = ""
+        title = ""
         try:
-            link_elem = self._safe_find(
-                card,
-                By.CSS_SELECTOR,
-                "a[data-view-name='search-result-lockup-title'], a.app-aware-link",
+            link_elem = card.find_element(
+                By.CSS_SELECTOR, "a[data-view-name='search-result-lockup-title']"
             )
-            profile_url = link_elem.get_attribute("href") if link_elem else ""
-            if not profile_url:
-                try:
-                    # Fallback: look for standard LinkedIn profile anchors
-                    fallback_links = card.find_elements(
-                        By.CSS_SELECTOR, "a[href*='/in/'], a[href*='miniProfileUrn']"
-                    )
-                    for link in fallback_links:
-                        href = link.get_attribute("href")
-                        if href:
-                            profile_url = href
-                            break
-                except Exception:
-                    pass
+            if link_elem:
+                name = link_elem.text.strip()
+                profile_url = link_elem.get_attribute("href") or ""
+        except Exception:
+            pass
+        if not profile_url:
+            try:
+                fallback_links = card.find_elements(
+                    By.CSS_SELECTOR, "a[href*='/in/'], a[href*='miniProfileUrn']"
+                )
+                for link in fallback_links:
+                    href = link.get_attribute("href")
+                    if href:
+                        profile_url = href
+                        if not name:
+                            name = link.text.strip()
+                        break
+            except Exception:
+                pass
+        if not name:
             name = self._safe_text(
-                card,
-                "a[data-view-name='search-result-lockup-title'], span.entity-result__title-text span[aria-hidden='true']",
+                card, "span.entity-result__title-text span[aria-hidden='true']"
             )
-            if not name:
-                name = self._safe_text(card, "span[dir='ltr']")
+        if not name:
+            name = self._safe_text(card, "span[dir='ltr']")
+        try:
+            title_elem = card.find_element(By.CSS_SELECTOR, "p._3f883ddb")
+            title = title_elem.text.strip()
+        except Exception:
             title = self._safe_text(
                 card,
                 "p[data-view-name='search-result-subtitle'], div.entity-result__primary-subtitle, div.entity-result__secondary-subtitle, p._57a34c9c._3f883ddb._0da3dbae._1ae18243",
             )
-            if title and "mutual connection" in title.lower():
-                title = ""
-
-            connection_status = self._extract_connection_status(card)
-            is_match = self._is_role_company_match(title, role, company)
-            if profile_url or name or title:
-                profile = ProfileCard(
-                    name=name,
-                    title=title,
-                    profile_url=profile_url,
-                    company=company,
-                    role=role,
-                    connection_status=connection_status,
-                    is_role_match=is_match,
-                )
-                return profile.to_dict()
-            self.logger.info(
-                "[PEOPLE_SEARCH] Skipping card with no identifiable data (url/name/title missing)"
-            )
-        except Exception as exc:
-            self.logger.debug(f"[PEOPLE_SEARCH] Failed to parse profile card: {exc}")
+        if title and "mutual connection" in title.lower():
+            title = ""
+        if profile_url or name or title:
+            return {"name": name, "title": title, "profile_url": profile_url}
         return None
-
-    def _click_next_page(self) -> bool:
-        try:
-            next_selectors = [
-                "button[data-testid='pagination-controls-next-button-visible']",
-                "button[aria-label='Next']",
-                "button[aria-label='Next page']",
-                "button[aria-label='Next Page']",
-                "button.artdeco-pagination__button--next",
-                "a[aria-label='Next']",
-                "a[aria-label='Next page']",
-            ]
-            for selector in next_selectors:
-                try:
-                    btn = self.driver.find_element(By.CSS_SELECTOR, selector)
-                    if btn.get_attribute("disabled") or btn.get_attribute(
-                        "aria-disabled"
-                    ) in {"true", True}:
-                        return False
-                    btn.click()
-                    time.sleep(0.5)
-                    return True
-                except Exception:
-                    continue
-            self.logger.debug(
-                "[PEOPLE_SEARCH] No next button found; stopping pagination"
-            )
-            return False
-        except Exception as exc:
-            self.logger.debug(f"[PEOPLE_SEARCH] Could not paginate: {exc}")
-            return False
 
     @staticmethod
     def _safe_find(card, by, value):
@@ -364,52 +411,9 @@ class PeopleFinder:
                 continue
         return ""
 
-    @staticmethod
-    def _is_role_company_match(title: str, role: str, company: str) -> bool:
-        """Strict role match: title must contain the queried role phrase (case-insensitive).
-
-        Example: query "data scientist" matches "Senior Data Scientist" or "Data Science Lead";
-        does not match "ML Engineer" or "AI Scientist" when "data scientist" is the query.
-        Company presence is not enforced because cards may omit it in the subtitle.
-        """
-        if not title or not role:
-            return False
-        title_l = title.lower()
-        role_l = role.lower().strip()
-
-        # Accept direct phrase hit or a light variant where "scientist" → "science" to allow
-        # titles like "Director of Data Science" for the "data scientist" query.
-        variants = {role_l}
-        if "scientist" in role_l:
-            variants.add(role_l.replace("scientist", "science"))
-        return any(v and v in title_l for v in variants)
-
-    @staticmethod
-    def _extract_connection_status(card) -> str:
-        selectors = [
-            "span.entity-result__badge-text",
-            "span.entity-result__badge",
-            "span[data-test-entity-result-badge], span[class*='entity-result__badge']",
-            "span.artdeco-entity-lockup__subtitle",
-        ]
-        for selector in selectors:
-            try:
-                elem = card.find_element(By.CSS_SELECTOR, selector)
-                text = elem.text.strip()
-                if text:
-                    return text
-            except Exception:
-                continue
-        return ""
+    # ...existing code...
 
     def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
-        for attempt in range(retries):
-            try:
-                self.driver.get(url)
-                return True
-            except Exception as exc:
-                self.logger.debug(
-                    f"[PEOPLE_SEARCH] Nav attempt {attempt + 1}/{retries} failed for {url}: {exc}"
-                )
-                time.sleep(delay)
-        return False
+        from utils.webdriver_utils import safe_get
+
+        return safe_get(self.driver, self.logger, url, retries, delay)
