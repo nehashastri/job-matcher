@@ -1,9 +1,6 @@
-"""LLM-backed HR/staffing company detection."""
-
 from __future__ import annotations
 
 import json
-import re
 from typing import Any
 
 from config.config import Config, get_config
@@ -11,6 +8,9 @@ from config.logging_utils import get_logger
 from filtering.blocklist import Blocklist
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
+from utils.model_utils import short_reason
+
+"""LLM-backed HR/staffing company detection."""
 
 
 class HRChecker:
@@ -110,15 +110,15 @@ class HRChecker:
             added = self.blocklist.add(company_name)
             if added:
                 self.logger.info(
-                    f"Rejected {company_name} as HR/staffing; added to blocklist. Reason: {self._short_reason(result['reason'])}"
+                    f"Rejected {company_name} as HR/staffing; added to blocklist. Reason: {short_reason(result['reason'])}"
                 )
             else:
                 self.logger.info(
-                    f"Rejected {company_name} as HR/staffing (already blocked). Reason: {self._short_reason(result['reason'])}"
+                    f"Rejected {company_name} as HR/staffing (already blocked). Reason: {short_reason(result['reason'])}"
                 )
         else:
             self.logger.info(
-                f"Accepted {company_name}; HR check clear. Reason: {self._short_reason(result['reason'])}"
+                f"Accepted {company_name}; HR check clear. Reason: {short_reason(result['reason'])}"
             )
 
         return result
@@ -137,7 +137,7 @@ class HRChecker:
 
     def _call_llm(self, messages: list[ChatCompletionMessageParam]) -> dict[str, Any]:
         """Call OpenAI using chat.completions API only."""
-        model = self.config.openai_model or "gpt-4o-mini"
+        model = self.config.openai_model or "gpt-3.5-turbo"
         if (
             not self.client
             or not hasattr(self.client, "chat")
@@ -156,14 +156,3 @@ class HRChecker:
         except Exception as exc:
             self.logger.error(f"OpenAI API call failed: {exc}")
             return {}
-
-    @staticmethod
-    def _short_reason(reason: str) -> str:
-        """Return up to two sentences for concise logging."""
-
-        if not reason:
-            return "No reason provided"
-
-        sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
-        joined = " ".join(sentences[:2]).strip()
-        return joined or reason.strip()[:240]
