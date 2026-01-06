@@ -303,7 +303,7 @@ class SponsorshipFilter:
     def _call_llm(self, messages: list[dict[str, str]]) -> dict[str, Any]:
         """Call OpenAI using chat.completions or responses for JSON output."""
 
-        model = self.config.openai_model or "gpt-4o-mini"
+        model = self.config.openai_model or "gpt-3.5-turbo"
 
         if self.client is None:
             raise RuntimeError("OpenAI client not initialized")

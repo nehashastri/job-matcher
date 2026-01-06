@@ -17,6 +17,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class PeopleFinder:
+    @staticmethod
+    def safe_text(card, selector: str) -> str:
+        selectors = [part.strip() for part in selector.split(",")]
+        for sel in selectors:
+            try:
+                elem = card.find_element(By.CSS_SELECTOR, sel)
+                return elem.text.strip()
+            except Exception:
+                continue
+        return ""
+
     def scrape_people_cards(self, role: str, company: str) -> list[dict[str, str]]:
         """
         Scrape LinkedIn People cards for a given role at a company.
@@ -371,16 +382,16 @@ class PeopleFinder:
             except Exception:
                 pass
         if not name:
-            name = self._safe_text(
+            name = PeopleFinder.safe_text(
                 card, "span.entity-result__title-text span[aria-hidden='true']"
             )
         if not name:
-            name = self._safe_text(card, "span[dir='ltr']")
+            name = PeopleFinder.safe_text(card, "span[dir='ltr']")
         try:
             title_elem = card.find_element(By.CSS_SELECTOR, "p._3f883ddb")
             title = title_elem.text.strip()
         except Exception:
-            title = self._safe_text(
+            title = PeopleFinder.safe_text(
                 card,
                 "p[data-view-name='search-result-subtitle'], div.entity-result__primary-subtitle, div.entity-result__secondary-subtitle, p._57a34c9c._3f883ddb._0da3dbae._1ae18243",
             )
@@ -389,27 +400,6 @@ class PeopleFinder:
         if profile_url or name or title:
             return {"name": name, "title": title, "profile_url": profile_url}
         return None
-
-    @staticmethod
-    def _safe_find(card, by, value):
-        selectors = [part.strip() for part in value.split(",")]
-        for selector in selectors:
-            try:
-                return card.find_element(by, selector)
-            except Exception:
-                continue
-        return None
-
-    @staticmethod
-    def _safe_text(card, selector: str) -> str:
-        selectors = [part.strip() for part in selector.split(",")]
-        for sel in selectors:
-            try:
-                elem = card.find_element(By.CSS_SELECTOR, sel)
-                return elem.text.strip()
-            except Exception:
-                continue
-        return ""
 
     # ...existing code...
 

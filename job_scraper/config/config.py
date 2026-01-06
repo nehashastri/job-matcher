@@ -47,9 +47,9 @@ class Config:
         # OpenAI
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         # Small/fast model for first-pass scoring
-        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-        # Larger model for rerank/second-pass; defaults to "gpt-4o" when unset
-        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-4o")
+        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+        # Larger model for rerank/second-pass; defaults to "gpt-3.5-turbo" when unset
+        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-3.5-turbo")
         # First-pass score at or above this value triggers rerank with a bigger model
         self.job_match_rerank_trigger = float(
             os.getenv("JOB_MATCH_RERANK_TRIGGER", "8")

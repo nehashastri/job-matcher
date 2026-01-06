@@ -271,15 +271,6 @@ class EmailNotifier:
 """
         return html
 
-    @staticmethod
-    def _cell_text(value: Any) -> str:
-        try:
-            if value is None:
-                return ""
-            return str(value).strip()
-        except Exception:
-            return ""
-
     def test_connection(self) -> bool:
         """
         Test SMTP connection

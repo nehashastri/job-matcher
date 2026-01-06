@@ -1,17 +1,57 @@
-"""LLM-backed job/resume match scorer with optional rerank pass."""
-
 from __future__ import annotations
 
 import json
-import re
 from typing import Any, cast
 
 from config.config import Config, get_config
 from config.logging_utils import get_logger
-from openai import OpenAI
+from utils.model_utils import short_reason
+
+"""LLM-backed job/resume match scorer with optional rerank pass."""
 
 
 class MatchScorer:
+    def _build_messages(
+        self,
+        resume_text: str,
+        job_details: dict,
+        prompt: "str | None" = None,
+    ) -> list[dict[str, str]]:
+        description = job_details.get("description", "")
+        if prompt is None:
+            prompt = (
+                "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
+                "Consider resume and preferences. If the job title or company is missing/blank, infer them "
+                'from the description and return them. Return JSON only: {"score": number, "reason": string, '
+                '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
+                "supply concise inferred values."
+            )
+        return [
+            {"role": "system", "content": prompt},
+            {
+                "role": "user",
+                "content": (
+                    f"Resume: {resume_text[:4000]}\n"
+                    f"Job Title: {job_details.get('title', '')}\n"
+                    f"Company: {job_details.get('company', '')}\n"
+                    f"Location: {job_details.get('location', '')}\n"
+                    f"Description: {description[:4000]}"
+                ),
+            },
+        ]
+
+    def _maybe_create_client(self) -> Any:
+        api_key = getattr(self.config, "openai_api_key", "")
+        if not api_key:
+            return None
+        try:
+            from openai import OpenAI
+
+            return OpenAI(api_key=api_key)
+        except Exception as exc:
+            self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
+            return None
+
     @staticmethod
     def update_profiles_with_llm_results(
         profiles: list[dict], llm_results: dict
@@ -88,6 +128,7 @@ class MatchScorer:
                     '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
                     "supply concise inferred values."
                 )
+
         if rerank_prompt is None:
             try:
                 with open("data/LLM_rerank_score.txt", "r", encoding="utf-8") as f:
@@ -96,7 +137,6 @@ class MatchScorer:
                 rerank_prompt = base_prompt
 
         messages = self._build_messages(resume_text, job_details, prompt=base_prompt)
-
         base_model = self.config.openai_model or "gpt-4o-mini"
         rerank_model = self.config.openai_model_rerank or "gpt-4o"
         trigger = getattr(self.config, "job_match_rerank_trigger", 8)
@@ -107,7 +147,7 @@ class MatchScorer:
             )
             inferred_title = inferred_title or job_details.get("title", "")
             inferred_company = inferred_company or job_details.get("company", "")
-            short_first_reason = self._short_reason(first_reason)
+            short_first_reason = short_reason(first_reason)
             self.logger.info(
                 f"LLM base score {first_score:.1f} ({base_model}): {short_first_reason}",
                 extra={"llm_reason": short_first_reason},
@@ -134,14 +174,12 @@ class MatchScorer:
                 rerank_messages = self._build_messages(
                     resume_text, job_details, prompt=rerank_prompt
                 )
-                rerank_score, reason_rerank, rerank_title, rerank_company = (
-                    self._call_llm(rerank_messages, rerank_model)
+                rerank_score, reason_rerank, _, _ = self._call_llm(
+                    rerank_messages, rerank_model
                 )
-                inferred_title = inferred_title or rerank_title
-                inferred_company = inferred_company or rerank_company
                 self.logger.info(
-                    f"LLM rerank score {rerank_score:.1f} ({rerank_model}): {self._short_reason(reason_rerank)}",
-                    extra={"llm_reason": self._short_reason(reason_rerank)},
+                    f"LLM rerank score {rerank_score:.1f} ({rerank_model}): {short_reason(reason_rerank)}",
+                    extra={"llm_reason": short_reason(reason_rerank)},
                 )
                 return {
                     "score": rerank_score,
@@ -152,6 +190,7 @@ class MatchScorer:
                     "model_used_rerank": model_used_rerank,
                     "first_score": first_score,
                     "reason_first": first_reason,
+                    # Only base scoring returns title/company
                     "inferred_title": inferred_title,
                     "inferred_company": inferred_company,
                 }
@@ -169,7 +208,6 @@ class MatchScorer:
                 "inferred_company": inferred_company,
             }
         except Exception as exc:  # pragma: no cover - defensive
-            # Requirement: invalid/failed JSON → accept job and append
             threshold = getattr(self.config, "job_match_threshold", 8.0)
             fallback_score = min(10.0, max(threshold, 0.0) + 0.1)
             self.logger.error(
@@ -185,46 +223,6 @@ class MatchScorer:
                 "first_score": fallback_score,
                 "reason_first": f"LLM error (accepted): {exc}",
             }
-
-    def _build_messages(
-        self,
-        resume_text: str,
-        job_details: dict,
-        prompt: "str | None" = None,
-    ) -> list[dict[str, str]]:
-        description = job_details.get("description", "")
-        if prompt is None:
-            prompt = (
-                "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
-                "Consider resume and preferences. If the job title or company is missing/blank, infer them "
-                'from the description and return them. Return JSON only: {"score": number, "reason": string, '
-                '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
-                "supply concise inferred values."
-            )
-        return [
-            {"role": "system", "content": prompt},
-            {
-                "role": "user",
-                "content": f"Resume:\n{resume_text}",
-            },
-            {
-                "role": "user",
-                "content": (
-                    f"Job Title: {job_details.get('title', '')}\n"
-                    f"Company: {job_details.get('company', '')}\n"
-                    f"Location: {job_details.get('location', '')}\n"
-                    f"Description: {description[:4000]}"
-                ),
-            },
-        ]
-
-    def _maybe_create_client(self) -> Any:
-        api_key = getattr(self.config, "openai_api_key", "")
-        if not api_key:
-            return None
-        try:
-            return OpenAI(api_key=api_key)
-        except Exception as exc:  # pragma: no cover - defensive
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
@@ -287,14 +285,3 @@ class MatchScorer:
             )
 
         raise RuntimeError("OpenAI client missing chat.completions or responses API")
-
-    @staticmethod
-    def _short_reason(reason: str) -> str:
-        """Return up to two sentences for concise logging."""
-
-        if not reason:
-            return "No reason provided"
-
-        sentences = re.split(r"(?<=[.!?])\s+", reason.strip())
-        joined = " ".join(sentences[:2]).strip()
-        return joined or reason.strip()[:240]
