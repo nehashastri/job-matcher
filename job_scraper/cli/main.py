@@ -7,7 +7,6 @@ import sys
 from typing import Sequence
 
 from config.config import Config
-from scheduler.job_scraper_scheduler import JobScraperScheduler
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -35,14 +34,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         for error in errors:
             print(f"Config error: {error}")
         return 1
-
-    scheduler = JobScraperScheduler(config=config, poll_interval_minutes=args.interval)
-
-    try:
-        scheduler.run_forever()
-    except KeyboardInterrupt:
-        scheduler.request_stop()
-        return 0
 
     return 0
 

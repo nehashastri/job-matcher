@@ -9,8 +9,6 @@ import re
 import time
 from typing import Any
 
-from networking.connection_requester import ConnectionRequester
-from networking.people_finder import PeopleFinder
 from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
@@ -139,7 +137,6 @@ class LinkedInScraper(BaseScraper):
         storage=None,
         connect_pages: int | None = None,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
-        team_hint: str | None = None,
         resume_text: str = "",
     ) -> list[dict[str, Any]]:
         """Main scraping method with inline scoring/export/connect."""
@@ -225,7 +222,6 @@ class LinkedInScraper(BaseScraper):
                     storage=storage,
                     connect_pages=connect_pages_val,
                     connect_delay_range=connect_delay_range,
-                    team_hint=team_hint,
                     no_match_pages_threshold=no_match_pages_threshold_val,
                     location=location,
                     experience_levels=experience_levels,
@@ -268,7 +264,6 @@ class LinkedInScraper(BaseScraper):
         storage=None,
         connect_pages: int | None = 3,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
-        team_hint: str | None = None,
         no_match_pages_threshold: int | None = None,
         location: str = "United States",
         experience_levels: list[str] | None = None,
@@ -498,7 +493,6 @@ class LinkedInScraper(BaseScraper):
 
                     score = None
                     if scorer:
-                        # Read LLM prompt template from file and format with job details and resume
                         try:
                             with open(
                                 os.path.join(
@@ -508,15 +502,7 @@ class LinkedInScraper(BaseScraper):
                                 "r",
                                 encoding="utf-8",
                             ) as f:
-                                prompt_instructions = f.read()
-                            llm_prompt = (
-                                f"Role: {job.get('title', '')}\n"
-                                f"Company: {job.get('company', '')}\n"
-                                f"Description: {job.get('description', '')}\n"
-                                f"Resume: {resume_text}\n"
-                                f"{prompt_instructions.strip()}\n"
-                                "If you identify that the company is a recruiting agency, staffing firm, or similar to 'Jobs via Dice', 'Lensa', or any job portal, return a score of 0 and set match_reason to 'Add to blocklist'."
-                            )
+                                llm_prompt = f.read().strip()
                         except Exception as exc:
                             self.logger.error(
                                 f"    Could not read LLM prompt template: {exc}"
@@ -556,21 +542,7 @@ class LinkedInScraper(BaseScraper):
                             continue
                     if storage:
                         storage.add_job(job)
-                        try:
-                            storage.export_to_excel()
-                        except Exception as exc:
-                            self.logger.debug(f"    Excel export failed: {exc}")
                     jobs.append(job)
-                    try:
-                        self._connect_to_people(
-                            job,
-                            connect_pages=connect_pages,
-                            delay_range=connect_delay_range,
-                            storage=storage,
-                            team_hint=team_hint,
-                        )
-                    except Exception as exc:
-                        self.logger.debug(f"    Connection attempts failed: {exc}")
                     self._close_extra_tabs()
                     self._safe_back_to_results(search_url)
                     matched = True
@@ -1103,29 +1075,17 @@ class LinkedInScraper(BaseScraper):
                 "span.t-16.t-black.t-bold",
             ]
             details["company"] = self._safe_find_text_multi(company_selectors)
-            location_selectors = [
-                "span.jobs-unified-top-card__location",
-                "span.job-details-jobs-unified-top-card__location",
-                "span.jobs-unified-top-card__bullet",
-                "span.t-14.t-black.t-normal",
-            ]
-            details["location"] = (
-                self._safe_find_text_multi(location_selectors) or "United States"
-            )
+            # ...existing code...
             try:
                 details["url"] = self.driver.current_url
                 if "/jobs/view/" in details["url"]:
                     details["id"] = details["url"].split("/jobs/view/")[1].split("?")[0]
-                else:
-                    details["id"] = str(hash(details["url"]))
             except Exception:
                 details["url"] = ""
-                details["id"] = ""
+                # ...existing code...
             details["description"] = self._get_job_description()
             details["applicant_count"] = self._parse_applicants()
-            details["posted_date"] = self._parse_posted_date()
             details["match_score"] = 0
-            details["source"] = "LinkedIn"
             # Log if title or company is empty for debugging
             if not details["title"] or not details["company"]:
                 self.logger.warning(
@@ -1164,19 +1124,9 @@ class LinkedInScraper(BaseScraper):
             return ""
 
     def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
-        """Navigate to a URL with lightweight retries to reduce flakiness in headless runs."""
-        if self.driver is None:
-            return False
-        for attempt in range(retries):
-            try:
-                self.driver.get(url)
-                return True
-            except Exception as exc:
-                self.logger.debug(
-                    f"Nav attempt {attempt + 1}/{retries} failed for {url}: {exc}"
-                )
-                time.sleep(delay)
-        return False
+        from utils.webdriver_utils import safe_get
+
+        return safe_get(self.driver, self.logger, url, retries, delay)
 
     def _safe_find_text_multi(self, selectors: list[str]) -> str:
         if self.driver is None:
@@ -1220,23 +1170,6 @@ class LinkedInScraper(BaseScraper):
                 continue
         return 0
 
-    def _parse_posted_date(self) -> str:
-        if self.driver is None:
-            return ""
-        selectors = [
-            "span.jobs-unified-top-card__posted-date",
-            "span.jobs-unified-top-card__subtitle-primary-grouping",
-        ]
-        for selector in selectors:
-            try:
-                element = self.driver.find_element(By.CSS_SELECTOR, selector)
-                text = element.text.strip()
-                if text:
-                    return text
-            except Exception:
-                continue
-        return ""
-
     def _is_viewed_from_details(self) -> bool:
         if self.driver is None:
             return False
@@ -1252,45 +1185,6 @@ class LinkedInScraper(BaseScraper):
 
     def _check_visa_sponsorship(self, description: str) -> bool:
         return self._sponsors_visa(description, title="", company="")
-
-    def _connect_to_people(
-        self,
-        job: dict,
-        connect_pages: int | None = None,
-        delay_range: tuple[float, float] = (1.0, 2.0),
-        storage=None,
-        team_hint: str | None = None,
-    ):
-        try:
-            company = job.get("company", "")
-            role = job.get("title", "")
-            if team_hint:
-                role = f"{role} {team_hint}".strip()
-
-            if not company or not role:
-                self.logger.info(
-                    "    [PEOPLE_SEARCH] Missing company or role; skipping networking"
-                )
-                return
-
-            if self.driver is None or self.wait is None:
-                return
-
-            people_finder = PeopleFinder(self.driver, self.wait, self.logger)
-            connection_requester = ConnectionRequester(
-                self.driver, self.wait, self.logger
-            )
-
-            if connect_pages is not None:
-                pass
-
-            profiles = people_finder.scrape_people_cards(role, company)
-            connection_requester.connect_matches(profiles, delay_range=delay_range)
-        except Exception as exc:
-            self.logger.debug(f"    Could not connect to people: {exc}")
-        finally:
-            # Stay in the current tab; no new tab was opened
-            pass
 
     def _safe_click(self, selector: str):
         try:

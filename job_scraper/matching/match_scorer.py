@@ -18,28 +18,25 @@ class MatchScorer:
     ) -> list[dict]:
         """
         Overwrite company and title fields in profiles with values from LLM results.
-        Expects llm_results to have 'matches' and 'non_matches', each a list of dicts with 'name', 'title', 'company', 'profile_url'.
-        Returns updated profiles list.
+        Expects llm_results to have 'matches', a list of dicts with 'name', 'title', 'company', 'profile_url'.
+        Returns updated profiles list (matches only).
         """
         updated = []
-        for group in ["matches", "non_matches"]:
-            for llm_profile in llm_results.get(group, []):
-                # Find matching profile by name and profile_url
-                match = next(
-                    (
-                        p
-                        for p in profiles
-                        if p.get("name") == llm_profile.get("name")
-                        and p.get("profile_url") == llm_profile.get("profile_url")
-                    ),
-                    None,
-                )
-                if match:
-                    match["company"] = llm_profile.get(
-                        "company", match.get("company", "")
-                    )
-                    match["title"] = llm_profile.get("title", match.get("title", ""))
-                    updated.append(match)
+        for llm_profile in llm_results.get("matches", []):
+            # Find matching profile by name and profile_url
+            match = next(
+                (
+                    p
+                    for p in profiles
+                    if p.get("name") == llm_profile.get("name")
+                    and p.get("profile_url") == llm_profile.get("profile_url")
+                ),
+                None,
+            )
+            if match:
+                match["company"] = llm_profile.get("company", match.get("company", ""))
+                match["title"] = llm_profile.get("title", match.get("title", ""))
+                updated.append(match)
         return updated
 
     def __init__(
@@ -55,7 +52,6 @@ class MatchScorer:
     def score(
         self,
         resume_text: str,
-        preferences_text: str,
         job_details: dict,
         base_prompt: "str | None" = None,
         rerank_prompt: "str | None" = None,
@@ -99,9 +95,7 @@ class MatchScorer:
             except Exception:
                 rerank_prompt = base_prompt
 
-        messages = self._build_messages(
-            resume_text, preferences_text, job_details, prompt=base_prompt
-        )
+        messages = self._build_messages(resume_text, job_details, prompt=base_prompt)
 
         base_model = self.config.openai_model or "gpt-4o-mini"
         rerank_model = self.config.openai_model_rerank or "gpt-4o"
@@ -138,7 +132,7 @@ class MatchScorer:
                 reranked = True
                 model_used_rerank = rerank_model
                 rerank_messages = self._build_messages(
-                    resume_text, preferences_text, job_details, prompt=rerank_prompt
+                    resume_text, job_details, prompt=rerank_prompt
                 )
                 rerank_score, reason_rerank, rerank_title, rerank_company = (
                     self._call_llm(rerank_messages, rerank_model)
@@ -195,7 +189,6 @@ class MatchScorer:
     def _build_messages(
         self,
         resume_text: str,
-        preferences_text: str,
         job_details: dict,
         prompt: "str | None" = None,
     ) -> list[dict[str, str]]:
@@ -212,7 +205,7 @@ class MatchScorer:
             {"role": "system", "content": prompt},
             {
                 "role": "user",
-                "content": f"Resume:\n{resume_text}\n\nPreferences:\n{preferences_text}",
+                "content": f"Resume:\n{resume_text}",
             },
             {
                 "role": "user",

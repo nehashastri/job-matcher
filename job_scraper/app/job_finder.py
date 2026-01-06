@@ -3,90 +3,43 @@ Main CLI application for LinkedIn job scraping with LLM matching
 and Windows toast notifications
 """
 
-import importlib
+# All imports at the top
 import logging
-import os
 import sys
 import time
 from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
-click = importlib.import_module("click")
-OpenAI = getattr(importlib.import_module("openai"), "OpenAI")
-tabulate = getattr(importlib.import_module("tabulate"), "tabulate")
-
-# Fix UTF-8 encoding on Windows PowerShell
-if sys.platform == "win32":
-    for stream in (sys.stdout, sys.stderr):
-        reconfig = getattr(stream, "reconfigure", None)
-        if callable(reconfig):
-            try:
-                reconfig(encoding="utf-8", errors="replace")
-            except Exception:
-                pass  # Fallback if reconfigure fails
+import click
+from config.config import DATA_DIR, LOG_DIR, Config
+from matching.match_scorer import MatchScorer
+from matching.resume_loader import ResumeLoader
+from openai import OpenAI
+from scraping.linkedin_scraper import LinkedInScraper
+from storage_pkg import JobStorage
+from tabulate import tabulate
 
 # Add project root to path for imports
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from config.config import DATA_DIR, LOG_DIR, Config  # noqa: E402
-from matching.match_scorer import MatchScorer  # noqa: E402
-from matching.resume_loader import ResumeLoader  # noqa: E402
-from scraping.linkedin_scraper import LinkedInScraper  # noqa: E402
-from storage_pkg import JobStorage  # noqa: E402
-
-
-class _ToastShim:
-    """Minimal toast shim to avoid external pkg_resources dependency warnings."""
-
-    def __init__(self, logger: logging.Logger):
-        self.logger = logger
-
-    def show_toast(
-        self, title: str, msg: str, duration: int = 5, threaded: bool = True
-    ):
-        del duration, threaded  # Unused in shim
-        self.logger.info(f"Toast: {title} - {msg}")
-
-
-# Custom formatter that strips emojis for console but keeps them for file
-class ConsoleFormatter(logging.Formatter):
-    """Formatter that removes emojis for console output"""
-
-    def format(self, record):
-        formatted = super().format(record)
-        # Remove emoji characters that can't be displayed
-        import re
-
-        # Remove emoji patterns
-        formatted = re.sub(
-            r"[\U0001F300-\U0001F9FF]|[\u2700-\u27BF]|[\u2600-\u26FF]|[\u2300-\u23FF]",
-            "",
-            formatted,
-        )
-        return formatted
-
-
-class FileFormatter(logging.Formatter):
-    """Formatter that keeps all content including emojis"""
-
-    pass
-
-
-# Setup logging handlers
-file_handler = logging.FileHandler(f"{LOG_DIR}/job_finder.log", encoding="utf-8")
+# Setup logging handlers for daily rotation
+log_filename = f"{LOG_DIR}/job_finder.log"
+file_handler = TimedRotatingFileHandler(
+    log_filename, when="midnight", interval=1, backupCount=7, encoding="utf-8"
+)
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(
-    FileFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 )
 
 console_handler = logging.StreamHandler(stream=sys.stdout)
 console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(
-    ConsoleFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 )
 
-# Configure root logger
 logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
 
 logger = logging.getLogger(__name__)
@@ -122,12 +75,6 @@ class JobFinder:
             config=self.config, openai_client=self.openai_client, logger=logger
         )
         self.resume_text = self._load_resume_text()
-        self.preferences_text = self._load_preferences()
-        # Use lightweight shim to avoid win10toast/pkg_resources warning; can be replaced
-        # with a richer notifier later without warning noise.
-        self.notifier = (
-            _ToastShim(logger) if self.config.enable_toast_notifications else None
-        )
 
     def _load_resume_text(self) -> str:
         """Load resume text using ResumeLoader (full text, cached)."""
@@ -138,39 +85,23 @@ class JobFinder:
             )
         return text
 
-    def _load_preferences(self) -> str:
-        """Load preferences text from PREFERENCES_PATH or data/preferences.txt."""
-        candidates = [
-            os.getenv("PREFERENCES_PATH"),
-            os.path.join("data", "preferences.txt"),
-        ]
-        for path in candidates:
-            if not path:
-                continue
-            p = Path(path)
-            if not p.exists():
-                continue
-            try:
-                text = p.read_text(encoding="utf-8", errors="ignore")
-                logger.info(f"Loaded preferences from {p}")
-                return text[:4000]
-            except Exception as exc:
-                logger.warning(f"Could not read preferences at {p}: {exc}")
-        return ""
-
     def _score_job_with_llm(self, job: dict, prompt: str = "") -> float:
-        """Use OpenAI to score job vs resume/preferences on 0-10 scale. Accepts optional prompt for compatibility with scraper."""
+        """Use OpenAI to score job vs resume on 0-10 scale. Always uses .txt file prompt if not provided."""
         if not self.openai_client:
             logger.warning("OPENAI_API_KEY not set; defaulting match score to 0")
             return 0.0
+        if not prompt:
+            try:
+                with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
+                    prompt = f.read().strip()
+            except Exception:
+                prompt = 'You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. Consider resume and preferences. If the job title or company is missing/blank, infer them from the description and return them. Return JSON only: {"score": number, "reason": string, "title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, supply concise inferred values.'
         try:
             result = self.match_scorer.score(
                 resume_text=self.resume_text,
-                preferences_text=self.preferences_text,
                 job_details=job,
                 base_prompt=prompt,
             )
-
             job["match_reason"] = result.get("reason", "")
             if result.get("reranked"):
                 job["match_reason_rerank"] = result.get("reason_rerank", "")
@@ -179,13 +110,12 @@ class JobFinder:
             job["reranked"] = result.get("reranked", False)
             job["first_score"] = result.get("first_score", result.get("score", 0.0))
             job["match_reason_first"] = result.get("reason_first", "")
-
-            # Backfill missing title/company with LLM-inferred values when provided.
+            # Always use LLM-inferred title/company unless empty string.
             inferred_title = (result.get("inferred_title") or "").strip()
             inferred_company = (result.get("inferred_company") or "").strip()
-            if not (job.get("title") or "").strip() and inferred_title:
+            if inferred_title:
                 job["title"] = inferred_title
-            if not (job.get("company") or "").strip() and inferred_company:
+            if inferred_company:
                 job["company"] = inferred_company
             return float(result.get("score", 0.0))
         except Exception as exc:
@@ -194,81 +124,17 @@ class JobFinder:
 
     def _normalize_job(self, portal_name: str, job: dict) -> dict:
         return {
-            "ID": str(job.get("id", hash(job.get("url", job.get("title", ""))))),
             "Title": job.get("title", ""),
             "Company": job.get("company", ""),
-            "Location": job.get("location", "Remote"),
-            "Job URL": job.get("url", ""),
-            "Source": job.get("source", portal_name),
+            "URL": job.get("url", ""),
             "Applicants": job.get("applicant_count", job.get("applicants", 0)),
-            "Posted Date": job.get("posted_date", ""),
-            "Scraped Date": time.strftime("%Y-%m-%dT%H:%M:%S"),
             "Match Score": job.get("match_score", ""),
-            "Viewed": "No",
-            "Saved": "No",
-            "Applied": "No",
-            "Emailed": "No",
         }
 
     def _notify_job(self, job: dict):
-        """Send local toast notification if available."""
+        """Log job notification info."""
         message = f"{job.get('title', '')} @ {job.get('company', '')} ({job.get('location', '')})"
-        if self.notifier:
-            try:
-                self.notifier.show_toast(
-                    "Matched Job", message, duration=5, threaded=True
-                )
-            except Exception as exc:
-                logger.debug(f"Toast notify failed: {exc}")
         logger.info(f"Notify: {message}")
-
-    def _build_connect_message(self, job: dict, name: str) -> str:
-        base = self.preferences_text.strip()[:400]
-        return (
-            f"Hi {name}, I spotted a {job.get('title', '')} role at {job.get('company', '')} and"
-            " believe my background is a strong match (AI/ML, data)."
-            f" Would love to connect and learn more. {base if base else ''}"
-        ).strip()
-
-    def _connect_via_scraper(self, job: dict, scraper, limit: int = 5):
-        """Use scraper to find similar people at company and save to Excel."""
-        try:
-            role = job.get("title", "")
-            company = job.get("company", "")
-
-            logger.info(f"🔗 Finding people at {company} for role: {role}")
-
-            # Find similar people using scraper
-            people = scraper.find_similar_people_at_company(company, role)
-
-            if people:
-                logger.info(f"  Found {len(people)} people at {company}")
-
-                # Store people info
-                for person in people[:limit]:
-                    try:
-                        self.storage.add_linkedin_connection(
-                            {
-                                "name": person.get("name", ""),
-                                "title": person.get("title", ""),
-                                "url": person.get("profile_url", ""),
-                                "company": company,
-                                "role": role,
-                                "country": "US",
-                                "role_match": person.get("is_role_match", False),
-                                "message_available": False,
-                                "connected": False,
-                                "status": "Identified",
-                            }
-                        )
-                    except Exception as e:
-                        logger.debug(f"Could not save person info: {e}")
-
-                logger.info(f"  ✅ Saved {len(people)} people to Excel")
-            else:
-                logger.debug(f"  No people found for {role} at {company}")
-        except Exception as e:
-            logger.debug(f"  Error in people search: {e}")
 
     def _process_jobs(self, portal_name: str, jobs: list, scraper=None) -> list:
         """Score, filter, store, find people, and notify for each job."""
@@ -284,21 +150,14 @@ class JobFinder:
             normalized = self._normalize_job(portal_name, job)
             if self.storage.add_job(normalized):
                 matched.append(job)
-                # Find similar people at company
-                if scraper and hasattr(scraper, "find_similar_people_at_company"):
-                    self._connect_via_scraper(job, scraper)
-                # Write to Excel immediately after adding a match
-                try:
-                    self.storage.export_to_excel()
-                except Exception as exc:
-                    logger.debug(f"Excel export failed: {exc}")
+                # Jobs are now written to CSV automatically; no export needed.
                 self._notify_job(job)
         return matched
 
     def scrape_single_portal(self, portal_name, max_applicants=100):
         """Scrape a single job portal: Scrape → Find People → Export → Notify"""
         click.echo(click.style(f"\n🔍 Scraping {portal_name}...", fg="cyan", bold=True))
-        click.echo("Workflow: Scrape → Filter → Find People → Export to Excel → Notify")
+        click.echo("Workflow: Scrape → Filter → Find People → Export to CSV → Notify")
         click.echo("=" * 80)
 
         # Find the matching scraper
@@ -337,79 +196,46 @@ class JobFinder:
             logger.error(f"Error scraping {portal_name}: {str(e)}")
 
     def scrape_jobs(self, max_applicants: int | None = None):
-        """Scrape each portal: Scrape → Find People → Export → Notify"""
-        single_portal = len(self.scrapers) == 1
+        """Scrape LinkedIn: Scrape → Find People → Export → Notify"""
         max_applicants = max_applicants or self.config.max_applicants
-
-        if single_portal:
-            click.echo(
-                click.style(
-                    "\n🔍 Starting LinkedIn job scraper...", fg="cyan", bold=True
-                )
-            )
-            click.echo(
-                "Workflow: Scrape → Filter → Find People → Export to Excel → Notify"
-            )
-        else:
-            click.echo(
-                click.style(
-                    "\n🔍 Starting multi-portal job scraper...", fg="cyan", bold=True
-                )
-            )
-            click.echo(
-                "Workflow: Scrape → Filter → Find People → Export to Excel → Notify (per portal)"
-            )
+        click.echo(
+            click.style("\n🔍 Starting LinkedIn job scraper...", fg="cyan", bold=True)
+        )
+        click.echo("Workflow: Scrape → Filter → Find People → Export to CSV → Notify")
         click.echo("=" * 80)
 
+        # Only LinkedIn scraper is used
+        portal_name, scraper = self.scrapers[0]
         all_jobs = []
-
-        num_portals = len(self.scrapers)
-
-        # Process each scraper in sequence
-        for portal_name, scraper in self.scrapers:
+        try:
             click.echo(
                 click.style(f"\n🚀 Processing {portal_name}...", fg="cyan", bold=True)
             )
-
-            try:
-                # Phase 1: Scrape portal with inline scoring/connecting
-                click.echo(f"  Scraping {portal_name}...")
-                jobs = scraper.scrape(
-                    max_applicants=max_applicants,
-                    scorer=self._score_job_with_llm,
-                    match_threshold=self.match_threshold,
-                    storage=self.storage,
-                    connect_pages=self.config.max_people_search_pages,
-                    connect_delay_range=(
-                        self.config.request_delay_min,
-                        self.config.request_delay_max,
-                    ),
-                )
-                click.echo(
-                    f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}"
-                )
-
-                click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
-                all_jobs.extend(jobs)
-
-            except Exception as e:
-                click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")
-                logger.error(f"Error scraping {portal_name}: {str(e)}")
+            click.echo(f"  Scraping {portal_name}...")
+            jobs = scraper.scrape(
+                max_applicants=max_applicants,
+                scorer=self._score_job_with_llm,
+                match_threshold=self.match_threshold,
+                storage=self.storage,
+                connect_pages=self.config.max_people_search_pages,
+                connect_delay_range=(
+                    self.config.request_delay_min,
+                    self.config.request_delay_max,
+                ),
+            )
+            click.echo(f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}")
+            click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
+            all_jobs.extend(jobs)
+        except Exception as e:
+            click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")
+            logger.error(f"Error scraping {portal_name}: {str(e)}")
 
         click.echo("\n" + "=" * 80)
-        if num_portals == 1:
-            click.secho(
-                f"✅ LinkedIn scrape finished. Total jobs scraped: {len(all_jobs)}",
-                fg="green",
-                bold=True,
-            )
-        else:
-            click.secho(
-                f"✅ {num_portals} portals processed! Total jobs scraped: {len(all_jobs)}",
-                fg="green",
-                bold=True,
-            )
-
+        click.secho(
+            f"✅ LinkedIn scrape finished. Total jobs scraped: {len(all_jobs)}",
+            fg="green",
+            bold=True,
+        )
         return all_jobs
 
     def show_new_jobs(self, hours=24):
@@ -421,7 +247,7 @@ class JobFinder:
             return
 
         click.echo(f"\n📋 {len(jobs)} Relevant Jobs in Database:")
-        click.echo("=" * 150)
+        click.echo("=" * 80)
 
         table_data = []
         for i, job in enumerate(jobs, 1):
@@ -430,19 +256,19 @@ class JobFinder:
                     i,
                     job.get("Title", "")[:20],
                     job.get("Company", "")[:15],
-                    job.get("Location", "Remote")[:12],
-                    job.get("Source", "")[:10],
-                    job.get("Posted Date", "N/A")[:10],
+                    job.get("URL", "")[:30],
+                    job.get("Applicants", ""),
+                    job.get("Match Score", ""),
                 ]
             )
 
-        headers = ["#", "Title", "Company", "Location", "Source", "Posted Date"]
+        headers = ["#", "Title", "Company", "URL", "Applicants", "Match Score"]
         click.echo(tabulate(table_data, headers=headers, tablefmt="grid"))
 
         # Show CSV location
-        click.secho("\n📁 Jobs stored in: data/jobs.xlsx", fg="green")
-        if Path("data/jobs.xlsx").exists():
-            click.secho("📊 Excel file available: data/jobs.xlsx", fg="green")
+        click.secho("\n📁 Jobs stored in: data/jobs.csv", fg="green")
+        if Path("data/jobs.csv").exists():
+            click.secho("📊 CSV file available: data/jobs.csv", fg="green")
 
     # --- Simplified continuous loop runner ---
     def run_loop(self, interval_minutes=15, max_applicants=100):
@@ -511,15 +337,9 @@ def stats():
 
 @cli.command()
 def export():
-    """Export CSV jobs to Excel."""
-    finder = JobFinder()
-    click.echo("\n📊 Exporting to Excel...")
-
-    if finder.storage.export_to_excel():
-        click.secho("✅ Exported jobs to data/jobs.xlsx", fg="green")
-    else:
-        click.secho("❌ Export failed. Make sure openpyxl is installed:", fg="red")
-        click.echo("pixi -C project_config install")
+    """Export jobs to CSV (already automatic)."""
+    click.echo("\n📊 Jobs are automatically exported to CSV...")
+    click.secho("✅ Jobs are automatically saved to data/jobs.csv", fg="green")
 
 
 @cli.command()
