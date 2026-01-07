@@ -6,7 +6,9 @@ Scrapes detailed job information from the right-pane job view
 import random
 import re
 import time
+from typing import Any
 
+from config.logging_utils import get_logger
 from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
@@ -16,8 +18,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from config.logging_utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -37,7 +37,9 @@ class JobDetailScraper:
         self.config = config
         self.wait = WebDriverWait(driver, 10)
 
-    def scrape_job_details(self, job_id: str, max_retries: int = 3) -> dict[str, any] | None:
+    def scrape_job_details(
+        self, job_id: str, max_retries: int = 3
+    ) -> dict[str, Any] | None:
         """
         Scrape detailed information for a specific job.
 
@@ -72,10 +74,14 @@ class JobDetailScraper:
                 # Wait for job details to load
                 try:
                     self.wait.until(
-                        EC.presence_of_element_located((By.CLASS_NAME, "jobs-search__job-details"))
+                        EC.presence_of_element_located(
+                            (By.CLASS_NAME, "jobs-search__job-details")
+                        )
                     )
                 except TimeoutException:
-                    logger.warning(f"[JOB_DETAIL] Job details panel did not load for ID {job_id}")
+                    logger.warning(
+                        f"[JOB_DETAIL] Job details panel did not load for ID {job_id}"
+                    )
                     if attempt < max_retries - 1:
                         continue
                     return None
@@ -87,26 +93,34 @@ class JobDetailScraper:
                     logger.info(f"[JOB_DETAIL] Successfully scraped job ID {job_id}")
                     return details
                 else:
-                    logger.warning(f"[JOB_DETAIL] Failed to extract details for job ID {job_id}")
+                    logger.warning(
+                        f"[JOB_DETAIL] Failed to extract details for job ID {job_id}"
+                    )
                     if attempt < max_retries - 1:
                         continue
                     return None
 
             except StaleElementReferenceException:
-                logger.warning(f"[JOB_DETAIL] Stale element for job ID {job_id}, retrying...")
+                logger.warning(
+                    f"[JOB_DETAIL] Stale element for job ID {job_id}, retrying..."
+                )
                 if attempt < max_retries - 1:
                     self._random_delay()
                     continue
                 return None
 
             except Exception as e:
-                logger.error(f"[JOB_DETAIL] Error scraping job ID {job_id}: {e}", exc_info=True)
+                logger.error(
+                    f"[JOB_DETAIL] Error scraping job ID {job_id}: {e}", exc_info=True
+                )
                 if attempt < max_retries - 1:
                     self._random_delay()
                     continue
                 return None
 
-        logger.error(f"[JOB_DETAIL] Failed to scrape job ID {job_id} after {max_retries} attempts")
+        logger.error(
+            f"[JOB_DETAIL] Failed to scrape job ID {job_id} after {max_retries} attempts"
+        )
         return None
 
     def _click_job_card(self, job_id: str):
@@ -118,7 +132,9 @@ class JobDetailScraper:
         """
         try:
             # Find job card by job ID
-            job_card = self.driver.find_element(By.CSS_SELECTOR, f"a[href*='/jobs/view/{job_id}']")
+            job_card = self.driver.find_element(
+                By.CSS_SELECTOR, f"a[href*='/jobs/view/{job_id}']"
+            )
 
             # Scroll to the job card
             self.driver.execute_script("arguments[0].scrollIntoView(true);", job_card)
@@ -135,7 +151,7 @@ class JobDetailScraper:
             logger.error(f"[JOB_DETAIL] Error clicking job card for ID {job_id}: {e}")
             raise
 
-    def _extract_job_details(self, job_id: str) -> dict[str, any] | None:
+    def _extract_job_details(self, job_id: str) -> dict[str, Any] | None:
         """
         Extract all details from the job details pane.
 
@@ -146,14 +162,16 @@ class JobDetailScraper:
             Dictionary with job details or None if extraction fails
         """
         try:
-            details = {
+            details: dict[str, Any] = {
                 "job_id": job_id,
                 "job_url": f"https://www.linkedin.com/jobs/view/{job_id}/",
             }
 
             # Extract job description
             try:
-                desc_elem = self.driver.find_element(By.CLASS_NAME, "jobs-description__content")
+                desc_elem = self.driver.find_element(
+                    By.CLASS_NAME, "jobs-description__content"
+                )
                 # Click "Show more" button if present
                 try:
                     show_more_btn = desc_elem.find_element(
@@ -166,7 +184,9 @@ class JobDetailScraper:
 
                 details["description"] = desc_elem.text.strip()
             except NoSuchElementException:
-                logger.warning(f"[JOB_DETAIL] Could not find description for job ID {job_id}")
+                logger.warning(
+                    f"[JOB_DETAIL] Could not find description for job ID {job_id}"
+                )
                 details["description"] = ""
 
             # Extract job criteria (seniority, employment type, etc.)
@@ -192,22 +212,34 @@ class JobDetailScraper:
 
                         # Parse different criteria types
                         if "Seniority level" in text or "level" in text.lower():
-                            details["seniority"] = text.replace("Seniority level", "").strip()
+                            details["seniority"] = text.replace(
+                                "Seniority level", ""
+                            ).strip()
                         elif (
-                            "Employment type" in text or "Full-time" in text or "Part-time" in text
+                            "Employment type" in text
+                            or "Full-time" in text
+                            or "Part-time" in text
                         ):
-                            details["employment_type"] = text.replace("Employment type", "").strip()
+                            details["employment_type"] = text.replace(
+                                "Employment type", ""
+                            ).strip()
                         elif "Job function" in text:
-                            details["job_function"] = text.replace("Job function", "").strip()
+                            details["job_function"] = text.replace(
+                                "Job function", ""
+                            ).strip()
                         elif "Industries" in text:
-                            details["industries"] = text.replace("Industries", "").strip()
+                            details["industries"] = text.replace(
+                                "Industries", ""
+                            ).strip()
 
                     except Exception as e:
                         logger.debug(f"[JOB_DETAIL] Error parsing criteria item: {e}")
                         continue
 
             except NoSuchElementException:
-                logger.debug(f"[JOB_DETAIL] No criteria items found for job ID {job_id}")
+                logger.debug(
+                    f"[JOB_DETAIL] No criteria items found for job ID {job_id}"
+                )
 
             # Extract posted time
             try:
@@ -219,12 +251,21 @@ class JobDetailScraper:
                     "span.tvm__text--low-emphasis",
                 ]:
                     try:
-                        posted_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
+                        posted_elem = self.driver.find_element(
+                            By.CSS_SELECTOR, selector
+                        )
                         text = posted_elem.text.strip()
                         # Check if text looks like a time indicator
                         if any(
                             keyword in text.lower()
-                            for keyword in ["ago", "hours", "days", "weeks", "reposted", "posted"]
+                            for keyword in [
+                                "ago",
+                                "hours",
+                                "days",
+                                "weeks",
+                                "reposted",
+                                "posted",
+                            ]
                         ):
                             posted_time = text
                             break
@@ -244,7 +285,9 @@ class JobDetailScraper:
                     ".job-details-jobs-unified-top-card__primary-description",
                 ]:
                     try:
-                        applicant_elem = self.driver.find_element(By.CSS_SELECTOR, selector)
+                        applicant_elem = self.driver.find_element(
+                            By.CSS_SELECTOR, selector
+                        )
                         applicant_text = applicant_elem.text.strip()
                         # Parse number from text like "Be among the first 25 applicants" or "50 applicants"
                         if "applicant" in applicant_text.lower():
@@ -284,14 +327,20 @@ class JobDetailScraper:
             details.setdefault("job_function", "Unknown")
             details.setdefault("industries", "Unknown")
 
-            logger.debug(f"[JOB_DETAIL] Extracted {len(details)} fields for job ID {job_id}")
+            logger.debug(
+                f"[JOB_DETAIL] Extracted {len(details)} fields for job ID {job_id}"
+            )
             return details
 
         except Exception as e:
-            logger.error(f"[JOB_DETAIL] Error extracting job details: {e}", exc_info=True)
+            logger.error(
+                f"[JOB_DETAIL] Error extracting job details: {e}", exc_info=True
+            )
             return None
 
-    def _random_delay(self, min_delay: float | None = None, max_delay: float | None = None):
+    def _random_delay(
+        self, min_delay: float | None = None, max_delay: float | None = None
+    ):
         """
         Add a random delay between requests to avoid rate limiting.
 

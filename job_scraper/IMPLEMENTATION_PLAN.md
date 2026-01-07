@@ -122,14 +122,15 @@
 
 ---
 
-### Phase 5: LLM Match Scoring
-**Goal**: Score job fit against master resume; accept if score ≥ threshold.
+### Phase 5: LLM Match Scoring & Job Storage
+**Goal**: Score job fit against master resume; accept if score ≥ threshold and immediately persist accepted jobs.
 
 **Deliverables**:
-- `src/matching/resume_loader.py`: extract text from `data/master_resume.docx` via python-docx
-- `src/matching/match_scorer.py`: LLM call with resume, preferences, job details; return JSON score (0–10) and verdict
+- `src/matching/resume_loader.py`: extract text from `data/resume.docx` via python-docx
+- `src/matching/match_scorer.py`: two-pass LLM scoring: first with smaller model (`OPENAI_MODEL`, default `gpt-4o-mini`), and if first-pass score ≥ `JOB_MATCH_RERANK_TRIGGER` (default 8) rerun with larger model (`OPENAI_MODEL_RERANK`, default `gpt-4o`); return JSON score (0–10) and verdict
 - Threshold check (default 8); configurable via `.env` or config
-- Logging: match score, reasoning, verdict
+- Persist accepted jobs immediately to `data/jobs.xlsx` (append with header if empty; log duplicates)
+- Logging: match score, reasoning, verdict, and storage outcome
 
 **Dependencies**: Phase 0 (config/LLM), Phase 2 (job details), Phase 5 (resume loader).
 
@@ -137,35 +138,44 @@
 
 **Test Use Cases** (to be approved):
 - Load resume PDF; extract text
-- LLM match scoring: high-fit job → score 8–10, accept
-- LLM match scoring: low-fit job → score 0–5, reject
+- LLM match scoring: high-fit job → score 8–10, accept and append to jobs.xlsx
+- LLM match scoring: low-fit job → score 0–5, reject (no append)
 - LLM match scoring: medium-fit job → score 6–7, reject (below default threshold 8)
-- Invalid JSON from LLM → log error, accept job
+- Invalid JSON from LLM → log error, accept job and append
 
 ---
 
-### Phase 6: Storage & Persistence
-**Goal**: Store matched jobs in CSV; support query and updates.
+### Phase 6: People Search & Networking (New Tab)
+**Goal**: After a role is accepted (Phase 5), open a new tab to LinkedIn People search for that role/company, make a list of people to message and send connection requests.
 
 **Deliverables**:
-- `src/storage/matched_jobs_store.py`: append matched jobs to CSV/XLSX (`data/jobs.csv`, `data/jobs.xlsx`)
-- `src/storage/matched_jobs_store.py`: append saved contacts to CSV/XLSX (`data/linkedin_connections.csv`, `data/linkedin_connections.xlsx`)
-- `src/storage/blocklist_store.py`: read/write company blocklist
-- Data format (jobs): ID, Title, Company, Location, Job URL, Source, Applicants, Posted Date, Scraped Date, Match Score, Viewed, Saved, Applied, Emailed
-- Data format (connections): Date, Name, Title, LinkedIn URL, Role Searched, Country, Message Sent, Status
-- Append mode (no duplicates expected, but log on duplicate job ID)
+- `src/networking/people_finder.py`: open a new tab, search `"<role-name> at <company-name>"`, click the LinkedIn **People** tab, collect people cards (name, title, profile URL, connection status) from the first 3 pages; derive a `role_match` flag.
+- **Match definition (strict)**: `role_match = true` only when the person’s title contains the queried role string (case-insensitive substring of the role phrase). Example: query "data scientist" matches titles containing "data scientist" or "data science"; it does **not** match "ML" or "AI".
+- `src/networking/connection_requester.py`: operate in the same people-search tab (do not open individual profiles). For each card:
+   - If `role_match` is true: record **Message** availability (do not send), and if **Connect** is present, click **Connect** (no note) and record.
+   - If `role_match` is false: if **Connect** is present, click **Connect** (no note) and record.
+   - Process up to the first 3 pages (stop earlier if no more pages). Stored actions are only recorded in Phase 6 and will be sent in the Phase 7 email.
+- (No messages or notes are sent in Phase 6; only availability and connect clicks are recorded for the Phase 7 email.)
+- **Stop conditions**: process up to the first 3 pages; stop early if no further people/pages are available. Close the networking tab (if opened) and return focus to the main tab.
+- Rate limiting: 1–2s delay between requests; log attempts, outcomes, counters, and failures per page/person; continue on errors.
+- Tab management: **single dedicated networking tab only when explicitly permitted**. Default: reuse current tab (no new tabs auto-open). If user permits, open one networking tab, finish all Phase 6 steps there, then close and return focus.
+- Persist outreach records (people cards + actions + role_match) to `data/linkedin_connections.xlsx` for later inclusion in Phase 7 email.
 
-**Dependencies**: Phase 0 (config), Phases 2–5 (job data).
+**Dependencies**: Phase 1 (session manager), Phase 2 (job data), Phase 5 (accepted role).
 
-**Duration**: 1–2 days.
+**Duration**: 3–4 days.
 
 **Test Use Cases**:
-- Append matched job to empty CSV; verify header and single row
-- Append second matched job; verify appended to CSV and optionally to XLSX when dependency installed
-- Load matched jobs from CSV; verify data integrity
-- Append a saved contact to `linkedin_connections.csv`; verify header and row
-- Update blocklist; verify company appended
-- Read blocklist; verify all companies present
+- Open new tab right after a role is accepted; verify People tab selected for query `"Software Engineer at Acme"`.
+- Scrape people cards across first 3 pages; capture name, title, profile URL, connection status, and `role_match` flag.
+- Match logic: query "data scientist" matches titles containing "data scientist"/"data science"; does not match "machine learning" or "AI".
+- Match handling: when a match has **Message**, log availability only (no send); when **Connect** exists, click connect and record in excel file.
+- Non-match handling: when **Connect** exists, click connect and log it; otherwise no action.
+- Pagination: process up to 3 pages; if no further pages/people exist, stop.
+- Stop logic: stop after first 3 pages or when no more pages exist; tab closes and main tab is active.
+- Rate limit respected (1–2s) and attempts logged; failures logged but workflow continues.
+- Tab cleanup: close networking tab and return to the main tab.
+- People data persisted to `linkedin_connections`.xlsx` with role_match and recorded actions for Phase 7 email.
 
 ---
 
@@ -188,10 +198,10 @@
 
 **Deliverables**:
 - `src/notifications/email_notifier.py`: Gmail SMTP connection (TLS), compose email with job details and connection count
-- Template: job title, company, location, match score, job URL, connection count
+- Template: job title, company, location, match score, job URL, connection count, networking summary
 - Error handling: SMTP failure, authentication error, retry or log
 
-**Dependencies**: Phase 0 (config/.env), Phases 2 & 6 (job data & storage).
+**Dependencies**: Phase 0 (config/.env), Phases 2 and 5 (job data & storage), Phase 6 (networking summary).
 
 **Duration**: 1–2 days.
 
@@ -200,49 +210,11 @@
 - SMTP server unreachable → log error, continue
 - Invalid app password → authentication error, log and continue
 - Invalid email address → SMTP error, log and continue
-- Email with all job details and connection count populated
+- Email with all job details, networking counts, and connection count populated
 
 ---
 
-### Phase 8: People Search & Networking (New Tab)
-**Goal**: After a role is accepted (Phase 5), emailed (Phase 7), and saved (Phase 6), open a new tab to LinkedIn People search for that role/company and attempt to start a conversation with matching employees.
-
-**Deliverables**:
-- `src/networking/people_finder.py`: open a new tab, search `"<role-name> at <company-name>"`, click the LinkedIn **People** tab, collect people cards (name, title, profile URL, connection status) from the first 3 pages; derive a `role_match` flag.
-- **Match definition (strict)**: `role_match = true` only when the person’s title contains the queried role string (case-insensitive substring of the role phrase). Example: query "data scientist" matches titles containing "data scientist" or "data science"; it does **not** match "ML" or "AI".
-- `src/networking/connection_requester.py`: operate in the same people-search tab (do not open individual profiles). For each card:
-   - If `role_match` is false: no outreach; if **Message** is present, skip; if **Connect** is present, send **without note** (counts toward the no-note quota).
-   - If `role_match` is true:
-      - **Message path (already connected)**: detect **Message** button → open chatbox → send personalized message → click **Send** → close chatbox (counts toward message+note quota).
-      - **Connect path (not connected)**: click **Connect** → choose **Add note/Send with note** → send the personalized note → submit (counts toward message+note quota).
-- **Personalized message template** (filled with person name, role-name, company-name):
-   ```
-   Hi <person-name>,
-   I'm Neha, master's student at Boston University. I just applied to <role-name> at <company-name>. Would you be willing to get on a quick call? I'd like to know more about your work.
-   ```
-- **Stop conditions**: continue processing cards; when reaching the end of a page, click **Next** and continue. Halt when (a) at least 10 "message sent + connect with note" actions, and (b) at least 10 "connect without note" actions are both met, **or** when there are no more people/pages to process; then close the networking tab and return focus to the main tab.
-- Rate limiting: 1–2s delay between requests; log attempts, outcomes, counters, and failures per page/person; continue on errors.
-- Tab management: open new tab for people search; close after processing; return focus to the main tab.
-
-**Dependencies**: Phase 1 (session manager), Phase 2 (job data), Phase 5 (accepted role), Phase 6 (saved role), Phase 7 (email sent).
-
-**Duration**: 3–4 days.
-
-**Test Use Cases**:
-- Open new tab after a role is accepted and email sent; verify People tab selected for query `"Software Engineer at Acme"`.
-- Scrape people cards across first 3 pages; capture name, title, profile URL, connection status, and `role_match` flag.
-- Match logic: query "data scientist" matches titles containing "data scientist"/"data science"; does not match "machine learning" or "AI".
-- Non-match handling: with **Message** present, skip action; with **Connect** present, send without note; increment the no-note counter.
-- Message path: for a matched 1st-degree connection, open chat, send the filled template, send successfully, and close chat; increment the message+note counter.
-- Connect path with note: for a matched non-connection, open Connect → Add note, paste filled template, send successfully; increment the message+note counter.
-- Pagination: when a page is exhausted before quotas are met, click **Next** and continue processing; if no further pages/people exist, stop.
-- Stop logic: execution halts once both counters reach 10 (message+note ≥10 and no-note ≥10), or when no further people/pages are available; tab closes and main tab is active.
-- Rate limit respected (1–2s) and attempts logged; failures logged but workflow continues.
-- Tab cleanup: close networking tab and return to the main tab.
-
----
-
-### Phase 9: Scheduler & Main Loop
+### Phase 8: Scheduler & Main Loop
 **Goal**: Orchestrate polling loop, manage roles, handle graceful shutdown.
 
 **Deliverables**:
@@ -252,7 +224,7 @@
 - Default interval: 30 minutes (configurable)
 - Log cycle begin/end with separators
 
-**Dependencies**: Phases 1–8.
+**Dependencies**: Phases 1–7.
 
 **Duration**: 2–3 days.
 
@@ -265,7 +237,7 @@
 
 ---
 
-### Phase 10: Integration & E2E Testing
+### Phase 9: Integration & E2E Testing
 **Goal**: Test full workflow end-to-end; validate all components work together.
 
 **Deliverables**:
@@ -273,19 +245,19 @@
 - E2E test (manual): run against real LinkedIn with test role; verify job found, matched, networked, alerted, stored
 - Verify logging is consistent across all phases
 
-**Dependencies**: All phases 1–9.
+**Dependencies**: All phases 1–8.
 
 **Duration**: 2–3 days.
 
 **Test Use Cases** (to be approved):
-- Full workflow: login → scrape list → scrape details → blocklist → HR check → sponsorship → match score → email → people search → close tab
+- Full workflow: login → scrape list → scrape details → blocklist → HR check → sponsorship → match score & store job → people search & store contacts → email → close tab
 - Multiple roles: cycle through 2+ roles in one polling loop
 - Handle errors: network timeout during scrape → retry → resume
 - Handle errors: LLM call fails → log, continue to next job
 
 ---
 
-### Phase 11: Documentation & Deployment Prep
+### Phase 10: Documentation & Deployment Prep
 **Goal**: Finalize docs, prepare for cloud deployment.
 
 **Deliverables**:
@@ -302,12 +274,12 @@
 
 ## Summary Timeline
 - **Phases 0–2**: Foundation + Auth + Scraping (6–9 days)
-- **Phases 3–5**: Filtering + HR + Matching (5–7 days)
-- **Phases 6–7**: Storage + Email (2–4 days)
-- **Phase 8**: Networking (3–4 days)
-- **Phase 9**: Scheduler (2–3 days) — Logging integrated throughout
-- **Phase 10**: Integration (2–3 days)
-- **Phase 11**: Docs (1–2 days)
+- **Phases 3–5**: Filtering + HR + Matching + Job Storage (5–7 days)
+- **Phase 6**: Networking + People Storage (3–4 days)
+- **Phase 7**: Email (1–2 days)
+- **Phase 8**: Scheduler (2–3 days) — Logging integrated throughout
+- **Phase 9**: Integration (2–3 days)
+- **Phase 10**: Docs (1–2 days)
 
 **Total**: ~25–35 days (assuming 1 developer, working sequentially).
 
@@ -330,11 +302,10 @@ Logging is **integrated into every phase**, not treated as a separate phase. Eac
 - **Phase 2 (Scraping)**: Log URL construction, list scrape, detail scrape, pagination, errors
 - **Phase 3 (Blocklist & HR)**: Log blocklist hits, HR check decisions, auto-blocklist additions
 - **Phase 4 (Sponsorship)**: Log sponsorship check results (accept/reject)
-- **Phase 5 (Match Scoring)**: Log match scores, resume load, LLM calls, thresholds
-- **Phase 6 (Storage)**: Log CSV/JSON appends, blocklist updates, duplicates
+- **Phase 5 (Match Scoring & Job Storage)**: Log match scores, resume load, LLM calls, thresholds, and job appends
+- **Phase 6 (Networking & People Storage)**: Log people search, connection requests sent/failed per page, tab management, and contact appends
 - **Phase 7 (Email)**: Log email sent events, SMTP errors, retry attempts
-- **Phase 8 (Networking)**: Log people search, connection requests sent/failed per page, tab management
-- **Phase 9 (Scheduler)**: Log cycle start/end with separators, role processing, errors, retry backoff
+- **Phase 8 (Scheduler)**: Log cycle start/end with separators, role processing, errors, retry backoff
 
 ### Log Examples
 ```
@@ -351,6 +322,7 @@ Logging is **integrated into every phase**, not treated as a separate phase. Eac
 [2025-01-01 10:31:30] [INFO] [CONNECTION_REQUEST] Page 1: 8 connection requests sent (2 failed, continued)
 [2025-01-01 10:31:45] [INFO] [CONNECTION_REQUEST] Page 2: 7 connection requests sent
 [2025-01-01 10:32:00] [INFO] [CONNECTION_REQUEST] Page 3: exhausted, 0 new people
+[2025-01-01 10:32:02] [INFO] [CONTACTS_STORED] People outreach stored: 15 records
 [2025-01-01 10:32:05] [INFO] [EMAIL_SENT] Alert email sent to user@example.com (connections: 15)
 [2025-01-01 10:32:06] [INFO] [CYCLE_END] End of job processing for role 1/2
 ===== END OF CYCLE =====

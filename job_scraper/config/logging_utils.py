@@ -6,7 +6,7 @@ import logging
 import sys
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import structlog
 
@@ -94,20 +94,22 @@ def setup_logging(
     )
     file_handler.setLevel(level)
     file_formatter = StructuredFormatter(
-        "[%(asctime)s] [%(levelname)s] [%(category)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+        "[%(asctime)s] [%(levelname)s] [%(category)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
     file_handler.setFormatter(file_formatter)
 
     # Console handler (optional)
-    handlers = [file_handler]
+    handlers: list[logging.Handler] = [file_handler]
     if enable_console:
         console_handler = logging.StreamHandler(stream=sys.stdout)
         console_handler.setLevel(level)
         console_formatter = ConsoleFormatter(
-            "[%(asctime)s] [%(levelname)s] [%(category)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+            "[%(asctime)s] [%(levelname)s] [%(category)s] %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
         console_handler.setFormatter(console_formatter)
-        handlers.append(console_handler)  # type: ignore[arg-type]
+        handlers.append(console_handler)
 
     # Configure root logger
     logging.basicConfig(
@@ -118,16 +120,18 @@ def setup_logging(
 
     # Optional structlog configuration that routes through stdlib logging
     if enable_structlog:
+        processors = [
+            _add_category,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeEncoder(),
+        ]
+
         structlog.configure(
-            processors=[
-                _add_category,
-                structlog.stdlib.add_log_level,
-                structlog.stdlib.PositionalArgumentsFormatter(),
-                structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False),
-                structlog.processors.StackInfoRenderer(),
-                structlog.processors.format_exc_info,
-                structlog.processors.UnicodeEncoder(),
-            ],
+            processors=cast(list[Any], processors),
             logger_factory=structlog.stdlib.LoggerFactory(),
             wrapper_class=structlog.stdlib.BoundLogger,
             cache_logger_on_first_use=True,
@@ -196,7 +200,9 @@ def get_logger(name: str, structured: bool = False) -> Any:
     return logging.getLogger(name)
 
 
-def _add_category(logger: Any, method_name: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+def _add_category(
+    logger: Any, method_name: str, event_dict: dict[str, Any]
+) -> dict[str, Any]:
     """Processor that adds category based on logger name"""
     logger_name = event_dict.get("logger", "") or getattr(logger, "name", "")
     category = "GENERAL"

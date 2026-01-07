@@ -25,16 +25,15 @@ class DummyResponsesClient:
             output=[SimpleNamespace(content=[SimpleNamespace(text=self.payload)])]
         )
 
-    # Support both client.responses.create and client.create patterns
-    responses = property(lambda self: self)
-
 
 def make_client(payload: str) -> DummyResponsesClient:
     return DummyResponsesClient(payload)
 
 
 class TestBlocklist:
-    def test_blocklist_exact_and_pattern_match(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_blocklist_exact_and_pattern_match(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         blocklist = Blocklist(file_path=mock_blocklist_json)
 
@@ -57,7 +56,9 @@ class TestBlocklist:
 
 
 class TestHRChecker:
-    def test_hr_company_rejected_and_blocklisted(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_hr_company_rejected_and_blocklisted(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
         blocklist = Blocklist(file_path=mock_blocklist_json, config=config)
@@ -89,7 +90,9 @@ class TestHRChecker:
             data = json.load(f)
         assert "Tech Products Inc" not in data["blocklist"]
 
-    def test_invalid_json_defaults_to_reject(self, mock_env, mock_blocklist_json, monkeypatch):
+    def test_invalid_json_defaults_to_reject(
+        self, mock_env, mock_blocklist_json, monkeypatch
+    ):
         monkeypatch.setenv("BLOCKLIST_PATH", str(mock_blocklist_json))
         config = Config()
         blocklist = Blocklist(file_path=mock_blocklist_json, config=config)

@@ -6,25 +6,41 @@ import importlib
 import pickle
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 try:
     webdriver = importlib.import_module("selenium.webdriver")
-    WebDriverException = importlib.import_module("selenium.common.exceptions").WebDriverException  # type: ignore[attr-defined]
-    Options = webdriver.ChromeOptions  # type: ignore[attr-defined]
-    Service = importlib.import_module("selenium.webdriver.chrome.service").Service  # type: ignore[attr-defined]
+    WebDriverException = getattr(
+        importlib.import_module("selenium.common.exceptions"),
+        "WebDriverException",
+        Exception,
+    )
+    ChromeService = getattr(
+        importlib.import_module("selenium.webdriver.chrome.service"),
+        "Service",
+        None,
+    )
+    ChromeDriverManager = None
     try:
-        ChromeDriverManager = importlib.import_module(
-            "webdriver_manager.chrome"
-        ).ChromeDriverManager  # type: ignore[attr-defined]
+        ChromeDriverManager = getattr(
+            importlib.import_module("webdriver_manager.chrome"),
+            "ChromeDriverManager",
+            None,
+        )
     except ModuleNotFoundError:
         ChromeDriverManager = None
-except ModuleNotFoundError:  # pragma: no cover - allows import without selenium installed
+except (
+    ModuleNotFoundError
+):  # pragma: no cover - allows import without selenium installed
     webdriver = None
     WebDriverException = Exception
-    Options = Any  # type: ignore[assignment]
-    Service = Any  # type: ignore[assignment]
+    ChromeService = None
     ChromeDriverManager = None
+
+if TYPE_CHECKING:
+    from typing import Any as ChromeWebDriver
+else:  # pragma: no cover - typing only
+    ChromeWebDriver = Any
 
 
 class SessionManager:
@@ -36,16 +52,18 @@ class SessionManager:
         user_agent: str | None = None,
         window_size: str = "1280,900",
         driver_path: str | None = None,
-        cookie_path: Path = Path("data/.linkedin_cookies.pkl"),
+        cookie_path: Path = Path(__file__).parent.parent / "data/.linkedin_cookies.pkl",
+        chrome_profile_path: str | None = None,
     ) -> None:
         self.headless = headless
         self.user_agent = user_agent
         self.window_size = window_size
         self.driver_path = driver_path
         self.cookie_path = cookie_path
-        self._driver: webdriver.Chrome | None = None
+        self.chrome_profile_path = chrome_profile_path
+        self._driver: ChromeWebDriver | None = None
 
-    def start(self) -> webdriver.Chrome:
+    def start(self) -> ChromeWebDriver:
         """Start (or return existing) Chrome webdriver."""
         if self._driver:
             return self._driver
@@ -61,32 +79,50 @@ class SessionManager:
         if not self.driver_path and ChromeDriverManager:
             try:
                 driver_path = ChromeDriverManager().install()
-                service = Service(executable_path=driver_path)
-                self._driver = webdriver.Chrome(service=service, options=options)
+                if ChromeService:
+                    service = ChromeService(executable_path=driver_path)
+                    self._driver = webdriver.Chrome(service=service, options=options)
+                else:
+                    self._driver = webdriver.Chrome(options=options)
             except Exception:
                 # Fallback to Selenium's built-in driver manager
                 self._driver = webdriver.Chrome(options=options)
         elif self.driver_path:
-            service = Service(executable_path=self.driver_path)
-            self._driver = webdriver.Chrome(service=service, options=options)
+            if ChromeService:
+                service = ChromeService(executable_path=self.driver_path)
+                self._driver = webdriver.Chrome(service=service, options=options)
+            else:
+                self._driver = webdriver.Chrome(options=options)
         else:
             # Let Selenium's built-in manager handle it
             self._driver = webdriver.Chrome(options=options)
 
         # Reasonable defaults; callers can override if needed
+        if self._driver is None:  # Defensive guard for type-checkers
+            raise RuntimeError("Failed to initialize Chrome webdriver.")
         self._driver.set_page_load_timeout(30)
         return self._driver
 
-    def get_driver(self) -> webdriver.Chrome:
+    def get_driver(self) -> ChromeWebDriver:
         """Ensure a webdriver is available."""
         return self.start()
 
-    def _build_options(self) -> Options:
+    def _build_options(self) -> Any:
         if webdriver is None:
             raise RuntimeError(
                 "Selenium is not installed. Install dependencies via pixi before running authentication."
             )
-        options = webdriver.ChromeOptions()
+        chrome_options_cls = getattr(webdriver, "ChromeOptions", None)
+        if chrome_options_cls is None:
+            raise RuntimeError("ChromeOptions not available in selenium.webdriver")
+        options = chrome_options_cls()
+
+        # Use user's Chrome profile if specified
+        if self.chrome_profile_path:
+            options.add_argument(f"--user-data-dir={self.chrome_profile_path}")
+            # Use a specific profile directory to avoid conflicts
+            options.add_argument("--profile-directory=Default")
+
         if self.headless:
             # Headless Chrome with new headless mode for stability
             options.add_argument("--headless=new")

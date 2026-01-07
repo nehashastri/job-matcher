@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import time
-from typing import Any
+from typing import Any, cast
 
 from config.config import get_config
 from filtering.blocklist import Blocklist
@@ -36,9 +36,10 @@ class LinkedInScraper(BaseScraper):
         self.base_url = "https://www.linkedin.com"
         self.user_email = os.getenv("LINKEDIN_EMAIL", "")
         self.user_password = os.getenv("LINKEDIN_PASSWORD", "")
-        self.driver = None
+        # Cast to concrete types so static analysis knows these are set by _setup_driver
+        self.driver = cast(webdriver.Chrome, None)
         self.authenticated = False
-        self.wait = None
+        self.wait = cast(WebDriverWait, None)
 
         # Config-driven components
         self.config = get_config()
@@ -63,6 +64,51 @@ class LinkedInScraper(BaseScraper):
             options.add_argument("--disable-blink-features=AutomationControlled")
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option("useAutomationExtension", False)
+
+            # Prefer explicit CHROME_PROFILE_PATH; otherwise fall back to CHROME_USER_DATA_DIR + CHROME_PROFILE_DIR
+            chrome_profile_path = os.getenv("CHROME_PROFILE_PATH", "").strip()
+            chrome_user_data_dir = os.getenv("CHROME_USER_DATA_DIR", "").strip()
+            chrome_profile_dir = os.getenv("CHROME_PROFILE_DIR", "").strip()
+
+            # Remote debugging attach (user starts Chrome with --remote-debugging-port)
+            remote_debug_port = os.getenv("CHROME_REMOTE_DEBUG_PORT", "").strip()
+            remote_debug_addr = os.getenv(
+                "CHROME_REMOTE_DEBUG_ADDRESS", "127.0.0.1"
+            ).strip()
+            use_remote_debug = bool(remote_debug_port)
+
+            if use_remote_debug:
+                debugger_address = f"{remote_debug_addr}:{remote_debug_port}"
+                options.add_experimental_option("debuggerAddress", debugger_address)
+                self.logger.info(
+                    "Using existing Chrome via remote debugging at %s (no profile flags applied)",
+                    debugger_address,
+                )
+            elif chrome_profile_path:
+                options.add_argument(f"--user-data-dir={chrome_profile_path}")
+                options.add_argument("--profile-directory=Default")
+                self.logger.info(
+                    f"Using Chrome profile from CHROME_PROFILE_PATH: {chrome_profile_path}"
+                )
+            elif chrome_user_data_dir:
+                options.add_argument(f"--user-data-dir={chrome_user_data_dir}")
+                if chrome_profile_dir:
+                    options.add_argument(f"--profile-directory={chrome_profile_dir}")
+                    self.logger.info(
+                        "Using Chrome profile from CHROME_USER_DATA_DIR + CHROME_PROFILE_DIR: %s | %s",
+                        chrome_user_data_dir,
+                        chrome_profile_dir,
+                    )
+                else:
+                    options.add_argument("--profile-directory=Default")
+                    self.logger.info(
+                        "Using Chrome user data dir (Default profile): %s",
+                        chrome_user_data_dir,
+                    )
+            else:
+                self.logger.warning(
+                    "CHROME_PROFILE_PATH/CHROME_USER_DATA_DIR not set; Chrome will launch with a fresh profile"
+                )
 
             if os.getenv("HEADLESS", "false").lower() == "true":
                 options.add_argument("--headless=new")
@@ -209,7 +255,7 @@ class LinkedInScraper(BaseScraper):
         scorer=None,
         match_threshold: float = 0.0,
         storage=None,
-        connect_pages: int = 3,
+        connect_pages: int | None = 3,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
         team_hint: str | None = None,
     ) -> tuple[list[dict[str, Any]], bool]:
@@ -498,7 +544,7 @@ class LinkedInScraper(BaseScraper):
             try:
                 elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
                 if elements:
-                    return elements  # type: ignore[no-any-return]
+                    return elements
             except Exception:
                 continue
         return []
@@ -590,7 +636,7 @@ class LinkedInScraper(BaseScraper):
                 element = self.driver.find_element(By.CSS_SELECTOR, selector)
                 text = element.get_attribute("innerText")
                 if text:
-                    return text.strip()  # type: ignore[no-any-return]
+                    return str(text).strip()
             except Exception:
                 continue
         return ""
@@ -598,7 +644,7 @@ class LinkedInScraper(BaseScraper):
     def _safe_find_text(self, selector: str) -> str:
         try:
             element = self.driver.find_element(By.CSS_SELECTOR, selector)
-            return element.text.strip()  # type: ignore[no-any-return]
+            return element.text.strip()
         except Exception:
             return ""
 
@@ -621,7 +667,7 @@ class LinkedInScraper(BaseScraper):
                 element = self.driver.find_element(By.CSS_SELECTOR, selector)
                 text = element.text.strip()
                 if text:
-                    return text  # type: ignore[no-any-return]
+                    return text
             except Exception:
                 continue
         return ""
@@ -654,7 +700,7 @@ class LinkedInScraper(BaseScraper):
                 element = self.driver.find_element(By.CSS_SELECTOR, selector)
                 text = element.text.strip()
                 if text:
-                    return text  # type: ignore[no-any-return]
+                    return text
             except Exception:
                 continue
         return ""
@@ -718,7 +764,7 @@ class LinkedInScraper(BaseScraper):
                 for elem in elements:
                     text = elem.text.lower()
                     if "seniority level" in text:
-                        return text.replace("seniority level", "").strip()  # type: ignore[no-any-return]
+                        return text.replace("seniority level", "").strip()
             except Exception:
                 continue
         return ""
@@ -731,7 +777,7 @@ class LinkedInScraper(BaseScraper):
                 for elem in elements:
                     text = elem.text.lower()
                     if "employees" in text:
-                        return text.strip()  # type: ignore[no-any-return]
+                        return text.strip()
             except Exception:
                 continue
         return ""
@@ -760,7 +806,7 @@ class LinkedInScraper(BaseScraper):
     def _connect_to_people(
         self,
         job: dict,
-        connect_pages: int = 3,
+        connect_pages: int | None = None,
         delay_range: tuple[float, float] = (1.0, 2.0),
         storage=None,
         team_hint: str | None = None,
@@ -780,44 +826,33 @@ class LinkedInScraper(BaseScraper):
             if not self._login():
                 return
 
-            original_window = self.driver.current_window_handle
-            self.driver.execute_script("window.open('about:blank','_blank');")
-            handles = self.driver.window_handles
-            self.driver.switch_to.window(handles[-1])
-
             people_finder = PeopleFinder(self.driver, self.wait, self.logger)
             connection_requester = ConnectionRequester(
                 self.driver, self.wait, self.logger
             )
 
+            pages = connect_pages if connect_pages is not None else 3
+
             summary = connection_requester.run_on_people_search(
                 people_finder,
                 role=role,
                 company=company,
-                message_note_target=10,
-                no_note_target=10,
                 delay_range=delay_range,
                 store=storage,
-                max_pages=connect_pages,
+                max_pages=pages,
+                use_new_tab=self.config.networking_allow_new_tab,
             )
             self.logger.info(
                 "    [CONNECT] Requests: "
-                f"messaged={summary['messaged']} sent_with_note={summary['sent_with_note']} "
-                f"sent_without_note={summary['sent_without_note']} skipped={summary['skipped']} "
+                f"message_available={summary['message_available']} connect_match={summary['connect_clicked_match']} "
+                f"connect_non_match={summary['connect_clicked_non_match']} skipped={summary['skipped']} "
                 f"failed={summary['failed']} pages={summary['pages_processed']}"
             )
         except Exception as exc:
             self.logger.debug(f"    Could not connect to people: {exc}")
         finally:
-            try:
-                handles = self.driver.window_handles
-                if len(handles) > 1:
-                    self.driver.close()
-                    self.driver.switch_to.window(handles[0])
-                else:
-                    self.driver.switch_to.window(original_window)
-            except Exception:
-                pass
+            # Stay in the current tab; no new tab was opened
+            pass
 
     def _safe_click(self, selector: str):
         try:

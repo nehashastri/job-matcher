@@ -7,9 +7,12 @@ import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, cast
 
-from config.config import Config
+import openpyxl
+from config.config import DATA_DIR, Config
+from openpyxl.worksheet.worksheet import Worksheet
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,13 @@ class EmailNotifier:
         self.email_to = config.email_to
         self.smtp_use_ssl = getattr(config, "smtp_use_ssl", False)
         self.enabled = config.enable_email_notifications
+        self.connections_excel_path = Path(
+            getattr(
+                config,
+                "connections_excel_path",
+                DATA_DIR / "linkedin_connections.xlsx",
+            )
+        )
 
     def send_job_notification(
         self, job_data: Dict[str, Any], connection_count: int = 0
@@ -56,9 +66,13 @@ class EmailNotifier:
             return False
 
         try:
+            role_contacts = self._load_role_contacts(
+                job_data.get("title", ""), job_data.get("company", "")
+            )
+
             # Compose email
             subject = self._compose_subject(job_data)
-            body = self._compose_body(job_data, connection_count)
+            body = self._compose_body(job_data, connection_count, role_contacts)
 
             # Create message
             msg = MIMEMultipart("alternative")
@@ -69,7 +83,10 @@ class EmailNotifier:
             # Attach plain text and HTML versions
             msg.attach(MIMEText(body, "plain"))
             msg.attach(
-                MIMEText(self._compose_html_body(job_data, connection_count), "html")
+                MIMEText(
+                    self._compose_html_body(job_data, connection_count, role_contacts),
+                    "html",
+                )
             )
 
             # Send email
@@ -168,13 +185,16 @@ class EmailNotifier:
         company = job_data.get("company", "Unknown")
         return f"🎯 Job Match: {title} at {company}"
 
-    def _compose_body(self, job_data: Dict[str, Any], connection_count: int) -> str:
+    def _compose_body(
+        self, job_data: Dict[str, Any], connection_count: int, role_contacts=None
+    ) -> str:
         """
         Compose plain text email body
 
         Args:
             job_data: Job details
             connection_count: Number of connection requests sent
+            role_contacts: Dict of role-specific contacts (messages/connections)
 
         Returns:
             str: Email body
@@ -188,6 +208,10 @@ class EmailNotifier:
         posted_date = job_data.get("posted_date", "Unknown")
         seniority = job_data.get("seniority", "Unknown")
         remote = job_data.get("remote", "Unknown")
+
+        role_contacts = role_contacts or job_data.get("role_contacts") or {}
+        message_targets = role_contacts.get("messages", [])
+        connected_targets = role_contacts.get("connections", [])
 
         body = f"""
 New Job Match Found!
@@ -203,6 +227,9 @@ Posted: {posted_date}
 
 Connection Requests Sent: {connection_count}
 
+{self._render_contacts_text_section("Send Messages to", message_targets)}
+{self._render_contacts_text_section("Connection Request sent to", connected_targets)}
+
 Job URL: {job_url}
 
 ---
@@ -211,7 +238,7 @@ This is an automated notification from the Job Scraper.
         return body
 
     def _compose_html_body(
-        self, job_data: Dict[str, Any], connection_count: int
+        self, job_data: Dict[str, Any], connection_count: int, role_contacts=None
     ) -> str:
         """
         Compose HTML email body
@@ -219,6 +246,7 @@ This is an automated notification from the Job Scraper.
         Args:
             job_data: Job details
             connection_count: Number of connection requests sent
+            role_contacts: Dict of role-specific contacts (messages/connections)
 
         Returns:
             str: HTML email body
@@ -232,6 +260,10 @@ This is an automated notification from the Job Scraper.
         posted_date = job_data.get("posted_date", "Unknown")
         seniority = job_data.get("seniority", "Unknown")
         remote = job_data.get("remote", "Unknown")
+
+        role_contacts = role_contacts or {}
+        message_targets = role_contacts.get("messages", [])
+        connected_targets = role_contacts.get("connections", [])
 
         # Color code match score
         score_color = "#28a745" if match_score >= 8 else "#ffc107"
@@ -308,6 +340,44 @@ This is an automated notification from the Job Scraper.
             color: #666;
             text-align: center;
         }}
+        .section-title {{
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #0077b5;
+        }}
+        .people-list {{
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+        }}
+        .people-list li {{
+            background-color: white;
+            margin-bottom: 8px;
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }}
+        .people-name {{
+            font-weight: bold;
+            color: #004182;
+        }}
+        .people-title {{
+            display: block;
+            color: #555;
+            margin-top: 4px;
+            font-size: 14px;
+        }}
+        .people-link {{
+            display: inline-block;
+            margin-top: 6px;
+            color: #0077b5;
+            text-decoration: none;
+            font-size: 13px;
+        }}
+        .people-link:hover {{
+            text-decoration: underline;
+        }}
     </style>
 </head>
 <body>
@@ -353,6 +423,9 @@ This is an automated notification from the Job Scraper.
             <span>{connection_count}</span>
         </div>
 
+        {self._render_contacts_html_section("Send Messages to", message_targets)}
+        {self._render_contacts_html_section("Connection Request sent to", connected_targets)}
+
         <a href="{job_url}" class="button">View Job on LinkedIn</a>
 
         <div class="footer">
@@ -363,6 +436,128 @@ This is an automated notification from the Job Scraper.
 </html>
 """
         return html
+
+    def _render_contacts_text_section(
+        self, title: str, contacts: list[dict[str, str]]
+    ) -> str:
+        if not contacts:
+            return ""
+
+        lines = [f"{title}:"]
+        for person in contacts:
+            name = person.get("name") or "Unknown"
+            title_text = person.get("title") or ""
+            url = person.get("url") or ""
+            detail = f"{name}" if not title_text else f"{name} — {title_text}"
+            if url:
+                detail = f"{detail} ({url})"
+            lines.append(f"- {detail}")
+        return "\n".join(lines)
+
+    def _render_contacts_html_section(
+        self, title: str, contacts: list[dict[str, str]]
+    ) -> str:
+        if not contacts:
+            return ""
+
+        items = []
+        for person in contacts:
+            name = person.get("name") or "Unknown"
+            title_text = person.get("title") or ""
+            url = person.get("url") or ""
+            link = (
+                f'<a href="{url}" class="people-link" target="_blank">Profile</a>'
+                if url
+                else ""
+            )
+            items.append(
+                f'<li><span class="people-name">{name}</span>'
+                f'<span class="people-title">{title_text}</span>{link}</li>'
+            )
+
+        return (
+            f'<div class="section-title">{title}</div>'
+            f'<ul class="people-list">{"".join(items)}</ul>'
+        )
+
+    def _load_role_contacts(
+        self, role: str, company: str | None = None
+    ) -> dict[str, list[dict[str, str]]]:
+        role_clean = (role or "").strip().lower()
+        company_clean = (company or "").strip().lower()
+        contacts = {"messages": [], "connections": []}
+
+        if not role_clean:
+            return contacts
+
+        try:
+            if not self.connections_excel_path.exists():
+                logger.debug(
+                    "No linkedin_connections.xlsx found at %s; skipping contact enrichment",
+                    self.connections_excel_path,
+                )
+                return contacts
+
+            wb = openpyxl.load_workbook(self.connections_excel_path)
+            active_sheet = wb.active
+            if active_sheet is None:
+                return contacts
+            ws = cast(Worksheet, active_sheet)
+            headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+            header_index = {name: idx for idx, name in enumerate(headers)}
+
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not any(row):
+                    continue
+
+                row_role = self._cell_text(
+                    row[header_index.get("Role Searched", -1)]
+                ).lower()
+                if row_role != role_clean:
+                    continue
+
+                row_company = self._cell_text(
+                    row[header_index.get("Company", -1)]
+                ).lower()
+                if company_clean and row_company and row_company != company_clean:
+                    continue
+
+                person = {
+                    "name": self._cell_text(row[header_index.get("Name", -1)]),
+                    "title": self._cell_text(row[header_index.get("Title", -1)]),
+                    "url": self._cell_text(row[header_index.get("LinkedIn URL", -1)]),
+                }
+
+                message_available = (
+                    self._cell_text(
+                        row[header_index.get("Message Available", -1)]
+                    ).lower()
+                    == "yes"
+                )
+                connected = (
+                    self._cell_text(row[header_index.get("Connected", -1)]).lower()
+                    == "yes"
+                )
+
+                if message_available:
+                    contacts["messages"].append(person)
+                if connected:
+                    contacts["connections"].append(person)
+
+            return contacts
+
+        except Exception as exc:
+            logger.debug(f"Could not load contacts for role '{role}': {exc}")
+            return contacts
+
+    @staticmethod
+    def _cell_text(value: Any) -> str:
+        try:
+            if value is None:
+                return ""
+            return str(value).strip()
+        except Exception:
+            return ""
 
     def test_connection(self) -> bool:
         """

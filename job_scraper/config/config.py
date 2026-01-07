@@ -34,22 +34,30 @@ class Config:
         """Load configuration from environment variables"""
         # OpenAI
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
+        # Small/fast model for first-pass scoring
         self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-        # Larger model used for second-pass reranking; defaults to primary if unset
-        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", self.openai_model)
-        # Score band where we trigger rerank (absolute difference from threshold)
-        self.job_match_rerank_band = float(os.getenv("JOB_MATCH_RERANK_BAND", "1.0"))
+        # Larger model for rerank/second-pass; defaults to "gpt-4o" when unset
+        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-4o")
+        # First-pass score at or above this value triggers rerank with a bigger model
+        self.job_match_rerank_trigger = float(
+            os.getenv("JOB_MATCH_RERANK_TRIGGER", "8")
+        )
+        # Score band around threshold that triggers rerank with larger model
+        self.job_match_rerank_band = float(os.getenv("JOB_MATCH_RERANK_BAND", "1"))
         self.job_match_threshold = float(os.getenv("JOB_MATCH_THRESHOLD", "8"))
 
         # LinkedIn
         self.linkedin_email = os.getenv("LINKEDIN_EMAIL", "")
         self.linkedin_password = os.getenv("LINKEDIN_PASSWORD", "")
 
-        # File paths
-        self.resume_path = Path(os.getenv("RESUME_PATH", "./data/resume.docx"))
-        self.roles_path = Path(os.getenv("ROLES_PATH", "./data/roles.json"))
+        # Chrome Configuration
+        self.chrome_profile_path = os.getenv("CHROME_PROFILE_PATH", "")
+
+        # File paths (resolve against repo data dir by default)
+        self.resume_path = Path(os.getenv("RESUME_PATH", str(DATA_DIR / "resume.docx")))
+        self.roles_path = Path(os.getenv("ROLES_PATH", str(DATA_DIR / "roles.json")))
         self.blocklist_path = Path(
-            os.getenv("BLOCKLIST_PATH", "./data/company_blocklist.json")
+            os.getenv("BLOCKLIST_PATH", str(DATA_DIR / "company_blocklist.json"))
         )
 
         # Scraping settings
@@ -72,6 +80,9 @@ class Config:
         # Networking settings
         self.max_connections_per_job = int(os.getenv("MAX_CONNECTIONS_PER_JOB", "30"))
         self.max_people_search_pages = int(os.getenv("MAX_PEOPLE_SEARCH_PAGES", "3"))
+        self.networking_allow_new_tab = (
+            os.getenv("NETWORKING_ALLOW_NEW_TAB", "true").lower() == "true"
+        )
 
         # Logging settings
         self.log_level = os.getenv("LOG_LEVEL", "INFO")

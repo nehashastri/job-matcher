@@ -28,7 +28,7 @@ pixi -C project_config install
    POLL_INTERVAL_MINUTES=30
    ```
 3. Provide inputs
-   - `data/master_resume.docx` (your resume)
+   - `data/resume.docx` (your resume)
    - `data/roles.json` (roles + locations + filters)
    - `data/company_blocklist.json` (optional blocklist)
 
@@ -67,6 +67,44 @@ ENABLE_EMAIL_NOTIFICATIONS=true
 - Do NOT use your regular Gmail password
 - Set `ENABLE_EMAIL_NOTIFICATIONS=false` to disable emails
 
+## Chrome Profile Setup
+
+To enable faster LinkedIn login and reduce CAPTCHA issues, you can copy your existing Chrome profile:
+
+### Step 1: Locate Your Chrome Profile
+1. Open Chrome and go to `chrome://version/`
+2. Find the **Profile Path** (e.g., `C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data\Default`)
+3. Close all Chrome instances before copying
+
+### Step 2: Copy Your Chrome Profile
+1. Open File Explorer and navigate to your Chrome User Data folder
+2. Copy the `Default` profile folder (or any named profile you use regularly):
+   ```powershell
+   Copy-Item "C:\Users\YourUsername\AppData\Local\Google\Chrome\User Data\Default" `
+     -Destination "D:\Projects\Job List\job_scraper\data\chrome_profile" -Recurse
+   ```
+3. Update your `.env` file with:
+   ```
+   CHROME_PROFILE_PATH=D:\Projects\Job List\job_scraper\data\chrome_profile
+   ```
+
+### Step 3: Verify Setup
+Run a test to ensure the profile loads correctly:
+```powershell
+pixi -C project_config run python ../scripts/test_linkedin_login.py
+```
+
+**Benefits:**
+- Preserves saved passwords and autofill data
+- Reduces CAPTCHA challenges
+- Maintains LinkedIn session cookies
+- Speeds up repeated runs
+
+**Notes:**
+- The profile copy is local and won't affect your regular Chrome browser
+- If login fails, verify the profile path and ensure all Chrome instances are closed
+- You can regenerate the copy anytime by following these steps again
+
 ## Resume Management
 
 ### Adding Your Resume
@@ -102,8 +140,8 @@ pixi -C project_config run loop
 ```
 
 ## Outputs
-- `data/jobs.csv` and `data/jobs.xlsx` for accepted jobs
-- `data/linkedin_connections.csv` and `data/linkedin_connections.xlsx` for saved contacts
+- `data/jobs.xlsx` for accepted jobs
+- `data/linkedin_connections.xlsx` for saved contacts
 - `data/company_blocklist.json` and `data/roles.json` for inputs
 - `logs/job_finder.log` (daily rotated) for execution logs
 

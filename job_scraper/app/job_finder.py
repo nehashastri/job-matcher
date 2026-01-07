@@ -3,6 +3,7 @@ Main CLI application for LinkedIn job scraping with LLM matching
 and Windows toast notifications
 """
 
+import importlib
 import logging
 import os
 import sys
@@ -10,23 +11,24 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-import click
-from openai import OpenAI
-from tabulate import tabulate
+click = importlib.import_module("click")
+OpenAI = getattr(importlib.import_module("openai"), "OpenAI")
+tabulate = getattr(importlib.import_module("tabulate"), "tabulate")
 
 try:
-    from win10toast import ToastNotifier
-except ImportError:  # Graceful fallback if toast package missing
+    ToastNotifier = getattr(importlib.import_module("win10toast"), "ToastNotifier")
+except ModuleNotFoundError:  # Graceful fallback if toast package missing
     ToastNotifier = None
 
 # Fix UTF-8 encoding on Windows PowerShell
 if sys.platform == "win32":
-    try:
-        # Set UTF-8 encoding for console output
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
-    except Exception:
-        pass  # Fallback if reconfigure fails
+    for stream in (sys.stdout, sys.stderr):
+        reconfig = getattr(stream, "reconfigure", None)
+        if callable(reconfig):
+            try:
+                reconfig(encoding="utf-8", errors="replace")
+            except Exception:
+                pass  # Fallback if reconfigure fails
 
 # Add project root to path for imports
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -145,28 +147,6 @@ class JobFinder:
             logger.warning("OPENAI_API_KEY not set; defaulting match score to 0")
             return 0.0
         try:
-            description = job.get("description", "")
-            prompt = (
-                "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
-                'Consider resume and preferences. Return JSON: {"score": number, "reason": string}.'
-            )
-            messages = [
-                {"role": "system", "content": prompt},
-                {
-                    "role": "user",
-                    "content": f"Resume:\n{self.resume_text}\n\nPreferences:\n{self.preferences_text}",
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        f"Job Title: {job.get('title', '')}\n"
-                        f"Company: {job.get('company', '')}\n"
-                        f"Location: {job.get('location', '')}\n"
-                        f"Description: {description[:4000]}"
-                    ),
-                },
-            ]
-
             result = self.match_scorer.score(
                 resume_text=self.resume_text,
                 preferences_text=self.preferences_text,
@@ -246,7 +226,9 @@ class JobFinder:
                                 "company": company,
                                 "role": role,
                                 "country": "US",
-                                "message_sent": "No",
+                                "role_match": person.get("is_role_match", False),
+                                "message_available": False,
+                                "connected": False,
                                 "status": "Identified",
                             }
                         )
@@ -407,7 +389,7 @@ class JobFinder:
         click.echo(tabulate(table_data, headers=headers, tablefmt="grid"))
 
         # Show CSV location
-        click.secho("\n📁 Jobs stored in: data/jobs.csv", fg="green")
+        click.secho("\n📁 Jobs stored in: data/jobs.xlsx", fg="green")
         if Path("data/jobs.xlsx").exists():
             click.secho("📊 Excel file available: data/jobs.xlsx", fg="green")
 
@@ -481,7 +463,7 @@ def export():
         click.secho("✅ Exported jobs to data/jobs.xlsx", fg="green")
     else:
         click.secho("❌ Export failed. Make sure openpyxl is installed:", fg="red")
-        click.echo("pip install openpyxl")
+        click.echo("pixi -C project_config install")
 
 
 @cli.command()
