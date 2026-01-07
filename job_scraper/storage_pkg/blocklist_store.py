@@ -23,6 +23,7 @@ class BlocklistStore:
     """
 
     def __init__(self, data_dir: str | Path | None = None):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize BlocklistStore.
 
@@ -37,6 +38,7 @@ class BlocklistStore:
             self._init_blocklist()
 
     def _init_blocklist(self):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._init_blocklist")
         """
         Initialize blocklist file with default structure if not present.
         """
@@ -49,6 +51,7 @@ class BlocklistStore:
         logger.info("Initialized empty company blocklist")
 
     def _read_blocklist(self) -> dict[str, Any]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._read_blocklist")
         """
         Read blocklist data from JSON file.
 
@@ -63,6 +66,7 @@ class BlocklistStore:
             return {"blocklist": [], "patterns": [], "notes": ""}
 
     def _write_blocklist(self, data: dict[str, Any]):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._write_blocklist")
         """
         Write blocklist data to JSON file.
 
@@ -76,6 +80,7 @@ class BlocklistStore:
             logger.error(f"Error writing blocklist: {str(e)}")
 
     def add(self, company: str) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.add")
         """
         Add a company to the blocklist if not already present.
 
@@ -104,6 +109,7 @@ class BlocklistStore:
             return False
 
     def remove(self, company: str) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.remove")
         """
         Remove a company from the blocklist.
 
@@ -132,6 +138,7 @@ class BlocklistStore:
             return False
 
     def get_all_companies(self) -> list[str]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_all_companies")
         """
         Get all companies in the blocklist.
 
@@ -142,6 +149,7 @@ class BlocklistStore:
         return data.get("blocklist", [])
 
     def get_all_patterns(self) -> list[str]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_all_patterns")
         """
         Get all regex patterns in the blocklist.
 
@@ -152,6 +160,7 @@ class BlocklistStore:
         return data.get("patterns", [])
 
     def is_blocked(self, company: str) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.is_blocked")
         """
         Check if a company is in the blocklist.
 
@@ -165,6 +174,7 @@ class BlocklistStore:
         return company in companies
 
     def add_pattern(self, pattern: str) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.add_pattern")
         """
         Add a regex pattern to the blocklist if not already present.
 
@@ -193,6 +203,7 @@ class BlocklistStore:
             return False
 
     def get_stats(self) -> dict[str, int]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_stats")
         """
         Get statistics about the blocklist (number of companies and patterns).
 

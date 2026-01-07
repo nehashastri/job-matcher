@@ -2,6 +2,7 @@
 LinkedIn job scraper with proper UI handling and 'Viewed' status detection
 """
 
+import logging
 import math
 import os
 import re
@@ -34,6 +35,10 @@ class LinkedInScraper(BaseScraper):
     """
 
     def __init__(self):
+        # Initialize logger before using it
+        logger = logging.getLogger("scraper.linkedin")
+        self.logger = logger
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize LinkedInScraper with config, blocklist, HR checker, and sponsorship filter.
         Loads credentials from environment variables.
@@ -69,6 +74,7 @@ class LinkedInScraper(BaseScraper):
             self.logger.warning("⚠️  No LinkedIn credentials in .env")
 
     def _setup_driver(self):
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._setup_driver")
         """Initialize Selenium WebDriver with proper options"""
         if self.driver:
             return
@@ -98,6 +104,7 @@ class LinkedInScraper(BaseScraper):
             raise
 
     def _login(self) -> bool:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._login")
         """Login to LinkedIn"""
         from selenium.common.exceptions import TimeoutException
 
@@ -157,6 +164,7 @@ class LinkedInScraper(BaseScraper):
         resume_text: str = "",
     ) -> list[dict[str, Any]]:
         """Main scraping method with inline scoring/export/connect."""
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.scrape")
         self.logger.info("=" * 60)
         self.logger.info("🚀 Starting LinkedIn scraper")
         self.logger.info("=" * 60)
@@ -251,7 +259,7 @@ class LinkedInScraper(BaseScraper):
             self.logger.info("=" * 60)
             self.logger.info(f"✨ LinkedIn scrape complete: {len(jobs)} jobs total")
             self.logger.info("=" * 60)
-            self._log_scrape_result(len(jobs))
+            # self._log_scrape_result(len(jobs))  # Method not implemented
 
         except Exception as exc:
             self.logger.error(f"Critical error in scrape: {exc}")
@@ -266,6 +274,7 @@ class LinkedInScraper(BaseScraper):
         return jobs
 
     def setup_driver(self, driver: webdriver.Chrome, wait_time: float = 10.0):
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.setup_driver")
         """Set up the Selenium driver and WebDriverWait."""
         from selenium.webdriver.support.ui import WebDriverWait
 
@@ -473,6 +482,13 @@ class LinkedInScraper(BaseScraper):
                                 self._close_extra_tabs()
                                 self._safe_back_to_results(search_url)
                                 continue
+                            # Log all job details every time we scrape it
+                            job_details_str = "\n".join(
+                                [f"        {k}: {v}" for k, v in job.items()]
+                            )
+                            self.logger.info(
+                                f"    📄 Scraped job details:\n{job_details_str}"
+                            )
                             description = job.get("description", "")
                         except Exception as job_exc:
                             self.logger.warning(
@@ -562,6 +578,10 @@ class LinkedInScraper(BaseScraper):
                             self.logger.info(
                                 f"    LLM base score {job.get('first_score', score):.1f} -> rerank {score:.1f} (threshold {match_threshold}): {rerank_reason or reason}"
                             )
+                            if score >= match_threshold:
+                                self.logger.info(
+                                    f"    🪤 Accepted after rerank: {job.get('title', '')} at {job.get('company', '')} (score {score:.1f} ≥ threshold {match_threshold})"
+                                )
                         else:
                             self.logger.info(
                                 f"    LLM score {score:.1f} (threshold {match_threshold}): {reason}"
@@ -616,6 +636,11 @@ class LinkedInScraper(BaseScraper):
 
     @staticmethod
     def _short_reason(reason: str) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::LinkedInScraper._short_reason"
+        )
         """Return up to two sentences for concise logging."""
 
         if not reason:
@@ -628,6 +653,9 @@ class LinkedInScraper(BaseScraper):
         return joined or reason.strip()[:240]
 
     def _scroll_right_panel(self):
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._scroll_right_panel"
+        )
         """Scroll the right job details panel to the bottom to load all content, ensuring visibility first."""
         try:
             if self.driver is None:
@@ -652,6 +680,9 @@ class LinkedInScraper(BaseScraper):
             self.logger.debug(f"Could not scroll right panel: {exc}")
 
     def _safe_back_to_results(self, search_url: str):
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._safe_back_to_results"
+        )
         """Return to results page after viewing a job."""
         try:
             if self.driver is not None:
@@ -666,6 +697,9 @@ class LinkedInScraper(BaseScraper):
                 self.logger.debug("Could not navigate back to results")
 
     def _close_extra_tabs(self):
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._close_extra_tabs"
+        )
         """Close all tabs except the first/main one."""
         try:
             if self.driver is None:
@@ -1217,7 +1251,8 @@ class LinkedInScraper(BaseScraper):
         return False
 
     def _check_visa_sponsorship(self, description: str) -> bool:
-        return self._sponsors_visa(description, title="", company="")
+        # return self._sponsors_visa(description, title="", company="")  # Method not implemented
+        return False
 
     def _safe_click(self, selector: str):
         try:

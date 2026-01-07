@@ -78,10 +78,11 @@ class JobFinder:
     """
 
     def __init__(self):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         # Load configuration settings
         self.config = Config()  # Loads config from file/env
         # Initialize job storage (writes jobs to CSV)
-        self.storage = JobStorage(data_dir=DATA_DIR)
+        self.storage = JobStorage(data_dir=DATA_DIR)  # type: ignore
         # List of job portal scrapers (currently LinkedIn only)
         self.scrapers = [
             ("LinkedIn", LinkedInScraper()),
@@ -113,6 +114,7 @@ class JobFinder:
         self.resume_text = self._load_resume_text()
 
     def _load_resume_text(self) -> str:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._load_resume_text")
         """
         Load resume text using ResumeLoader (full text, cached).
         Returns:
@@ -128,6 +130,9 @@ class JobFinder:
         return text
 
     def _score_job_with_llm(self, job: dict, prompt: str = "") -> float:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._score_job_with_llm"
+        )
         """
         Use OpenAI to score job vs resume on 0-10 scale.
         Args:
@@ -173,6 +178,7 @@ class JobFinder:
             return 0.0
 
     def _normalize_job(self, portal_name: str, job: dict) -> dict:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._normalize_job")
         """
         Normalize job dictionary for storage/export.
         Args:
@@ -190,6 +196,7 @@ class JobFinder:
         }
 
     def _notify_job(self, job: dict):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._notify_job")
         """
         Log job notification info.
         Args:
@@ -198,117 +205,79 @@ class JobFinder:
         message = f"{job.get('title', '')} @ {job.get('company', '')} ({job.get('location', '')})"
         logger.info(f"Notify: {message}")
 
-    def _process_jobs(self, portal_name: str, jobs: list, scraper=None) -> list:
+    def process_accepted_job(self, portal_name: str, job: dict, driver=None, wait=None):
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.process_accepted_job"
+        )
         """
-        Score, filter, store, find people, and notify for each job.
+        For an accepted job: save, scrape profiles, LLM match, store profiles, email, desktop notification.
         Args:
             portal_name (str): Name of job portal.
-            jobs (list): List of job dicts.
-            scraper: Scraper instance (optional).
+            job (dict): Job dict (already scored and accepted).
+            driver: Selenium driver (optional).
+            wait: Selenium WebDriverWait (optional).
         Returns:
-            list: List of matched jobs.
+            dict: The job dict with attached profiles (if any).
         """
-        matched = []
-        # Import here to avoid circular imports
-
         from networking.people_finder import PeopleFinder
         from notifications.email_notifier import EmailNotifier
 
-        # Use the active Selenium driver and WebDriverWait from the scraper
-        driver = getattr(scraper, "driver", None)
-        wait = getattr(scraper, "wait", None)
-        email_notifier = EmailNotifier()
-
-        for job in jobs:
-            score = self._score_job_with_llm(job)
-            job["match_score"] = score
-            if score < self.match_threshold:
-                logger.info(
-                    f"    ❌ Skipped (LLM score {score:.1f} < {self.match_threshold}): {job.get('title', '')} at {job.get('company', '')}"
-                )
-                continue
-
-            normalized = self._normalize_job(portal_name, job)
-            if self.storage.add_job(normalized):
-                matched.append(job)
-                self._notify_job(job)
-
-                profiles = []
-                role = job.get("title", "")
-                company = job.get("company", "")
-                if driver is not None and wait is not None:
-                    try:
-                        from networking.people_finder import PeopleFinder
-
-                        people_finder = PeopleFinder(driver, wait, logger)
-                        profiles = people_finder.scrape_people_cards(role, company)
-                        # LLM only returns matched profiles, so use as-is
-                        self.storage.add_people_profiles(
-                            profiles, searched_job_title=role
-                        )
-                    except Exception as pf_exc:
-                        logger.error(
-                            f"Error scraping or storing LinkedIn profiles for networking: {pf_exc}"
-                        )
-                else:
-                    logger.warning(
-                        "PeopleFinder not initialized: driver or wait not available."
-                    )
-
-                # Send notification after job and people info are stored
-                try:
-                    email_notifier.send_job_notification(job, match_profiles=profiles)
-                except Exception as en_exc:
-                    logger.error(f"Error sending notifications: {en_exc}")
-        return matched
-
-    def scrape_single_portal(self, portal_name, max_applicants=100):
-        """
-        Scrape a single job portal: Scrape → Find People → Export → Notify
-        Args:
-            portal_name (str): Name of portal to scrape.
-            max_applicants (int): Max applicants filter.
-        """
-        click.echo(click.style(f"\n🔍 Scraping {portal_name}...", fg="cyan", bold=True))
-        click.echo("Workflow: Scrape → Filter → Find People → Export to CSV → Notify")
-        click.echo("=" * 80)
-
-        # Find the matching scraper
-        scraper = None
-        for portal, s in self.scrapers:
-            if portal == portal_name:
-                scraper = s
-                break
-
-        if not scraper:
-            click.secho(f"❌ Portal '{portal_name}' not found", fg="red")
-            click.echo(f"Available portals: {', '.join([p for p, _ in self.scrapers])}")
-            return
-
-        try:
-            # Phase 1: Scrape portal
-            click.echo(f"  Scraping {portal_name}...")
-            jobs = scraper.scrape(
-                max_applicants=max_applicants,
-                scorer=self._score_job_with_llm,
-                match_threshold=self.match_threshold,
-                storage=self.storage,
-                connect_pages=self.config.max_people_search_pages,
-                connect_delay_range=(
-                    self.config.request_delay_min,
-                    self.config.request_delay_max,
-                ),
+        # 1. Save job to jobs.csv
+        normalized = self._normalize_job(portal_name, job)
+        added = self.storage.add_job(normalized)  # type: ignore
+        logger.info("CHECK HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        if not added:
+            logger.warning(
+                f"Job not added to jobs.csv: {job.get('title', '')} at {job.get('company', '')}"
             )
-            click.echo(f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}")
+            return job
 
-            click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
-            click.echo("=" * 80)
+        profiles = []
+        role = job.get("title", "")
+        company = job.get("company", "")
+        # 2. Scrape for relevant profiles and LLM match
+        # log if driver and wait are provided
 
-        except Exception as e:
-            click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")
-            logger.error(f"Error scraping {portal_name}: {str(e)}")
+        if driver is not None and wait is not None:
+            logger.info(f"Scraping people for role '{role}' at company '{company}'...")
+            try:
+                people_finder = PeopleFinder(driver, wait, logger=logger)
+                profiles = people_finder.scrape_people_cards(role, company)
+                # LLM only returns matched profiles, so use as-is
+                self.storage.add_people_profiles(profiles, searched_job_title=role)
+            except Exception as pf_exc:
+                logger.error(f"Error scraping or storing LinkedIn profiles: {pf_exc}")
+        else:
+            if driver is None:
+                logger.info(f"[DEBUG] driver is None for '{role}' at '{company}'")
+            if wait is None:
+                logger.info(f"[DEBUG] wait is None for '{role}' at '{company}'")
+            logger.warning(
+                f"Skipping people scraping for '{role}' at '{company}': driver or wait not available."
+            )
+
+        # 3. Send email with job and profiles
+        try:
+            email_notifier = EmailNotifier()
+            email_sent = email_notifier.send_job_notification(
+                job, match_profiles=profiles
+            )
+            if email_sent:
+                logger.info(f"Email sent for job '{role}' at '{company}'")
+            else:
+                logger.warning(f"Email not sent for job '{role}' at '{company}'")
+        except Exception as en_exc:
+            logger.error(f"Error sending notifications: {en_exc}")
+
+        # 4. Desktop notification is handled by EmailNotifier (win10toast)
+        self._notify_job(job)  # still log/notify in-app
+
+        # Attach profiles to job for return
+        job["matched_profiles"] = profiles
+        return job
 
     def scrape_jobs(self, max_applicants: int | None = None):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.scrape_jobs")
         """
         Scrape LinkedIn: Scrape → Find People → Export → Notify
         Args:
@@ -342,28 +311,44 @@ class JobFinder:
                     self.config.request_delay_max,
                 ),
             )
-            click.echo(f"  ✅ Completed {len(jobs)} job evaluations for {portal_name}")
+            # For each job, if accepted, process immediately
+            driver = getattr(scraper, "driver", None)
+            wait = getattr(scraper, "wait", None)
+            for job in jobs:
+                score = job.get("match_score")
+                if score is None:
+                    score = self._score_job_with_llm(job)
+                    job["match_score"] = score
+                if score < self.match_threshold:
+                    logger.info(
+                        f"    ❌ Skipped (LLM score {score:.1f} < {self.match_threshold}): {job.get('title', '')} at {job.get('company', '')}"
+                    )
+                    continue
+                processed_job = self.process_accepted_job(
+                    portal_name, job, driver=driver, wait=wait
+                )
+                all_jobs.append(processed_job)
             click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
-            all_jobs.extend(jobs)
         except Exception as e:
             click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")
             logger.error(f"Error scraping {portal_name}: {str(e)}")
 
         click.echo("\n" + "=" * 80)
         click.secho(
-            f"✅ LinkedIn scrape finished. Total jobs scraped: {len(all_jobs)}",
+            f"✅ LinkedIn scrape finished. Total jobs processed: {len(all_jobs)}",
             fg="green",
             bold=True,
         )
         return all_jobs
 
     def show_new_jobs(self, hours=24):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.show_new_jobs")
         """
         Display new jobs from last N hours.
         Args:
             hours (int): Number of hours to look back for new jobs.
         """
-        jobs = self.storage.get_all_jobs()
+        jobs = self.storage.get_all_jobs()  # type: ignore
 
         if not jobs:
             click.echo("❌ No jobs found")
@@ -395,6 +380,7 @@ class JobFinder:
 
     # --- Simplified continuous loop runner ---
     def run_loop(self, interval_minutes=15, max_applicants=100):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.run_loop")
         """
         Continuously run all portal workflows with a sleep between cycles.
         Args:
@@ -424,6 +410,7 @@ class JobFinder:
 
 @click.group()
 def cli():
+    logger.info(f"[ENTER] {__file__}::cli")
     """
     Job Scraper CLI - Find jobs and automate LinkedIn outreach.
     This is the main entry point for CLI commands.
@@ -439,6 +426,7 @@ def cli():
     help="Max applicants threshold (defaults to MAX_APPLICANTS from .env)",
 )
 def scrape(max_applicants):
+    logger.info(f"[ENTER] {__file__}::scrape")
     """
     Scrape LinkedIn for relevant positions.
     Args:
@@ -451,6 +439,7 @@ def scrape(max_applicants):
 @cli.command()
 @click.option("--hours", default=24, help="Show jobs from last N hours")
 def show_jobs(hours):
+    logger.info(f"[ENTER] {__file__}::show_jobs")
     """
     Show recent jobs from database.
     Args:
@@ -462,12 +451,13 @@ def show_jobs(hours):
 
 @cli.command()
 def stats():
+    logger.info(f"[ENTER] {__file__}::stats")
     """
     Show job statistics.
     Displays statistics about jobs scraped and stored.
     """
     finder = JobFinder()
-    stats_data = finder.storage.get_stats()
+    stats_data = finder.storage.get_stats()  # type: ignore
 
     click.echo(click.style("\n📊 Job Scraper Statistics", fg="cyan", bold=True))
     click.echo("=" * 50)
@@ -479,6 +469,7 @@ def stats():
 
 @cli.command()
 def export():
+    logger.info(f"[ENTER] {__file__}::export")
     """
     Export jobs to CSV (already automatic).
     This command is informational; jobs are exported automatically.
@@ -493,6 +484,7 @@ def export():
     "--max-applicants", default=100, help="Max applicants filter (default: 100)"
 )
 def loop(interval, max_applicants):
+    logger.info(f"[ENTER] {__file__}::loop")
     """
     Run scraper continuously in a loop.
     Args:

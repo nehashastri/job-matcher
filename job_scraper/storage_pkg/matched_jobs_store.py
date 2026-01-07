@@ -36,6 +36,7 @@ class MatchedJobsStore:
     """
 
     def __init__(self, data_dir: str | Path | None = None):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize MatchedJobsStore.
 
@@ -51,6 +52,7 @@ class MatchedJobsStore:
 
     # ---------- Initialization ----------
     def _init_jobs_file(self) -> None:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._init_jobs_file")
         """
         Ensure jobs CSV file exists. Creates an empty file if not present.
         """
@@ -58,6 +60,9 @@ class MatchedJobsStore:
             self._write_jobs_csv([])
 
     def _init_connections_file(self) -> None:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._init_connections_file"
+        )
         """
         Ensure linkedin_connections.csv file exists. Creates an empty file if not present.
         """
@@ -67,6 +72,9 @@ class MatchedJobsStore:
     def add_people_profiles(
         self, profiles: list[dict[str, Any]], searched_job_title: str = ""
     ) -> bool:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.add_people_profiles"
+        )
         """
         Add people profiles to linkedin_connections.csv. Each profile should include name, title, profile_url, company.
         Args:
@@ -90,6 +98,9 @@ class MatchedJobsStore:
         return self._write_connections_csv(rows)
 
     def _write_connections_csv(self, profiles: list[dict[str, Any]]) -> bool:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._write_connections_csv"
+        )
         """
         Write the list of people profiles to linkedin_connections.csv using CONNECTION_HEADERS.
         Args:
@@ -105,6 +116,7 @@ class MatchedJobsStore:
 
     # ---------- Jobs ----------
     def add_job(self, job: dict[str, Any]) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.add_job")
         """
         Append a job to jobs.csv. Does not update existing jobs.
 
@@ -146,6 +158,7 @@ class MatchedJobsStore:
             return False
 
     def get_all_jobs(self) -> list[dict[str, Any]]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_all_jobs")
         """
         Read all jobs from jobs.csv and return as a list of dictionaries.
 
@@ -163,6 +176,7 @@ class MatchedJobsStore:
             return []
 
     def _write_jobs_csv(self, jobs: list[dict[str, Any]]) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._write_jobs_csv")
         """
         Write the list of jobs to jobs.csv using the provided fieldnames.
 
@@ -180,6 +194,7 @@ class MatchedJobsStore:
     # Only CSV logic remains.
 
     def get_stats(self) -> dict[str, Any]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_stats")
         """
         Get statistics about the jobs stored (e.g., total job count).
 

@@ -3,6 +3,8 @@ from dataclasses import asdict
 
 
 def to_dict(obj):
+    import logging
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::to_dict")
     """
     Convert a dataclass object to a dictionary using asdict.
 
@@ -23,6 +25,8 @@ def to_dict(obj):
 
 
 def short_reason(reason: str) -> str:
+    import logging
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::short_reason")
     """
     Return up to two sentences from a reason string for concise logging.
 

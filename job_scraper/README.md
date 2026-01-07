@@ -39,9 +39,6 @@ job_scraper/
 │   └── people_finder.py             # LinkedIn people search and networking
 ├── notifications/
 │   └── email_notifier.py            # Email and desktop notification logic
-├── project_config/
-│   ├── pixi.toml                    # Pixi environment config (optional)
-│   └── pyproject.toml               # Python project config (optional)
 ├── scheduler/
 │   └── job_scraper_scheduler.py     # Main scheduler for polling and workflow
 ├── scraping/

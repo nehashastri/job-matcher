@@ -34,12 +34,35 @@ class Blocklist:
         patterns (list[str]): List of pattern/regex blocked companies
     """
 
+    def is_blocked(self, company: str) -> bool:
+        """
+        Check if a company is blocked (exact or pattern match).
+        Args:
+            company (str): Company name to check
+        Returns:
+            bool: True if blocked, False otherwise
+        """
+        if not company:
+            return False
+        name = company.strip()
+        if not name:
+            return False
+        if self._matches_exact(name):
+            self.logger.info(f"Rejected company via blocklist (exact match): {name}")
+            return True
+        if self._matches_pattern(name):
+            self.logger.info(f"Rejected company via blocklist (pattern match): {name}")
+            return True
+        return False
+
     def __init__(
         self,
         file_path: str | Path | None = None,
         config: Config | None = None,
         logger=None,
     ):
+        self.logger = logger or get_logger(__name__)
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize Blocklist instance and load blocklist from disk.
         Args:
@@ -48,7 +71,6 @@ class Blocklist:
             logger: Logger instance
         """
         self.config = config or get_config()
-        self.logger = logger or get_logger(__name__)
         self.file_path = (
             Path(file_path) if file_path else Path(self.config.blocklist_path)
         )
@@ -56,37 +78,8 @@ class Blocklist:
         self.patterns: list[str] = []
         self._load()
 
-    # -----------------------------
-    # Public API
-    # -----------------------------
-
-    def is_blocked(self, company: str) -> bool:
-        """
-        Return True if the company matches an exact name or pattern.
-        Args:
-            company (str): Company name to check
-        Returns:
-            bool: True if blocked, False otherwise
-        """
-
-        if not company:
-            return False
-
-        name = company.strip()
-        if not name:
-            return False
-
-        if self._matches_exact(name):
-            self.logger.info(f"Rejected company via blocklist (exact match): {name}")
-            return True
-
-        if self._matches_pattern(name):
-            self.logger.info(f"Rejected company via blocklist (pattern match): {name}")
-            return True
-
-        return False
-
     def add(self, company: str) -> bool:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.add")
         """
         Add a company to the blocklist and persist it to disk.
         Args:
@@ -119,6 +112,7 @@ class Blocklist:
     # Internal helpers
     # -----------------------------
     def _load(self) -> None:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._load")
         """Load blocklist entries and patterns from JSON file."""
 
         try:
@@ -142,6 +136,7 @@ class Blocklist:
             self.blocked, self.patterns = [], []
 
     def _persist(self) -> None:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._persist")
         """Persist blocklist data to JSON, preserving existing patterns/notes."""
 
         try:
@@ -165,9 +160,15 @@ class Blocklist:
             )
 
     def _matches_exact(self, company: str) -> bool:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._matches_exact"
+        )
         return any(company.lower() == item.lower() for item in self.blocked)
 
     def _matches_pattern(self, company: str) -> bool:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._matches_pattern"
+        )
         for pattern in self.patterns:
             regex = self._to_regex(pattern)
             try:
@@ -181,6 +182,9 @@ class Blocklist:
 
     @staticmethod
     def _to_regex(pattern: str) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(f"[ENTER] {__file__}::Blocklist._to_regex")
         """Convert simple wildcard patterns to regex. Existing regex still works."""
 
         # Replace shell-style wildcard with regex equivalent
@@ -188,4 +192,7 @@ class Blocklist:
 
     @staticmethod
     def _clean_list(values: Iterable[str]) -> Iterable[str]:
+        import logging
+
+        logging.getLogger(__name__).info(f"[ENTER] {__file__}::Blocklist._clean_list")
         return [v for v in values if isinstance(v, str) and v.strip()]

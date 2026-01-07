@@ -26,6 +26,7 @@ class BaseScraper(ABC):
     """
 
     def __init__(self, source_name: str):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize BaseScraper.
         Args:
@@ -51,6 +52,7 @@ class BaseScraper(ABC):
 
     @abstractmethod
     def scrape(self) -> list[dict[str, Any]]:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.scrape")
         """
         Scrape jobs from the source.
         Returns:
@@ -61,6 +63,9 @@ class BaseScraper(ABC):
     def _retry_on_stale_element(
         self, func: Callable[[], T], max_retries: int = 3, delay: float = 1.0
     ) -> T | None:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._retry_on_stale_element"
+        )
         """
         Retry a function call if it raises StaleElementReferenceException.
 
@@ -90,6 +95,7 @@ class BaseScraper(ABC):
         return None
 
     def _safe_find_element(self, driver, by, value, default=None):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._safe_find_element")
         """
         Safely find an element, returning default if not found.
 
@@ -111,6 +117,7 @@ class BaseScraper(ABC):
             return default
 
     def _safe_get_text(self, element, default: str = "") -> str:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._safe_get_text")
         """
         Safely get text from an element.
 
@@ -135,6 +142,9 @@ class BaseScraper(ABC):
     def _handle_network_error(
         self, error: Exception, attempt: int, max_retries: int
     ) -> bool:
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._handle_network_error"
+        )
         """
         Handle network-related errors with exponential backoff.
 
@@ -162,6 +172,7 @@ class BaseScraper(ABC):
         return True
 
     def _random_delay(self, min_delay: float = 2.0, max_delay: float = 5.0):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._random_delay")
         """
         Add a random delay to avoid rate limiting.
 
@@ -176,6 +187,7 @@ class BaseScraper(ABC):
     def _log_scrape_result(
         self, jobs_found: int, success: bool = True, error: str | None = None
     ):
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._log_scrape_result")
         """Log scraping result"""
         if success:
             self.logger.info(
@@ -187,6 +199,7 @@ class BaseScraper(ABC):
     def _sponsors_visa(
         self, description: str, title: str = "", company: str = ""
     ) -> bool:
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._sponsors_visa")
         """Check if job description indicates visa sponsorship."""
         if not description:
             return True

@@ -1,5 +1,6 @@
 Instructions:
 - Do not reject any role unless it explicitly states it does not hire international students or cannot sponsor visas.
+- Do not reject a role because you think I'm overqualified.
 - Give a score of zero only if:
 	- The role explicitly mentions no sponsorship or cannot hire international students.
 	- The role requires a PhD/doctorate or more than 2 years of work experience.
