@@ -15,6 +15,70 @@ logger = logging.getLogger(__name__)
 
 
 class EmailNotifier:
+    def send_job_notification(
+        self, job_data: dict, match_profiles: Optional[list[dict]] = None
+    ) -> bool:
+        """
+        Send a job notification email with job details and relevant profiles.
+        Args:
+            job_data (dict): Job details (title, company, url, match_score, etc.)
+            match_profiles (list[dict], optional): List of relevant profiles.
+        Returns:
+            bool: True if email sent successfully, False otherwise
+        """
+        if not self.enabled:
+            logger.info("Email notifications are disabled by config.")
+            return False
+        if not self._validate_config():
+            logger.error("Email config is invalid. Email not sent.")
+            return False
+
+        subject = f"Job Match: {job_data.get('title', 'Unknown')} @ {job_data.get('company', 'Unknown')}"
+        html_body = self._compose_html_body(job_data, match_profiles)
+        plain_body = (
+            self._compose_body(job_data, match_profiles)
+            if hasattr(self, "_compose_body")
+            else None
+        )
+
+        import email.message
+
+        msg = email.message.EmailMessage()
+        msg["From"] = self.email_from
+        msg["To"] = self.email_to
+        msg["Subject"] = subject
+        msg.set_content(plain_body or "See HTML version for details.")
+        msg.add_alternative(html_body, subtype="html")
+
+        try:
+            if self.smtp_use_ssl:
+                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=30)
+            else:
+                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+            server.login(self.smtp_username, self.smtp_password)
+            server.send_message(msg)
+            server.quit()
+            logger.info(f"✅ Email sent: {subject}")
+            # Optionally show desktop notification
+            if ToastNotifier:
+                try:
+                    toaster = ToastNotifier()
+                    toaster.show_toast(
+                        "Job Match Notification",
+                        f"{job_data.get('title', 'Unknown')} @ {job_data.get('company', 'Unknown')}",
+                        duration=5,
+                        threaded=True,
+                    )
+                except Exception as toast_exc:
+                    logger.warning(f"Desktop notification failed: {toast_exc}")
+            return True
+        except Exception as e:
+            logger.error(f"❌ Failed to send email: {e}")
+            return False
+
     def __init__(self):
         """
         Initialize EmailNotifier and load SMTP/email configuration from environment variables.
@@ -35,6 +99,31 @@ class EmailNotifier:
             "1",
             "yes",
         ]
+
+    def _compose_body(
+        self, job_data: dict, match_profiles: Optional[list[dict]] = None
+    ) -> str:
+        """
+        Compose plain text email body for job notification.
+        """
+        title = job_data.get("title", "Unknown")
+        company = job_data.get("company", "Unknown")
+        match_score = job_data.get("match_score", 0)
+        job_url = job_data.get("job_url", "") or job_data.get("url", "")
+        lines = [
+            "Job Match Notification",
+            f"Title: {title}",
+            f"Company: {company}",
+            f"URL: {job_url}",
+            f"Match Score: {match_score}",
+        ]
+        if match_profiles:
+            lines.append("\nRelevant Profiles:")
+            for p in match_profiles:
+                lines.append(
+                    f"- {p.get('name', 'Unknown')} | {p.get('title', '')} | {p.get('profile_url', p.get('url', ''))}"
+                )
+        return "\n".join(lines)
 
     def _validate_config(self) -> bool:
         """
