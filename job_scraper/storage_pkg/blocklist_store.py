@@ -14,19 +14,32 @@ logger = logging.getLogger(__name__)
 
 
 class BlocklistStore:
-    """Store and manage company blocklist"""
+    """
+    Store and manage company blocklist in a JSON file.
+
+    Attributes:
+        data_dir (Path): Directory where blocklist JSON is stored.
+        blocklist_file (Path): Path to company_blocklist.json file.
+    """
 
     def __init__(self, data_dir: str | Path | None = None):
+        """
+        Initialize BlocklistStore.
+
+        Args:
+            data_dir (str | Path | None): Directory to store blocklist file. Defaults to DATA_DIR.
+        """
         self.data_dir = Path(data_dir) if data_dir else DATA_DIR
         self.data_dir.mkdir(exist_ok=True)
         self.blocklist_file = self.data_dir / "company_blocklist.json"
-
         # Initialize with default structure if file doesn't exist
         if not self.blocklist_file.exists():
             self._init_blocklist()
 
     def _init_blocklist(self):
-        """Initialize blocklist with default structure"""
+        """
+        Initialize blocklist file with default structure if not present.
+        """
         default_blocklist = {
             "blocklist": [],
             "patterns": [],
@@ -36,7 +49,12 @@ class BlocklistStore:
         logger.info("Initialized empty company blocklist")
 
     def _read_blocklist(self) -> dict[str, Any]:
-        """Read blocklist from JSON file"""
+        """
+        Read blocklist data from JSON file.
+
+        Returns:
+            dict[str, Any]: Blocklist data dictionary.
+        """
         try:
             with open(self.blocklist_file, encoding="utf-8") as f:
                 return json.load(f)
@@ -45,7 +63,12 @@ class BlocklistStore:
             return {"blocklist": [], "patterns": [], "notes": ""}
 
     def _write_blocklist(self, data: dict[str, Any]):
-        """Write blocklist to JSON file"""
+        """
+        Write blocklist data to JSON file.
+
+        Args:
+            data (dict[str, Any]): Blocklist data to write.
+        """
         try:
             with open(self.blocklist_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
@@ -53,7 +76,15 @@ class BlocklistStore:
             logger.error(f"Error writing blocklist: {str(e)}")
 
     def add(self, company: str) -> bool:
-        """Add a company to the blocklist if not already present"""
+        """
+        Add a company to the blocklist if not already present.
+
+        Args:
+            company (str): Company name to add.
+
+        Returns:
+            bool: True if added, False if already present or error.
+        """
         try:
             data = self._read_blocklist()
             blocklist = data.get("blocklist", [])
@@ -73,7 +104,15 @@ class BlocklistStore:
             return False
 
     def remove(self, company: str) -> bool:
-        """Remove a company from the blocklist"""
+        """
+        Remove a company from the blocklist.
+
+        Args:
+            company (str): Company name to remove.
+
+        Returns:
+            bool: True if removed, False if not present or error.
+        """
         try:
             data = self._read_blocklist()
             blocklist = data.get("blocklist", [])
@@ -93,22 +132,48 @@ class BlocklistStore:
             return False
 
     def get_all_companies(self) -> list[str]:
-        """Get all companies in the blocklist"""
+        """
+        Get all companies in the blocklist.
+
+        Returns:
+            list[str]: List of company names.
+        """
         data = self._read_blocklist()
         return data.get("blocklist", [])
 
     def get_all_patterns(self) -> list[str]:
-        """Get all regex patterns in the blocklist"""
+        """
+        Get all regex patterns in the blocklist.
+
+        Returns:
+            list[str]: List of regex patterns.
+        """
         data = self._read_blocklist()
         return data.get("patterns", [])
 
     def is_blocked(self, company: str) -> bool:
-        """Check if a company is in the blocklist"""
+        """
+        Check if a company is in the blocklist.
+
+        Args:
+            company (str): Company name to check.
+
+        Returns:
+            bool: True if blocked, False otherwise.
+        """
         companies = self.get_all_companies()
         return company in companies
 
     def add_pattern(self, pattern: str) -> bool:
-        """Add a regex pattern to the blocklist"""
+        """
+        Add a regex pattern to the blocklist if not already present.
+
+        Args:
+            pattern (str): Regex pattern to add.
+
+        Returns:
+            bool: True if added, False if already present or error.
+        """
         try:
             data = self._read_blocklist()
             patterns = data.get("patterns", [])
@@ -128,7 +193,12 @@ class BlocklistStore:
             return False
 
     def get_stats(self) -> dict[str, int]:
-        """Get statistics about the blocklist"""
+        """
+        Get statistics about the blocklist (number of companies and patterns).
+
+        Returns:
+            dict[str, int]: Dictionary with counts for companies and patterns.
+        """
         data = self._read_blocklist()
         return {
             "companies": len(data.get("blocklist", [])),

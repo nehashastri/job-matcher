@@ -94,7 +94,12 @@ class Config:
         self.request_delay_min = float(os.getenv("REQUEST_DELAY_MIN", "2"))
         self.request_delay_max = float(os.getenv("REQUEST_DELAY_MAX", "5"))
         self.max_jobs_per_role = int(os.getenv("MAX_JOBS_PER_ROLE", "50"))
-        self.headless = os.getenv("HEADLESS", "false").lower() == "true"
+        # Default to headless unless HEADLESS is explicitly set to false
+        headless_env = os.getenv("HEADLESS")
+        if headless_env is None:
+            self.headless = True
+        else:
+            self.headless = headless_env.lower() == "true"
 
         # Filtering settings
         self.max_applicants = int(os.getenv("MAX_APPLICANTS", "100"))

@@ -130,7 +130,7 @@ class PeopleFinder:
             content = resp.choices[0].message.content if resp.choices else "{}"
             data = json.loads(content or "{}")
             matches = data.get("matches", [])
-            # Only return profiles with is_match True and all required columns
+            # LLM only returns matched profiles, so return as-is
             return [
                 {
                     "name": m.get("name", ""),
@@ -140,7 +140,6 @@ class PeopleFinder:
                     "reason": m.get("reason", ""),
                 }
                 for m in matches
-                if m.get("is_match", False)
             ]
         except Exception as exc:
             self.logger.error(f"LLM batch profile match failed: {exc}")
