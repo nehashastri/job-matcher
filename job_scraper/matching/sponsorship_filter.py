@@ -38,6 +38,8 @@ class SponsorshipFilter:
             config (Config | None): Configuration instance
             logger: Logger instance
         """
+        logger = logger or get_logger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
         self.client: Any | None = openai_client or self._maybe_create_client()
@@ -53,6 +55,7 @@ class SponsorshipFilter:
         Returns:
             dict[str, Any]: Decision and reason
         """
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.check")
         needs_sponsorship = requires_sponsorship
         if needs_sponsorship is None:
             needs_sponsorship = getattr(self.config, "requires_sponsorship", True)
@@ -191,6 +194,9 @@ class SponsorshipFilter:
     # ------------------------------------------------------------------
     def _check_unpaid_or_volunteer(self, lowered_text: str) -> str | None:
         if getattr(self.config, "reject_unpaid_roles", True):
+            self.logger.info(
+                f"[ENTER] {__file__}::{self.__class__.__name__}._check_unpaid_or_volunteer"
+            )
             unpaid_keywords = [
                 "unpaid",
                 "no pay",
@@ -214,6 +220,9 @@ class SponsorshipFilter:
         return None
 
     def _check_experience_requirement(self, lowered_text: str) -> str | None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._check_experience_requirement"
+        )
         min_years = getattr(self.config, "min_required_experience_years", 0)
         if min_years <= 0:
             return None
@@ -230,6 +239,9 @@ class SponsorshipFilter:
         return None
 
     def _check_phd_requirement(self, lowered_text: str) -> str | None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._check_phd_requirement"
+        )
         allow_phd = getattr(self.config, "allow_phd_required", True)
         if allow_phd:
             return None
@@ -241,6 +253,10 @@ class SponsorshipFilter:
 
     @staticmethod
     def _has_sponsorship_signal(lowered_text: str) -> bool:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::SponsorshipFilter._has_sponsorship_signal")
         """Heuristic to detect if the description mentions sponsorship/authorization."""
 
         keywords = [
@@ -279,6 +295,12 @@ class SponsorshipFilter:
 
     @staticmethod
     def _find_strong_negative_phrase(lowered_text: str) -> str | None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(
+            f"[ENTER] {__file__}::SponsorshipFilter._find_strong_negative_phrase"
+        )
         """Detect phrases that clearly deny sponsorship to short-circuit LLM calls."""
 
         strong_negatives = [
@@ -313,6 +335,9 @@ class SponsorshipFilter:
         return None
 
     def _maybe_create_client(self) -> OpenAI | None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._maybe_create_client"
+        )
         """Create an OpenAI client when an API key is present."""
 
         api_key = getattr(self.config, "openai_api_key", "")
@@ -325,6 +350,7 @@ class SponsorshipFilter:
             return None
 
     def _call_llm(self, messages: list[dict[str, str]]) -> dict[str, Any]:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._call_llm")
         """Call OpenAI using chat.completions or responses for JSON output."""
 
         model = self.config.openai_model or "gpt-3.5-turbo"
@@ -374,6 +400,10 @@ class SponsorshipFilter:
 
     @staticmethod
     def _short_reason(reason: str) -> str:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::SponsorshipFilter._short_reason")
         """Return up to two sentences for concise logging."""
 
         if not reason:

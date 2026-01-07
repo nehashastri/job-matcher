@@ -53,6 +53,9 @@ class EmailNotifier:
     def send_job_notification(
         self, job_data: dict, match_profiles: Optional[list[dict[str, str]]] = None
     ) -> bool:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.send_job_notification"
+        )
         """
         Send an email notification for an accepted job and relevant profiles.
         Args:
@@ -83,17 +86,20 @@ class EmailNotifier:
             logger.info(
                 f"✅ Email notification sent for job: {job_data.get('title', 'Unknown')}"
             )
-            # Show Windows notification if possible
+            # Show Windows notification if possible, robust to all errors
             if ToastNotifier:
                 try:
                     toaster = ToastNotifier()
-                    toaster.show_toast(
-                        "New Job Alert!",
-                        "A job notification email was sent.",
-                        duration=5,
-                    )
-                except Exception as notify_exc:
-                    logger.debug(f"Windows notification failed: {notify_exc}")
+                    try:
+                        toaster.show_toast(
+                            "New Job Alert!",
+                            "A job notification email was sent.",
+                            duration=5,
+                        )
+                    except Exception as notify_exc:
+                        logger.error(f"Windows notification inner error: {notify_exc}")
+                except Exception as outer_exc:
+                    logger.error(f"Windows notification outer error: {outer_exc}")
             return True
         except smtplib.SMTPException as e:
             logger.error(f"❌ SMTP error occurred: {e}")
@@ -103,6 +109,9 @@ class EmailNotifier:
             return False
 
     def _compose_subject(self, job_data: dict) -> str:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._compose_subject"
+        )
         title = job_data.get("title", "Unknown")
         company = job_data.get("company", "Unknown")
         return f"🎯 Job Match: {title} at {company}"
@@ -110,6 +119,9 @@ class EmailNotifier:
     def _compose_body(
         self, job_data: dict, match_profiles: Optional[list[dict[str, str]]] = None
     ) -> str:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._compose_body"
+        )
         title = job_data.get("title", "Unknown")
         company = job_data.get("company", "Unknown")
         job_url = job_data.get("job_url", "")
@@ -121,65 +133,19 @@ class EmailNotifier:
             result += "None\n"
         result += "\n---\nThis is an automated notification from the Job Scraper.\n"
         return result
-
-    # ...existing code...
-
-    def _validate_config(self) -> bool:
-        if not self.smtp_server:
-            logger.error("SMTP_SERVER not configured in environment")
-            return False
-        if not self.smtp_username:
-            logger.error("SMTP_USERNAME not configured in environment")
-            return False
-        if not self.smtp_password:
-            logger.error("SMTP_PASSWORD not configured in environment")
-            return False
-        if not self.email_from:
-            logger.error("EMAIL_FROM not configured in environment")
-            return False
-        if not self.email_to:
-            logger.error("EMAIL_TO not configured in environment")
-            return False
-        return True
-
-    def _send_email(self, msg: MIMEMultipart) -> None:
-        try:
-            if self.smtp_use_ssl or self.smtp_port == 465:
-                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=30)
-                server.ehlo()
-            else:
-                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
-                server.ehlo()
-                server.starttls()
-                server.ehlo()
-            server.login(self.smtp_username, self.smtp_password)
-            server.send_message(msg)
-            server.quit()
-        except smtplib.SMTPServerDisconnected as e:
-            logger.error(f"❌ SMTP server disconnected: {e}")
-            raise
-        except smtplib.SMTPConnectError as e:
-            logger.error(
-                f"❌ Failed to connect to SMTP server {self.smtp_server}:{self.smtp_port}: {e}"
-            )
-            raise
-        except Exception as e:
-            logger.error(f"❌ Error during SMTP operation: {e}")
-            raise
-
-    # ...existing code...
-    # This is an automated notification from the Job Scraper.
-
     def _compose_html_body(
         self,
         job_data: Dict[str, Any],
         match_profiles: Optional[list[dict[str, str]]] = None,
     ) -> str:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._compose_html_body"
+        )
         """
         Compose HTML email body.
 
         Args:
-            job_data: Job details (dict with keys: title, company, url, applicants, match_score)
+            job_data: Job details (dict with keys: title, company, url, match_score)
             match_profiles: List of relevant profiles identified (dicts with keys: name, title, profile_url, company, searched_job_title)
 
         Returns:
@@ -188,12 +154,7 @@ class EmailNotifier:
         title = job_data.get("title", "Unknown")
         company = job_data.get("company", "Unknown")
         match_score = job_data.get("match_score", 0)
-        job_url = job_data.get("job_url", "")
-        title = job_data.get("title", "Unknown")
-        company = job_data.get("company", "Unknown")
-        job_url = job_data.get("url", "")
-        applicants = job_data.get("applicants", "Unknown")
-        match_score = job_data.get("match_score", "Unknown")
+        job_url = job_data.get("job_url", "") or job_data.get("url", "")
         score_color = (
             "#28a745"
             if str(match_score).isdigit() and int(match_score) >= 8
@@ -260,6 +221,59 @@ class EmailNotifier:
                 <th>Title</th>
                 <th>Company</th>
                 <th>URL</th>
+                <th>Match Score</th>
+            </tr>
+            <tr>
+                <td>{title}</td>
+                <td>{company}</td>
+                <td><a href='{job_url}'>Link</a></td>
+                <td><span style='color: {score_color};'>{match_score}</span></td>
+            </tr>
+        </table>
+        <div class='section-title'>Relevant Profiles</div>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Title</th>
+                <th>URL</th>
+            </tr>
+            {{
+            "".join(
+                [
+                    f"<tr><td>{p.get('name', 'Unknown')}</td><td>{p.get('title', '')}</td><td><a href='{p.get('profile_url', p.get('url', ''))}'>Profile</a></td></tr>"
+                    for p in (match_profiles or [])
+                ]
+            )
+        }}
+        </table>
+    </div>
+</body>
+</html>
+"""
+        return html
+        th {{
+            background-color: #0077b5;
+            color: white;
+        }}
+        .section-title {{
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }}
+    </style>
+</head>
+<body>
+    <div class='header'>
+        <h2>Job Match Notification</h2>
+    </div>
+    <div class='content'>
+        <div class='section-title'>Job Details</div>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Company</th>
+                <th>URL</th>
                 <th>Applicants</th>
                 <th>Match Score</th>
             </tr>
@@ -294,6 +308,9 @@ class EmailNotifier:
         return html
 
     def test_connection(self) -> bool:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.test_connection"
+        )
         """
         Test SMTP connection
 

@@ -35,6 +35,8 @@ class ResumeLoader:
             config (Config | None): Configuration instance
             logger: Logger instance
         """
+        logger = logger or get_logger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         self.config = config or get_config()
         self.logger = logger
         self._cache: dict[str, str] = {}
@@ -49,6 +51,8 @@ class ResumeLoader:
         Returns:
             str: Resume text
         """
+        if self.logger:
+            self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.load_text")
         target_path = Path(path) if path else Path(self.config.resume_path)
 
         if target_path.exists() and target_path.is_file():

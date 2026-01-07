@@ -71,6 +71,10 @@ class SessionManager:
         driver_path: str | None = None,
         cookie_path: Path = Path(__file__).parent.parent / "data/.linkedin_cookies.pkl",
     ) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         """
         Initialize SessionManager.
         Args:
@@ -88,6 +92,10 @@ class SessionManager:
         self._driver: ChromeWebDriver | None = None
 
     def start(self) -> ChromeWebDriver:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.start")
         """
         Start (or return existing) Chrome webdriver.
         Returns:
@@ -134,6 +142,10 @@ class SessionManager:
         return self._driver
 
     def get_driver(self) -> ChromeWebDriver:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.get_driver")
         """
         Ensure a webdriver is available.
         Returns:
@@ -142,6 +154,10 @@ class SessionManager:
         return self.start()
 
     def _build_options(self) -> Any:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._build_options")
         """
         Build Chrome options for Selenium WebDriver.
         Returns:
@@ -174,6 +190,10 @@ class SessionManager:
     # Cookie handling -----------------------------------------------------------------
 
     def load_cookies(self, cookie_path: Path | None = None) -> bool:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.load_cookies")
         """
         Load cookies into the current session.
         Args:
@@ -199,6 +219,10 @@ class SessionManager:
         return True
 
     def save_cookies(self, cookie_path: Path | None = None) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.save_cookies")
         """
         Persist cookies from the current session.
         Args:
@@ -211,6 +235,10 @@ class SessionManager:
             pickle.dump(driver.get_cookies(), f)
 
     def quit(self) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.quit")
         """
         Cleanly shut down the webdriver.
         Releases resources and closes browser.

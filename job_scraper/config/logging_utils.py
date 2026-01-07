@@ -32,6 +32,9 @@ class StructuredFormatter(logging.Formatter):
     }
 
     def format(self, record):
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.format"
+        )
         # Extract category from logger name
         category = "GENERAL"
         for key, label in self.CATEGORY_MAP.items():
@@ -53,6 +56,9 @@ class ConsoleFormatter(StructuredFormatter):
     """
 
     def format(self, record):
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.format"
+        )
         formatted = super().format(record)
         # Remove emoji characters that can't be displayed in some consoles
         import re
@@ -151,6 +157,7 @@ def setup_logging(
 
 def log_cycle_separator(logger: logging.Logger, cycle_num: int | None = None):
     """Log a visual separator for cycle start/end"""
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::log_cycle_separator")
     if cycle_num is not None:
         logger.info(f"{'=' * 60}")
         logger.info(f"START OF CYCLE {cycle_num}")
@@ -163,6 +170,7 @@ def log_cycle_separator(logger: logging.Logger, cycle_num: int | None = None):
 
 def log_phase_start(logger: logging.Logger, phase_name: str):
     """Log the start of a processing phase"""
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::log_phase_start")
     logger.info(f"--- {phase_name.upper()} ---")
 
 
@@ -187,6 +195,7 @@ def log_job_decision(
         reason: Reason for decision
         score: Match score (optional)
     """
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::log_job_decision")
     score_str = f", score {score}" if score is not None else ""
     logger.info(
         f"Job {job_id} ({job_title} at {company}): {decision.upper()} - {reason}{score_str}"
@@ -204,6 +213,7 @@ def get_logger(name: str, structured: bool = False) -> Any:
     Returns:
         Logger instance
     """
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::get_logger")
     if structured:
         return structlog.get_logger(name)
     return logging.getLogger(name)

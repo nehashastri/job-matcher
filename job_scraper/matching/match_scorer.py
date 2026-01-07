@@ -39,6 +39,9 @@ class MatchScorer:
         Returns:
             list[dict[str, str]]: Messages for LLM chat completion
         """
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._build_messages"
+        )
         description = job_details.get("description", "")
         if prompt is None:
             prompt = (
@@ -68,6 +71,9 @@ class MatchScorer:
         Returns:
             Any: OpenAI client instance or None
         """
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._maybe_create_client"
+        )
         api_key = getattr(self.config, "openai_api_key", "")
         if not api_key:
             return None
@@ -93,6 +99,10 @@ class MatchScorer:
         Returns:
             list[dict]: Updated profiles
         """
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::MatchScorer.update_profiles_with_llm_results")
         updated = []
         for llm_profile in llm_results.get("matches", []):
             # Find matching profile by name and profile_url
@@ -117,6 +127,8 @@ class MatchScorer:
         openai_client: Any = None,
         logger=None,
     ):
+        logger = logger or get_logger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
         self.client = openai_client or self._maybe_create_client()
@@ -132,6 +144,8 @@ class MatchScorer:
         Score a job against resume/preferences.
         Returns dict with keys: score, reason, model_used, reranked (bool), reason_rerank, model_used_rerank.
         """
+
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.score")
 
         if not self.client:
             self.logger.warning(
@@ -261,6 +275,8 @@ class MatchScorer:
         """
         Call OpenAI using chat.completions or responses for JSON output.
         """
+
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._call_llm")
 
         if self.client is None:
             raise RuntimeError("OpenAI client not initialized")

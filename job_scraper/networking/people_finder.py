@@ -68,10 +68,11 @@ class PeopleFinder:
         try:
             for page_profiles in self.iterate_pages(role, company, pages=max_pages):
                 for profile in page_profiles:
-                    # Only keep name, title, profile_url
+                    # Keep name, title, current_position, profile_url
                     card = {
                         "name": profile.get("name", ""),
                         "title": profile.get("title", ""),
+                        "current_position": profile.get("current_position", ""),
                         "profile_url": profile.get("profile_url", ""),
                         "company": company,
                     }
@@ -99,12 +100,12 @@ class PeopleFinder:
                 prompt = f.read().strip()
         except Exception:
             prompt = (
-                "You are given a list of LinkedIn profile cards, each with: name, title, profile_url. "
+                "You are given a list of LinkedIn profile cards, each with: name, title, current_position, profile_url. "
                 "You are also given the original search query (role at company). "
-                "For each profile, decide if this person is a match for the search query, based ONLY on the title field. "
-                'Return JSON only: {"matches": [ {"name": ..., "title": ..., "profile_url": ..., "company": ..., "is_match": true, "reason": "..."}, ... ]}. '
-                'Only include profiles in the "matches" list if their title clearly matches the role in the query. Otherwise, exclude them. '
-                "Do not return non-matches. For each match, include all columns: name, title, profile_url, company, and reason."
+                "For each profile, decide if this person is a match for the search query, using BOTH the title and current_position fields. "
+                'Return JSON only: {"matches": [ {"name": ..., "title": ..., "current_position": ..., "profile_url": ..., "company": ..., "is_match": true, "reason": "..."}, ... ]}. '
+                'Only include profiles in the "matches" list if their title or current_position clearly matches the role in the query. Otherwise, exclude them. '
+                "Do not return non-matches. For each match, include all columns: name, title, current_position, profile_url, company, and reason."
             )
         # Prepare LLM input
         profiles_json = json.dumps(profiles, ensure_ascii=False)
@@ -144,6 +145,7 @@ class PeopleFinder:
                 {
                     "name": m.get("name", ""),
                     "title": m.get("title", ""),
+                    "current_position": m.get("current_position", ""),
                     "profile_url": m.get("profile_url", ""),
                     "company": m.get("company", ""),
                     "reason": m.get("reason", ""),
@@ -196,7 +198,7 @@ class PeopleFinder:
                 page_profiles = self._scrape_current_page(role, company)
                 for p in page_profiles:
                     self.logger.info(
-                        f"[PEOPLE_SEARCH] Profile: name='{p.get('name')}', title='{p.get('title')}', match={p.get('is_role_match')}"
+                        f"[PEOPLE_SEARCH] Profile: name='{p.get('name')}', title='{p.get('title')}'"
                     )
                 yield page_profiles
 
@@ -414,6 +416,7 @@ class PeopleFinder:
         name = ""
         profile_url = ""
         title = ""
+        current_position = ""
         try:
             link_elem = card.find_element(
                 By.CSS_SELECTOR, "a[data-view-name='search-result-lockup-title']"
@@ -443,18 +446,41 @@ class PeopleFinder:
             )
         if not name:
             name = PeopleFinder.safe_text(card, "span[dir='ltr']")
+        # Extract 'title' (headline/summary)
         try:
-            title_elem = card.find_element(By.CSS_SELECTOR, "p._3f883ddb")
+            # This matches the inspected element: <p class="c7ecc111 ..."> (headline/summary)
+            title_elem = card.find_element(By.CSS_SELECTOR, "div._443f33b9 p.c7ecc111")
             title = title_elem.text.strip()
         except Exception:
             title = PeopleFinder.safe_text(
                 card,
-                "p[data-view-name='search-result-subtitle'], div.entity-result__primary-subtitle, div.entity-result__secondary-subtitle, p._57a34c9c._3f883ddb._0da3dbae._1ae18243",
+                "div._443f33b9 p.c7ecc111, p.c7ecc111, p[data-view-name='search-result-subtitle'], div.entity-result__primary-subtitle, div.entity-result__secondary-subtitle, p._57a34c9c._3f883ddb._0da3dbae._1ae18243",
             )
+
+        # Extract 'current_position' (Current: ...)
+        try:
+            current_elem = card.find_element(By.CSS_SELECTOR, "div.bd59b9d3 p.c7ecc111")
+            # Try to extract the job title and company from <strong><span class="b5f00f6b">...</span></strong>
+            strong_spans = current_elem.find_elements(
+                By.CSS_SELECTOR, "strong > span.b5f00f6b"
+            )
+            if strong_spans and len(strong_spans) >= 2:
+                job_title = strong_spans[0].text.strip()
+                company_name = strong_spans[1].text.strip()
+                current_position = f"{job_title} at {company_name}"
+            else:
+                current_position = current_elem.text.strip()
+        except Exception:
+            current_position = ""
         if title and "mutual connection" in title.lower():
             title = ""
-        if profile_url or name or title:
-            return {"name": name, "title": title, "profile_url": profile_url}
+        if profile_url or name or title or current_position:
+            return {
+                "name": name,
+                "title": title,
+                "current_position": current_position,
+                "profile_url": profile_url,
+            }
         return None
 
     # ...existing code...

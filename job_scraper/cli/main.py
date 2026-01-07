@@ -16,6 +16,8 @@ from config.config import Config
 
 
 def _build_parser() -> argparse.ArgumentParser:
+    logger = logging.getLogger("cli.main")
+    logger.info(f"[ENTER] {__file__}::_build_parser")
     """
     Build and return the argument parser for CLI options.
     Returns:
@@ -33,6 +35,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    logger = logging.getLogger("cli.main")
+    logger.info(f"[ENTER] {__file__}::main")
     """
     Run the scheduler loop until interrupted.
     Args:
@@ -40,11 +44,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     Returns:
         int: Exit code (0 for success, 1 for config error)
     """
-    logger = logging.getLogger("cli.main")
     logger.info("Starting Job Scraper CLI entry point")
 
     parser = _build_parser()
-    args = parser.parse_args(list(argv) if argv is not None else None)
+    parser.parse_args(list(argv) if argv is not None else None)
 
     config = Config()
     errors = config.validate()
