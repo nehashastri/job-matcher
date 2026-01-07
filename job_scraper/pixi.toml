@@ -1,0 +1,33 @@
+[workspace]
+name = "job-scraper"
+version = "0.1.0"
+description = "LinkedIn job scraper with LLM matching and Windows notifications"
+authors = ["Your Name Here <your@email.com>"] # Fill in your details
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[dependencies]
+python = ">=3.10,<3.13"
+requests = ">=2.31.0"
+beautifulsoup4 = ">=4.12.2"
+selenium = ">=4.15.2"
+python-dotenv = ">=1.0.0"
+click = ">=8.1.7"
+tabulate = ">=0.9.0"
+openpyxl = ">=3.1.5"
+openai = ">=1.52.0"
+httpx = ">=0.24.1"
+pypdf = ">=4.2.0"
+win10toast = ">=0.9"
+structlog = ">=24.4.0"
+python-docx = ">=1.2.0,<2"
+
+[feature.dev.dependencies]
+pytest = ">=7.4.0"
+pytest-cov = ">=4.1.0"
+ruff = ">=0.1.0"
+mypy = ">=1.7.0"
+[tasks]
+scrape = "python -m app.job_finder scrape"
+loop = "python -m app.job_finder loop"
+show-jobs = "python -m app.job_finder show_jobs"

@@ -72,11 +72,14 @@ job_scraper/
         b. For each job:
             i. Filter out blocklisted companies (HR/staffing detection via LLM)
             ii. Score job/resume match (LLM)
-            iii. If match score >= threshold, store job and notify user
-        c. Optionally, scrape relevant LinkedIn profiles for networking
-3. **Send notifications (email, desktop)**
-4. **Log all actions, errors, and decisions**
+            iii. If match score >= threshold:
+                 - Store job in `jobs.csv`
+                 - Scrape LinkedIn profiles for networking
+                 - Send profiles to LLM for matching
+                 - Store only matched profiles in `linkedin_connections.csv`
+                 - Send notifications (email, desktop)
+3. **Log all actions, errors, and decisions**
 
 ---
 
-See `setup.md` for installation and usage instructions. 
+See `setup.md` for installation and usage instructions.

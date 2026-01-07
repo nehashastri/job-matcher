@@ -1,4 +1,5 @@
 Instructions:
+- Do not reject any role unless it explicitly states it does not hire international students or cannot sponsor visas.
 - Use stricter criteria for technical fit and seniority.
 - Score the match out of 10 (float, 0-10 scale).
 - If the candidate is a strong match for the job requirements and sponsorship is possible, score highly.

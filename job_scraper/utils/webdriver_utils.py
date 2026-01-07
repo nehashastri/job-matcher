@@ -1,8 +1,21 @@
+# Standard library for time delays
 import time
 
 
 def safe_get(driver, logger, url, retries=2, delay=2.0):
-    """Navigate to a URL with lightweight retries to reduce flakiness in headless runs."""
+    """
+    Attempt to navigate a Selenium WebDriver to a given URL, with retry logic.
+
+    Args:
+        driver: Selenium WebDriver instance used for navigation.
+        logger: Logger object for logging navigation attempts and errors.
+        url: The target URL to navigate to.
+        retries: Number of retry attempts if navigation fails (default: 2).
+        delay: Delay in seconds between retries (default: 2.0).
+
+    Returns:
+        True if navigation succeeds, False otherwise.
+    """
     logger.info(f"Attempting to navigate to {url} with {retries} retries.")
     if driver is None:
         logger.error("WebDriver is None; cannot navigate.")

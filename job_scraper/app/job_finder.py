@@ -12,7 +12,6 @@ import logging  # For logging messages to file and console
 import sys  # For system-specific parameters and functions
 import time  # For time-related functions
 from datetime import datetime  # For date and time operations
-from logging.handlers import TimedRotatingFileHandler  # For rotating log files
 from pathlib import Path  # For filesystem path operations
 
 # Third-party imports
@@ -32,10 +31,15 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
 # Setup logging handlers for daily rotation
-log_filename = f"{LOG_DIR}/job_finder.log"  # Log file path
-file_handler = TimedRotatingFileHandler(
-    log_filename, when="midnight", interval=1, backupCount=7, encoding="utf-8"
-)
+
+# Create a log file with today's date (YYYY-MM-DD) if it doesn't exist
+today_str = datetime.now().strftime("%Y-%m-%d")
+dated_log_filename = f"{LOG_DIR}/job_finder.{today_str}.log"
+if not Path(dated_log_filename).exists():
+    Path(dated_log_filename).touch()
+
+# Use FileHandler for daily log file
+file_handler = logging.FileHandler(dated_log_filename, encoding="utf-8")
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(
     logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -205,6 +209,16 @@ class JobFinder:
             list: List of matched jobs.
         """
         matched = []
+        # Import here to avoid circular imports
+
+        from networking.people_finder import PeopleFinder
+        from notifications.email_notifier import EmailNotifier
+
+        # Use the active Selenium driver and WebDriverWait from the scraper
+        driver = getattr(scraper, "driver", None)
+        wait = getattr(scraper, "wait", None)
+        email_notifier = EmailNotifier()
+
         for job in jobs:
             score = self._score_job_with_llm(job)
             job["match_score"] = score
@@ -213,11 +227,39 @@ class JobFinder:
                     f"    ❌ Skipped (LLM score {score:.1f} < {self.match_threshold}): {job.get('title', '')} at {job.get('company', '')}"
                 )
                 continue
+
             normalized = self._normalize_job(portal_name, job)
             if self.storage.add_job(normalized):
                 matched.append(job)
-                # Jobs are now written to CSV automatically; no export needed.
                 self._notify_job(job)
+
+                profiles = []
+                role = job.get("title", "")
+                company = job.get("company", "")
+                if driver is not None and wait is not None:
+                    try:
+                        from networking.people_finder import PeopleFinder
+
+                        people_finder = PeopleFinder(driver, wait, logger)
+                        profiles = people_finder.scrape_people_cards(role, company)
+                        # LLM only returns matched profiles, so use as-is
+                        self.storage.add_people_profiles(
+                            profiles, searched_job_title=role
+                        )
+                    except Exception as pf_exc:
+                        logger.error(
+                            f"Error scraping or storing LinkedIn profiles for networking: {pf_exc}"
+                        )
+                else:
+                    logger.warning(
+                        "PeopleFinder not initialized: driver or wait not available."
+                    )
+
+                # Send notification after job and people info are stored
+                try:
+                    email_notifier.send_job_notification(job, match_profiles=profiles)
+                except Exception as en_exc:
+                    logger.error(f"Error sending notifications: {en_exc}")
         return matched
 
     def scrape_single_portal(self, portal_name, max_applicants=100):
@@ -446,7 +488,7 @@ def export():
 
 
 @cli.command()
-@click.option("--interval", default=15, help="Minutes between scrapes (default: 15)")
+@click.option("--interval", default=1, help="Minutes between scrapes (default: 15)")
 @click.option(
     "--max-applicants", default=100, help="Max applicants filter (default: 100)"
 )

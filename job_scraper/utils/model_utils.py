@@ -3,6 +3,15 @@ from dataclasses import asdict
 
 
 def to_dict(obj):
+    """
+    Convert a dataclass object to a dictionary using asdict.
+
+    Args:
+        obj: The dataclass instance to convert.
+
+    Returns:
+        dict: Dictionary representation of the dataclass, or empty dict on error.
+    """
     try:
         result = asdict(obj)
         return result
@@ -14,7 +23,15 @@ def to_dict(obj):
 
 
 def short_reason(reason: str) -> str:
-    """Return up to two sentences for concise logging."""
+    """
+    Return up to two sentences from a reason string for concise logging.
+
+    Args:
+        reason: The reason string to summarize.
+
+    Returns:
+        str: Concise summary (max two sentences or 240 chars).
+    """
     import logging
 
     logger = logging.getLogger(__name__)

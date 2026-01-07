@@ -2,7 +2,6 @@
 LinkedIn job scraper with proper UI handling and 'Viewed' status detection
 """
 
-import json
 import math
 import os
 import re
@@ -18,9 +17,27 @@ from .base_scraper import BaseScraper
 
 
 class LinkedInScraper(BaseScraper):
-    """Scraper for LinkedIn job listings with proper 'Viewed' detection"""
+    """
+    Scraper for LinkedIn job listings with UI handling and 'Viewed' status detection.
+
+    Attributes:
+        base_url (str): LinkedIn base URL.
+        user_email (str): User email for LinkedIn login.
+        user_password (str): User password for LinkedIn login.
+        driver (webdriver.Chrome): Selenium WebDriver instance.
+        authenticated (bool): Login status flag.
+        wait (WebDriverWait): Selenium wait object for element loading.
+        config: Configuration object loaded from config/config.py.
+        blocklist: Blocklist instance for filtering companies.
+        hr_checker: HRChecker instance for HR/staffing company detection.
+        sponsorship_filter: SponsorshipFilter instance for visa eligibility.
+    """
 
     def __init__(self):
+        """
+        Initialize LinkedInScraper with config, blocklist, HR checker, and sponsorship filter.
+        Loads credentials from environment variables.
+        """
         super().__init__("linkedin")
         self.base_url = "https://www.linkedin.com"
         self.user_email = os.getenv("LINKEDIN_EMAIL", "")
@@ -32,7 +49,6 @@ class LinkedInScraper(BaseScraper):
         self.driver = cast(webdriver.Chrome, None)
         self.authenticated = False
         self.wait = cast(WebDriverWait, None)
-
         from config.config import get_config
         from filtering.blocklist import Blocklist
         from matching.hr_checker import HRChecker
@@ -64,7 +80,8 @@ class LinkedInScraper(BaseScraper):
             options.add_experimental_option("excludeSwitches", ["enable-automation"])
             options.add_experimental_option("useAutomationExtension", False)
 
-            if getattr(self.config, "headless", False):
+            # Always run headless unless config.headless is explicitly False
+            if getattr(self.config, "headless", True):
                 options.add_argument("--headless=new")
                 options.add_argument("--disable-gpu")
                 options.add_argument("--window-size=1920,1080")
@@ -375,7 +392,6 @@ class LinkedInScraper(BaseScraper):
                         break
                     job_card = job_cards[idx]
                     traversed_jobs += 1
-                    # Display job card number as 1/25, 2/25, etc.
                     self.logger.info(
                         f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
                     )
@@ -389,71 +405,88 @@ class LinkedInScraper(BaseScraper):
                         self.driver.execute_script(
                             "arguments[0].scrollIntoView(true);", job_card
                         )
-                        time.sleep(0.5)
+                        self.logger.info("=" * 60)
+                        job_cards = self._get_job_cards()
+                        if idx >= len(job_cards):
+                            break
+                        job_card = job_cards[idx]
+                        traversed_jobs += 1
+                        self.logger.info(
+                            f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
+                        )
+                        self.logger.debug(
+                            f"  Processing job {idx + 1}/{len(job_cards)} on page {current_page}"
+                        )
+                        if self._is_viewed(job_card):
+                            self.logger.info("    ⏭️  Skipped: Already viewed job card")
+                            continue
                         try:
-                            link = job_card.find_element(
-                                By.CSS_SELECTOR,
-                                "a.job-card-list__title, a.app-aware-link",
+                            self.driver.execute_script(
+                                "arguments[0].scrollIntoView(true);", job_card
                             )
-                            link.click()
-                        except Exception:
-                            job_card.click()
-                        self._wait_for_results_loader()
-                        time.sleep(1.2)
-                        self._scroll_right_panel()
-                        time.sleep(1)
-                        time.sleep(2)
-                        # Wait for right-pane container and a title element (anchor or h1)
-                        details_ready = False
-                        for _ in range(6):
+                            time.sleep(0.5)
                             try:
-                                # Try both anchor and non-anchor selectors
-                                title_elem = None
+                                link = job_card.find_element(
+                                    By.CSS_SELECTOR,
+                                    "a.job-card-list__title, a.app-aware-link",
+                                )
+                                link.click()
+                            except Exception:
+                                job_card.click()
+                            self._wait_for_results_loader()
+                            time.sleep(1.2)
+                            self._scroll_right_panel()
+                            time.sleep(1)
+                            time.sleep(2)
+                            # Wait for right-pane container and a title element (anchor or h1)
+                            details_ready = False
+                            for _ in range(6):
                                 try:
-                                    title_elem = self.driver.find_element(
-                                        By.CSS_SELECTOR,
-                                        "h1 a, h1, div.job-details-jobs-unified-top-card__job-title a, div.job-details-jobs-unified-top-card__job-title",
-                                    )
+                                    # Try both anchor and non-anchor selectors
+                                    title_elem = None
+                                    try:
+                                        title_elem = self.driver.find_element(
+                                            By.CSS_SELECTOR,
+                                            "h1 a, h1, div.job-details-jobs-unified-top-card__job-title a, div.job-details-jobs-unified-top-card__job-title",
+                                        )
+                                    except Exception:
+                                        pass
+                                    if title_elem and title_elem.text.strip():
+                                        details_ready = True
+                                        break
                                 except Exception:
                                     pass
-                                if title_elem and title_elem.text.strip():
-                                    details_ready = True
-                                    break
-                            except Exception:
-                                pass
-                            time.sleep(0.5)
-                        if not details_ready:
+                                time.sleep(0.5)
+                            if not details_ready:
+                                self.logger.warning(
+                                    "    ⚠️ Job details pane not ready after click; skipping this card."
+                                )
+                                self._close_extra_tabs()
+                                self._safe_back_to_results(search_url)
+                                continue
+                            # Extract job details after confirming details_ready
+                            job = self._extract_job_details()
+                            if not job:
+                                self.logger.info(
+                                    "    ❌ Skipped: Could not extract job details from card"
+                                )
+                                self._close_extra_tabs()
+                                self._safe_back_to_results(search_url)
+                                continue
+                            description = job.get("description", "")
+                        except Exception as job_exc:
                             self.logger.warning(
-                                "    ⚠️ Job details pane not ready after click; skipping this card."
+                                f"Failed to process job card {idx + 1}: {job_exc}"
                             )
                             self._close_extra_tabs()
                             self._safe_back_to_results(search_url)
                             continue
-                    except Exception as exc:
-                        self.logger.debug(f"    Could not click job card: {exc}")
-                        continue
-                    job = self._extract_job_details()
-                    if not job:
-                        self.logger.info(
-                            "    ❌ Skipped: Could not extract job details from card"
-                        )
+                    except StaleElementReferenceException:
+                        self.logger.debug("    Stale element, continuing...")
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
-                    self.logger.info(
-                        f"    [SCRAPED JOB] {json.dumps(job, ensure_ascii=False, indent=2)}"
-                    )
-                    applicants = job.get("applicant_count", 0)
-                    if applicants > max_applicants:
-                        self.logger.info(
-                            f"    ❌ Skipped: Too many applicants ({applicants} > {max_applicants})"
-                        )
-                        self._close_extra_tabs()
-                        self._safe_back_to_results(search_url)
-                        continue
-                    description = job.get("description", "")
-
-                    # Normalize company name for blocklist check
+                    # Only one except block for Exception is needed
                     normalized_company = (
                         company_name.strip().lower() if company_name else ""
                     )

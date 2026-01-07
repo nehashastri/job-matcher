@@ -7,7 +7,12 @@ from urllib.parse import quote
 
 
 class LinkedInSearchBuilder:
-    """Builds LinkedIn job search URLs with various filters"""
+    """
+    Builds LinkedIn job search URLs with various filters and options.
+
+    Attributes:
+        BASE_URL (str): The base URL for LinkedIn job search.
+    """
 
     BASE_URL = "https://www.linkedin.com/jobs/search/"
 
@@ -24,19 +29,18 @@ class LinkedInSearchBuilder:
         easy_apply: bool | None = None,
     ) -> str:
         """
-        Build a LinkedIn job search URL with filters.
+        Build a LinkedIn job search URL with filters for keywords, location, remote, experience level, date posted, and Easy Apply.
 
         Args:
-            keywords: Job title or keywords (e.g., "Software Engineer")
-            location: Location string (e.g., "United States", "New York, NY")
-            remote: Whether to filter for remote jobs (True) or not (None for any)
-            experience_levels: List of experience levels (e.g., ["Internship", "Entry level", "Associate"])
-            date_posted: Time period filter (e.g., "r86400" for past 24h, "r604800" for past week, "r2592000" for past month)
-                        Can use custom values like "r3600" for past hour
-            easy_apply: Whether to filter for Easy Apply jobs only
+            keywords (str | None): Job title or keywords (e.g., "Software Engineer").
+            location (str | None): Location string (e.g., "United States", "New York, NY").
+            remote (bool | None): Whether to filter for remote jobs (True) or not (None for any).
+            experience_levels (list[str] | None): List of experience levels (e.g., ["Internship", "Entry level", "Associate"]).
+            date_posted (str | None): Time period filter (e.g., "r86400" for past 24h, "r604800" for past week, "r2592000" for past month). Can use custom values like "r3600" for past hour.
+            easy_apply (bool | None): Whether to filter for Easy Apply jobs only.
 
         Returns:
-            Complete LinkedIn job search URL with encoded parameters
+            str: Complete LinkedIn job search URL with encoded parameters.
         """
         params = []
 
@@ -116,16 +120,14 @@ class LinkedInSearchBuilder:
         search_settings: dict,
     ) -> str:
         """
-        Build a search URL from a role configuration and search settings.
+        Build a LinkedIn job search URL from a role configuration and search settings.
 
         Args:
-            role: Role configuration dictionary from roles.json
-                Expected keys: title, location, experience_levels, remote, keywords
-            search_settings: Search settings dictionary from roles.json
-                Expected keys: date_posted, applicant_limit, requires_sponsorship
+            role (dict): Role configuration dictionary from roles.json. Expected keys: title, location, experience_levels, remote, keywords.
+            search_settings (dict): Search settings dictionary from roles.json. Expected keys: date_posted, applicant_limit, requires_sponsorship.
 
         Returns:
-            Complete LinkedIn job search URL
+            str: Complete LinkedIn job search URL.
         """
         # Extract role fields
         title = role.get("title", "")
@@ -146,14 +148,14 @@ class LinkedInSearchBuilder:
 
     def get_next_page_url(self, current_url: str, page_num: int) -> str:
         """
-        Get the URL for the next page of search results.
+        Get the URL for the next page of search results by updating the pageNum parameter.
 
         Args:
-            current_url: Current search URL
-            page_num: Page number to fetch (0-indexed)
+            current_url (str): Current search URL.
+            page_num (int): Page number to fetch (0-indexed).
 
         Returns:
-            URL with updated page number
+            str: URL with updated page number.
         """
         # Replace or add pageNum parameter
         if "pageNum=" in current_url:
