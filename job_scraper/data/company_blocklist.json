@@ -21,7 +21,8 @@
         "TEKsystems",
         "Teksystems",
         "TekWissen",
-        "Workbridge Associates"
+        "Workbridge Associates",
+        "Collabera"
     ],
     "patterns": [
         ".*[Rr]ecruiting.*",

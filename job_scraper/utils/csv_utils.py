@@ -2,6 +2,7 @@ import csv
 
 
 def write_dicts_to_csv(filepath, fieldnames, rows, logger):
+    logger.info(f"[ENTER] {__file__}::write_dicts_to_csv")
     """
     Write a list of dictionaries to a CSV file with specified fieldnames.
 

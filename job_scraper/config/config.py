@@ -33,6 +33,11 @@ class Config:
     """
 
     def __init__(self):
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.__init__"
+        )
         """
         Initialize Config instance and load all configuration sources.
         """
@@ -40,6 +45,11 @@ class Config:
         self._load_json_config()
 
     def _resolve_path(self, env_var: str, default: Path) -> Path:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._resolve_path"
+        )
         """
         Resolve a path from environment variable; treat relative values as repo-root relative.
         Args:
@@ -59,6 +69,11 @@ class Config:
         return (BASE_DIR / candidate).resolve()
 
     def _load_env_config(self):
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._load_env_config"
+        )
         """
         Load configuration from environment variables.
         Sets OpenAI keys, model names, and job match thresholds.
@@ -153,6 +168,11 @@ class Config:
         )
 
     def _load_json_config(self):
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._load_json_config"
+        )
         """Load configuration from JSON files"""
         # Load roles
         self.roles = []
@@ -179,6 +199,11 @@ class Config:
                 print(f"Warning: Failed to load company_blocklist.json: {e}")
 
     def validate(self) -> list[str]:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.validate"
+        )
         """
         Validate required configuration values
 
@@ -208,10 +233,20 @@ class Config:
         return errors
 
     def get_enabled_roles(self) -> list[dict[str, Any]]:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.get_enabled_roles"
+        )
         """Get list of enabled roles"""
         return [role for role in self.roles if role.get("enabled", True)]
 
     def add_to_blocklist(self, company: str) -> bool:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.add_to_blocklist"
+        )
         """
         Add a company to the blocklist and save to file
 
@@ -252,6 +287,9 @@ _config: Config | None = None
 
 
 def get_config() -> Config:
+    import logging
+
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::get_config")
     """Get the global configuration instance"""
     global _config
     if _config is None:
@@ -260,6 +298,9 @@ def get_config() -> Config:
 
 
 def reload_config() -> Config:
+    import logging
+
+    logging.getLogger(__name__).info(f"[ENTER] {__file__}::reload_config")
     """Reload configuration from files"""
     global _config
     _config = Config()

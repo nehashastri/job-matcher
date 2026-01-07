@@ -52,6 +52,9 @@ class JobScraperScheduler:
         logger: logging.Logger | None = None,
         sleep_fn: Callable[[float], None] = time.sleep,
     ) -> None:
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.__init__"
+        )
         """
         Initialize JobScraperScheduler.
         Args:
@@ -89,11 +92,13 @@ class JobScraperScheduler:
     # Lifecycle
     # ---------------------------------------------------------------------
     def request_stop(self) -> None:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.request_stop")
         """Signal the scheduler loop to stop after the current cycle."""
 
         self._stop_requested = True
 
     def run_forever(self, max_cycles: int | None = None) -> None:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.run_forever")
         """Run polling cycles until stopped or max_cycles is reached."""
 
         cycle_num = 1
@@ -120,6 +125,7 @@ class JobScraperScheduler:
             cycle_num += 1
 
     def run_cycle(self, cycle_num: int = 1) -> list[dict[str, Any]]:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.run_cycle")
         """Run one full polling cycle across all enabled roles."""
 
         results: list[dict[str, Any]] = []
@@ -164,6 +170,9 @@ class JobScraperScheduler:
     # Default runner (real pipeline path)
     # ---------------------------------------------------------------------
     def _jobfinder_role_runner(self, role: dict[str, Any]) -> dict[str, Any]:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._jobfinder_role_runner"
+        )
         """Use JobFinder to execute the full scrape→match→store→notify pipeline."""
 
         if JobFinder is None:  # pragma: no cover - guard for optional dependency

@@ -3,6 +3,7 @@ import time
 
 
 def safe_get(driver, logger, url, retries=2, delay=2.0):
+    logger.info(f"[ENTER] {__file__}::safe_get")
     """
     Attempt to navigate a Selenium WebDriver to a given URL, with retry logic.
 

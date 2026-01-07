@@ -27,6 +27,9 @@ class PeopleFinder:
 
     @staticmethod
     def safe_text(card, selector: str) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(f"[ENTER] {__file__}::PeopleFinder.safe_text")
         """
         Extracts text from a card using a CSS selector, tries multiple selectors if comma-separated.
         Args:
@@ -45,6 +48,9 @@ class PeopleFinder:
         return ""
 
     def scrape_people_cards(self, role: str, company: str) -> list[dict[str, str]]:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.scrape_people_cards"
+        )
         """
         Scrape LinkedIn People cards for a given role at a company.
         Returns a list of dicts with keys: name, title, profile_url, company, reason (matches only).
@@ -81,6 +87,9 @@ class PeopleFinder:
     def _llm_batch_profile_match(
         self, profiles: list[dict[str, str]], query: str
     ) -> list[dict[str, str]]:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._llm_batch_profile_match"
+        )
         """
         Use LLM to decide which LinkedIn profile cards match the search query, using only the title field.
         Returns a list of matched profiles with all required columns.
@@ -148,14 +157,16 @@ class PeopleFinder:
     def __init__(
         self, driver, wait: WebDriverWait, logger: logging.Logger | None = None
     ):
+        self.logger = logger or logging.getLogger(__name__)
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         self.driver = driver
         self.wait = wait
-        self.logger = logger or logging.getLogger(__name__)
         self.base_url = "https://www.linkedin.com"
 
     def iterate_pages(
         self, role: str, company: str, pages: int | None = None
     ) -> Generator[list[dict[str, Any]], None, None]:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.iterate_pages")
         """Yield profiles page-by-page, opening the search in a new tab and closing it after done."""
         query = f"{role} at {company}".strip()
         search_url = (
@@ -201,6 +212,9 @@ class PeopleFinder:
             self.driver.switch_to.window(original_handle)
 
     def _click_people_filter(self) -> None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._click_people_filter"
+        )
         """Ensure the People filter/tab is selected."""
         try:
             filter_selectors = [
@@ -225,6 +239,9 @@ class PeopleFinder:
             self.logger.debug(f"[PEOPLE_SEARCH] Could not click People filter: {exc}")
 
     def _click_next_page(self) -> bool:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._click_next_page"
+        )
         """
         Clicks the 'Next' button on LinkedIn people search results, if present.
         Returns True if next page was clicked, False otherwise.
@@ -256,6 +273,9 @@ class PeopleFinder:
     # Removed unused legacy function _search_via_bar
 
     def _scrape_current_page(self, role: str, company: str) -> list[dict[str, str]]:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._scrape_current_page"
+        )
         """
         Scrape all profile cards on the current page, returning a list of profile dicts
         with direct references to card, connect button, and message button.
@@ -308,6 +328,9 @@ class PeopleFinder:
         return profiles
 
     def _scroll_results(self) -> None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._scroll_results"
+        )
         try:
             self.driver.execute_script(
                 "window.scrollTo(0, document.body.scrollHeight);"
@@ -317,6 +340,9 @@ class PeopleFinder:
             pass
 
     def _wait_for_results(self) -> None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._wait_for_results"
+        )
         try:
             # Wait up to 30s for results to load
             self.wait.until(
@@ -336,6 +362,7 @@ class PeopleFinder:
             self._log_debug_counts()
 
     def _dump_page(self, filename: str) -> None:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._dump_page")
         try:
             logs_dir = Path(__file__).resolve().parent.parent / "logs"
             logs_dir.mkdir(parents=True, exist_ok=True)
@@ -347,6 +374,9 @@ class PeopleFinder:
             self.logger.debug(f"[PEOPLE_SEARCH] Failed to dump page: {exc}")
 
     def _ensure_people_url(self, search_url: str) -> None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._ensure_people_url"
+        )
         try:
             if "search/results/people" not in (self.driver.current_url or ""):
                 self._safe_get(search_url)
@@ -354,6 +384,9 @@ class PeopleFinder:
             self._safe_get(search_url)
 
     def _log_debug_counts(self) -> None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._log_debug_counts"
+        )
         try:
             selectors = {
                 "[data-view-name='people-search-result']": "[data-view-name='people-search-result']",
@@ -371,6 +404,9 @@ class PeopleFinder:
             self.logger.debug(f"[PEOPLE_SEARCH] Failed counting selectors: {exc}")
 
     def _extract_profile(self, card, role: str, company: str) -> dict[str, str] | None:
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._extract_profile"
+        )
         """
         Extracts minimal profile info from a LinkedIn people search card.
         Returns a dict with name, title, profile_url only.
@@ -424,6 +460,7 @@ class PeopleFinder:
     # ...existing code...
 
     def _safe_get(self, url: str, retries: int = 2, delay: float = 2.0) -> bool:
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._safe_get")
         from utils.webdriver_utils import safe_get
 
         return safe_get(self.driver, self.logger, url, retries, delay)
