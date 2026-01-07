@@ -84,6 +84,10 @@ class LinkedInAuth:
         backoff_start_seconds: int = 2,
         backoff_max_seconds: int = 30,
     ) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         # SessionManager instance for managing Selenium driver and cookies
         self.session_manager = session_manager
         # LinkedIn login page URL
@@ -98,6 +102,10 @@ class LinkedInAuth:
         self.backoff_max_seconds = backoff_max_seconds
 
     def login(self, email: str, password: str) -> bool:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.login")
         """
         Attempt login, reusing cookies first; falls back to credential login.
         Args:
@@ -140,6 +148,10 @@ class LinkedInAuth:
         raise LinkedInAuthError("Login failed")
 
     def _login_once(self, driver: Any, email: str, password: str) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._login_once")
         """
         Perform a single login attempt using credentials.
         Args:
@@ -162,7 +174,7 @@ class LinkedInAuth:
             password_el = wait.until(
                 EC.presence_of_element_located((By.ID, "password"))
             )
-            submit_el = wait.until(
+            wait.until(
                 EC.element_to_be_clickable(
                     (By.XPATH, "//button[@type='submit' or @aria-label='Sign in']")
                 )
@@ -175,7 +187,6 @@ class LinkedInAuth:
         email_el.send_keys(email)
         password_el.clear()
         password_el.send_keys(password)
-        submit_el.click()
 
         # Wait for either feed page or an error indicator
         try:
@@ -187,6 +198,10 @@ class LinkedInAuth:
             raise
 
     def _is_logged_in(self) -> bool:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._is_logged_in")
         """
         Check if user is logged in by verifying current URL.
         Returns:
@@ -197,6 +212,12 @@ class LinkedInAuth:
         return "/feed" in driver.current_url and "login" not in driver.current_url
 
     def _has_invalid_credentials_error(self, driver: Any) -> bool:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._has_invalid_credentials_error"
+        )
         """
         Check for invalid credentials error on login page.
         Args:
@@ -215,6 +236,10 @@ class LinkedInAuth:
             return False
 
     def _backoff(self, attempt: int) -> None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._backoff")
         """
         Implements exponential backoff for login retries.
         Args:

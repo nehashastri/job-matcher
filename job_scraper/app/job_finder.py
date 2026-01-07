@@ -310,24 +310,9 @@ class JobFinder:
                     self.config.request_delay_min,
                     self.config.request_delay_max,
                 ),
+                jobfinder=self,
             )
-            # For each job, if accepted, process immediately
-            driver = getattr(scraper, "driver", None)
-            wait = getattr(scraper, "wait", None)
-            for job in jobs:
-                score = job.get("match_score")
-                if score is None:
-                    score = self._score_job_with_llm(job)
-                    job["match_score"] = score
-                if score < self.match_threshold:
-                    logger.info(
-                        f"    ❌ Skipped (LLM score {score:.1f} < {self.match_threshold}): {job.get('title', '')} at {job.get('company', '')}"
-                    )
-                    continue
-                processed_job = self.process_accepted_job(
-                    portal_name, job, driver=driver, wait=wait
-                )
-                all_jobs.append(processed_job)
+            all_jobs.extend(jobs)
             click.secho(f"  ✨ {portal_name} workflow complete", fg="green")
         except Exception as e:
             click.secho(f"  ❌ Error processing {portal_name}: {str(e)}", fg="red")

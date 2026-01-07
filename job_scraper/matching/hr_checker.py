@@ -43,6 +43,8 @@ class HRChecker:
             blocklist (Blocklist | None): Blocklist instance
             logger: Logger instance
         """
+        logger = logger or get_logger(__name__)
+        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.__init__")
         self.config = config or get_config()
         self.logger = logger or get_logger(__name__)
         self.blocklist = blocklist or Blocklist(config=self.config, logger=self.logger)
@@ -64,6 +66,8 @@ class HRChecker:
             dict[str, Any]: {"is_hr_company": bool, "reason": str}
         If the company is detected as HR (or on error), it is auto-added to the blocklist.
         """
+
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.check")
 
         if not company:
             return {"is_hr_company": False, "reason": "No company provided"}
@@ -151,6 +155,10 @@ class HRChecker:
     def _maybe_create_client(self) -> OpenAI | None:
         """Create an OpenAI client if an API key is present."""
 
+        self.logger.info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}._maybe_create_client"
+        )
+
         api_key = getattr(self.config, "openai_api_key", "")
         if not api_key:
             return None
@@ -162,6 +170,8 @@ class HRChecker:
 
     def _call_llm(self, messages: list[ChatCompletionMessageParam]) -> dict[str, Any]:
         """Call OpenAI using chat.completions API only."""
+
+        self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._call_llm")
         model = self.config.openai_model or "gpt-3.5-turbo"
         if (
             not self.client

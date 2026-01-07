@@ -162,6 +162,7 @@ class LinkedInScraper(BaseScraper):
         connect_pages: int | None = None,
         connect_delay_range: tuple[float, float] = (1.0, 2.0),
         resume_text: str = "",
+        jobfinder=None,
     ) -> list[dict[str, Any]]:
         """Main scraping method with inline scoring/export/connect."""
         self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.scrape")
@@ -252,6 +253,7 @@ class LinkedInScraper(BaseScraper):
                     experience_levels=experience_levels,
                     date_posted=date_posted,
                     resume_text=resume_text,
+                    jobfinder=jobfinder,
                 )
                 self.logger.info(f"✅ Processed {len(page_jobs)} jobs for '{title}'")
                 jobs.extend(page_jobs)
@@ -295,6 +297,7 @@ class LinkedInScraper(BaseScraper):
         experience_levels: list[str] | None = None,
         date_posted: str | None = None,
         resume_text: str = "",
+        jobfinder=None,
     ) -> tuple[list[dict[str, Any]], bool]:
         """Scrape jobs for a single query; return (jobs, matched_flag)."""
         jobs: list[dict[str, Any]] = []
@@ -593,9 +596,16 @@ class LinkedInScraper(BaseScraper):
                             self._close_extra_tabs()
                             self._safe_back_to_results(search_url)
                             continue
-                    if storage:
-                        storage.add_job(job)
-                    jobs.append(job)
+                    # Call process_accepted_job from JobFinder if provided
+                    if jobfinder is not None:
+                        driver = getattr(self, "driver", None)
+                        wait = getattr(self, "wait", None)
+                        processed_job = jobfinder.process_accepted_job(
+                            "LinkedIn", job, driver=driver, wait=wait
+                        )
+                        jobs.append(processed_job)
+                    else:
+                        jobs.append(job)
                     self._close_extra_tabs()
                     self._safe_back_to_results(search_url)
                     matched = True

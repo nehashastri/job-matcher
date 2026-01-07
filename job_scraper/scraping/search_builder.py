@@ -17,6 +17,11 @@ class LinkedInSearchBuilder:
     BASE_URL = "https://www.linkedin.com/jobs/search/"
 
     def __init__(self):
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.__init__"
+        )
         pass
 
     def build_search_url(
@@ -28,6 +33,11 @@ class LinkedInSearchBuilder:
         date_posted: str | None = None,
         easy_apply: bool | None = None,
     ) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.build_search_url"
+        )
         """
         Build a LinkedIn job search URL with filters for keywords, location, remote, experience level, date posted, and Easy Apply.
 
@@ -119,6 +129,11 @@ class LinkedInSearchBuilder:
         role: dict,
         search_settings: dict,
     ) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.build_role_search_url"
+        )
         """
         Build a LinkedIn job search URL from a role configuration and search settings.
 
@@ -147,6 +162,11 @@ class LinkedInSearchBuilder:
         )
 
     def get_next_page_url(self, current_url: str, page_num: int) -> str:
+        import logging
+
+        logging.getLogger(__name__).info(
+            f"[ENTER] {__file__}::{self.__class__.__name__}.get_next_page_url"
+        )
         """
         Get the URL for the next page of search results by updating the pageNum parameter.
 
