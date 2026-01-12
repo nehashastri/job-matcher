@@ -1,17 +1,65 @@
-Instructions:
-- Do not reject any role unless it explicitly states it does not hire international students or cannot sponsor visas.
-- Do not reject a role because you think I'm overqualified.
-- Give a score of zero only if:
-	- The role explicitly mentions no sponsorship or cannot hire international students.
-	- The role requires a PhD/doctorate or more than 2 years of work experience.
-	- The role requires high security clearance or U.S. Citizenship.
-	- The company falls into ANY of the following categories (based on a quick search of the company, not the job title or function):
-		1. Staffing, Recruiting, or Consulting Firms (e.g., Robert Half, Adecco, Kforce, IT consulting, contract placement agencies)
-		2. Job Boards & Job Aggregators (e.g., LinkedIn, Indeed, Glassdoor, Dice, ClearanceJobs)
-		3. Federal/National Security related companies (e.g., government contractors, defense, national labs, security agencies)
-		4. Professional Networks & Talent Organizations (e.g., alumni networks, diversity initiatives, talent facilitation groups)
-	- If you give a score of zero because the company matches any of the above categories, set the reason to exactly "Add to blocklist" (no other text or explanation).
-- If you are unsure whether a company fits these categories, do NOT blocklist it.
-- Note: I'm currently on F1 Visa and have work authorization using OPT.
-- Otherwise, compare the resume (provided below) with the job description and score the match out of 10.
-- Return JSON only: {"score": number, "reason": string, "title": string, "company": string}.
+You are performing a FIRST-PASS ELIGIBILITY AND RELEVANCE SCREEN.
+This is NOT a deep fit evaluation.
+
+Your job is to:
+1) Immediately eliminate roles that are legally impossible or clearly irrelevant.
+2) Otherwise, assign a rough match score to decide whether the role deserves deeper evaluation.
+
+---
+
+=== ABSOLUTE REJECTION (SCORE = 0 ONLY IF TRUE) ===
+Give a score of 0 ONLY if the job description explicitly states at least one of the following:
+
+- The role does NOT hire international students
+- The role explicitly states no visa sponsorship or no OPT/CPT
+- U.S. Citizenship or permanent residency is REQUIRED
+- High-level security clearance is REQUIRED
+- The role explicitly requires a PhD or Doctorate
+
+If the score is 0 because the COMPANY falls into a blocked category, set:
+reason = "Add to blocklist"
+(no other explanation)
+
+Blocked company categories (ONLY if clearly stated or unambiguous):
+1) Staffing, recruiting, placement, or consulting firms whose core business is hiring contractors for other companies
+2) Job boards or job aggregation platforms
+3) Government, defense, national security, or intelligence agencies
+4) Professional talent networks or facilitation-only organizations
+
+If you are unsure, DO NOT blocklist.
+
+---
+
+=== IMPORTANT VISA CONTEXT ===
+Candidate is on F1 OPT and IS legally authorized to work.
+Do NOT reject or penalize a role unless sponsorship is explicitly disallowed.
+
+---
+
+=== SCORING (FOR NON-ZERO ROLES) ===
+For all other roles:
+- Assign a ROUGH score from 1.0 to 10.0 based on:
+  - Relevance to software, data, AI, or ML engineering
+  - Likelihood the role is technical and non-trivial
+  - Whether the role could plausibly align with application-layer AI, data systems, or backend engineering
+
+Do NOT reject or penalize because:
+- The role seems senior
+- The candidate might be overqualified
+- Years of experience exceed the candidate’s background
+- The company is early-stage or ambiguous
+
+This is a coarse filter only.
+
+---
+
+=== OUTPUT FORMAT (JSON ONLY) ===
+{
+  "score": number,
+  "reason": string,
+  "title": string,
+  "company": string
+}
+
+The reason should be brief and factual (1–2 sentences).
+Do NOT perform deep career analysis at this stage.

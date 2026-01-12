@@ -81,9 +81,25 @@ class Config:
         # OpenAI
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         # Small/fast model for first-pass scoring
-        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
-        # Larger model for rerank/second-pass; defaults to "gpt-3.5-turbo" when unset
-        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-3.5-turbo")
+        self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+        # Larger model for rerank/second-pass; defaults to "gpt-4.1" when unset
+        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-4.1")
+        # LLM generation parameters (rerank/global)
+        self.openai_temperature = float(os.getenv("OPENAI_TEMPERATURE", "0.25"))
+        self.openai_top_p = float(os.getenv("OPENAI_TOP_P", "0.9"))
+        self.openai_max_tokens = int(os.getenv("OPENAI_MAX_TOKENS", "1200"))
+        # Level-1 (base) scoring parameters
+        self.openai_base_temperature = float(
+            os.getenv("OPENAI_BASE_TEMPERATURE", "0.15")
+        )
+        self.openai_base_top_p = float(os.getenv("OPENAI_BASE_TOP_P", "0.9"))
+        self.openai_base_max_tokens = int(os.getenv("OPENAI_BASE_MAX_TOKENS", "350"))
+        self.openai_base_presence_penalty = float(
+            os.getenv("OPENAI_BASE_PRESENCE_PENALTY", "0")
+        )
+        self.openai_base_frequency_penalty = float(
+            os.getenv("OPENAI_BASE_FREQUENCY_PENALTY", "0")
+        )
         # First-pass score at or above this value triggers rerank with a bigger model
         self.job_match_rerank_trigger = float(
             os.getenv("JOB_MATCH_RERANK_TRIGGER", "8")

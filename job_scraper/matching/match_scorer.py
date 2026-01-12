@@ -182,13 +182,33 @@ class MatchScorer:
                 rerank_prompt = base_prompt
 
         messages = self._build_messages(resume_text, job_details, prompt=base_prompt)
-        base_model = self.config.openai_model or "gpt-4o-mini"
-        rerank_model = self.config.openai_model_rerank or "gpt-4o"
+        base_model = self.config.openai_model or "gpt-4.1-mini"
+        rerank_model = self.config.openai_model_rerank or "gpt-4.1"
+        # Level-1 (base) settings
+        base_temperature = getattr(self.config, "openai_base_temperature", 0.15)
+        base_top_p = getattr(self.config, "openai_base_top_p", 0.9)
+        base_max_tokens = getattr(self.config, "openai_base_max_tokens", 350)
+        base_presence_penalty = getattr(self.config, "openai_base_presence_penalty", 0)
+        base_frequency_penalty = getattr(
+            self.config, "openai_base_frequency_penalty", 0
+        )
+        # Rerank settings (fallback to global if not set)
+        rerank_temperature = getattr(self.config, "openai_temperature", 0.25)
+        rerank_top_p = getattr(self.config, "openai_top_p", 0.9)
+        rerank_max_tokens = getattr(self.config, "openai_max_tokens", 1200)
         trigger = getattr(self.config, "job_match_rerank_trigger", 8)
 
         try:
             first_score, first_reason, inferred_title, inferred_company = (
-                self._call_llm(messages, base_model)
+                self._call_llm(
+                    messages,
+                    base_model,
+                    base_temperature,
+                    base_top_p,
+                    base_max_tokens,
+                    base_presence_penalty,
+                    base_frequency_penalty,
+                )
             )
             inferred_title = inferred_title or job_details.get("title", "")
             inferred_company = inferred_company or job_details.get("company", "")
@@ -220,7 +240,13 @@ class MatchScorer:
                     resume_text, job_details, prompt=rerank_prompt
                 )
                 rerank_score, reason_rerank, _, _ = self._call_llm(
-                    rerank_messages, rerank_model
+                    rerank_messages,
+                    rerank_model,
+                    rerank_temperature,
+                    rerank_top_p,
+                    rerank_max_tokens,
+                    0,
+                    0,
                 )
                 self.logger.info(
                     f"LLM rerank score {rerank_score:.1f} ({rerank_model}): {short_reason(reason_rerank)}",
@@ -271,7 +297,16 @@ class MatchScorer:
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
-    def _call_llm(self, messages: list[dict[str, str]], model: str) -> tuple:
+    def _call_llm(
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        temperature: float = 0.25,
+        top_p: float = 0.9,
+        max_tokens: int = 1200,
+        presence_penalty: float = 0,
+        frequency_penalty: float = 0,
+    ) -> tuple:
         """
         Call OpenAI using chat.completions or responses for JSON output.
         """
@@ -289,7 +324,11 @@ class MatchScorer:
             resp = client.chat.completions.create(
                 model=model,
                 messages=typed_messages,
-                temperature=0,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
+                presence_penalty=presence_penalty,
+                frequency_penalty=frequency_penalty,
                 response_format={"type": "json_object"},
             )
             content = resp.choices[0].message.content if resp.choices else "{}"
@@ -307,7 +346,11 @@ class MatchScorer:
                 model=model,
                 messages=typed_messages,
                 response_format={"type": "json_object"},
-                temperature=0,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
+                presence_penalty=presence_penalty,
+                frequency_penalty=frequency_penalty,
             )
 
             content = ""
