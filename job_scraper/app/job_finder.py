@@ -222,10 +222,31 @@ class JobFinder:
         from networking.people_finder import PeopleFinder
         from notifications.email_notifier import EmailNotifier
 
-        # 1. Save job to jobs.csv
+        # 1. Check for duplicate job in last 30 rows
         normalized = self._normalize_job(portal_name, job)
+        recent_jobs = (
+            self.storage.get_all_jobs()[-30:]
+            if hasattr(self.storage, "get_all_jobs")
+            else []
+        )
+        is_duplicate = any(
+            (
+                j.get("Title", "").strip().lower()
+                == normalized["Title"].strip().lower()
+                and j.get("Company", "").strip().lower()
+                == normalized["Company"].strip().lower()
+            )
+            for j in recent_jobs
+        )
+        if is_duplicate:
+            logger.info(
+                f"Duplicate job detected in last 30 rows: {normalized['Title']} at {normalized['Company']}. Skipping add and all further steps."
+            )
+            return job
+
+        # 2. Save job to jobs.csv
         added = self.storage.add_job(normalized)  # type: ignore
-        logger.info("CHECK HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        logger.info("✅✅✅✅✅✅JOB FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         if not added:
             logger.warning(
                 f"Job not added to jobs.csv: {job.get('title', '')} at {job.get('company', '')}"
@@ -363,35 +384,6 @@ class JobFinder:
         if Path("data/jobs.csv").exists():
             click.secho("📊 CSV file available: data/jobs.csv", fg="green")
 
-    # --- Simplified continuous loop runner ---
-    def run_loop(self, interval_minutes=15, max_applicants=100):
-        logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}.run_loop")
-        """
-        Continuously run all portal workflows with a sleep between cycles.
-        Args:
-            interval_minutes (int): Minutes between each scrape cycle.
-            max_applicants (int): Max applicants filter for jobs.
-        """
-        click.echo(
-            click.style(
-                f"\n▶️  Continuous loop every {interval_minutes} minutes (Ctrl+C to stop)",
-                fg="cyan",
-                bold=True,
-            )
-        )
-        while True:
-            cycle_start = time.time()
-            try:
-                self.scrape_jobs(max_applicants=max_applicants)
-            except Exception as exc:
-                logger.error(f"Loop cycle error: {exc}")
-            elapsed = time.time() - cycle_start
-            sleep_seconds = max(interval_minutes * 60 - elapsed, 0)
-            click.echo(
-                f"⏳ Sleeping {sleep_seconds / 60:.1f} minutes before next cycle..."
-            )
-            time.sleep(sleep_seconds)
-
 
 @click.group()
 def cli():
@@ -464,7 +456,7 @@ def export():
 
 
 @cli.command()
-@click.option("--interval", default=1, help="Minutes between scrapes (default: 15)")
+@click.option("--interval", default=30, help="Minutes between scrapes (default: 15)")
 @click.option(
     "--max-applicants", default=100, help="Max applicants filter (default: 100)"
 )

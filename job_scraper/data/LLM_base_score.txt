@@ -5,8 +5,13 @@ Instructions:
 	- The role explicitly mentions no sponsorship or cannot hire international students.
 	- The role requires a PhD/doctorate or more than 2 years of work experience.
 	- The role requires high security clearance or U.S. Citizenship.
-	- The company is a spam, staffing, or recruiting company (based on a quick search).
-	- If you give a score of zero because the company is staffing, recruiting, or spam, set the reason to exactly "Add to blocklist" (no other text).
-Note: I'm currently on F1 Visa and have work authorization using OPT.
+	- The company falls into ANY of the following categories (based on a quick search of the company, not the job title or function):
+		1. Staffing, Recruiting, or Consulting Firms (e.g., Robert Half, Adecco, Kforce, IT consulting, contract placement agencies)
+		2. Job Boards & Job Aggregators (e.g., LinkedIn, Indeed, Glassdoor, Dice, ClearanceJobs)
+		3. Federal/National Security related companies (e.g., government contractors, defense, national labs, security agencies)
+		4. Professional Networks & Talent Organizations (e.g., alumni networks, diversity initiatives, talent facilitation groups)
+	- If you give a score of zero because the company matches any of the above categories, set the reason to exactly "Add to blocklist" (no other text or explanation).
+- If you are unsure whether a company fits these categories, do NOT blocklist it.
+- Note: I'm currently on F1 Visa and have work authorization using OPT.
 - Otherwise, compare the resume (provided below) with the job description and score the match out of 10.
 - Return JSON only: {"score": number, "reason": string, "title": string, "company": string}.

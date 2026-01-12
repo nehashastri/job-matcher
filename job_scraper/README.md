@@ -1,8 +1,125 @@
 # Job Scraper
 
+## Overview
+
+# Job Scraper
+
 ## Introduction
 
 Job Scraper is an automated pipeline for scraping job listings from LinkedIn, filtering and matching them to user profiles, and notifying users of relevant opportunities. It leverages LLMs (OpenAI GPT) for HR/staffing detection, job/resume matching, and networking profile relevance. The workflow is modular, configurable, and designed for extensibility and robust error handling.
+
+---
+
+## Quick Start
+
+1. **Install dependencies:**
+    ```powershell
+    pixi install
+    ```
+2. **Set up environment:**
+    - Copy `.env.example` to `.env` and fill in your credentials (see [SETUP.md](SETUP.md)).
+3. **Run the scraper:**
+    ```powershell
+    pixi run scrape         # Single scrape
+    pixi run loop           # Continuous loop (default interval)
+    pixi run show-jobs      # View saved jobs
+    ```
+4. **See [SETUP.md](SETUP.md) for full configuration and advanced usage.**
+
+---
+## Project Structure (Key Files)
+
+- `app/job_finder.py`: Main job finding logic and orchestration, CLI commands
+- `auth/linkedin_auth.py`: LinkedIn authentication routines
+- `auth/session_manager.py`: Session management for scraping
+- `cli/main.py`: CLI entry point for running the scheduler
+- `config/config.py`: Configuration loader and settings (reads `.env`, JSON, etc.)
+- `config/logging_utils.py`: Logging setup and utilities
+- `data/roles.json`: Roles to search for (user-editable)
+- `data/company_blocklist.json`: List of companies to block (user-editable)
+- `data/jobs.csv`: Output CSV of scraped jobs
+- `data/linkedin_connections.csv`: Exported LinkedIn connections
+- `data/LLM_base_score.txt`, `data/LLM_rerank_score.txt`: LLM prompt templates
+- `filtering/blocklist.py`: Blocklist logic for filtering companies
+- `logs/`: Log output directory
+- `matching/`: LLM-based HR/staffing detection, job/resume scoring, resume loading, sponsorship filtering
+- `networking/people_finder.py`: LinkedIn people search and networking
+- `notifications/email_notifier.py`: Email and desktop notification logic
+- `scheduler/job_scraper_scheduler.py`: Main scheduler for polling and workflow
+- `scraping/linkedin_scraper.py`: LinkedIn scraping logic
+- `storage_pkg/`: Storage for blocklist and matched jobs
+- `utils/`: CSV, model, and webdriver utilities
+- `tests/`: Unit tests for workflow and modules
+
+---
+## Example Files
+
+- `.env.example`: Example environment variable file for configuration
+- `company_blocklist.example.json`: Example blocklist for companies
+- `roles.example.json`: Example job roles configuration
+
+---
+## Workflow Overview
+
+1. **Initialize Config & Logging**
+2. **Start Scheduler Loop**
+    - For each enabled role in `roles.json`:
+        - Scrape jobs from LinkedIn using Selenium
+        - For each job:
+            - Filter out blocklisted companies (LLM-based HR/staffing detection)
+            - Score job/resume match (LLM)
+            - If match score >= threshold:
+                - Store job in `jobs.csv`
+                - Scrape LinkedIn profiles for networking
+                - Send profiles to LLM for matching
+                - Store only matched profiles in `linkedin_connections.csv`
+                - Send notifications (email, desktop)
+3. **Log all actions, errors, and decisions**
+
+---
+## CLI Usage
+
+The main CLI is defined in `app/job_finder.py` and can be run via Pixi:
+
+```powershell
+pixi run scrape         # Scrape jobs once
+pixi run loop           # Run continuous scheduler loop
+pixi run show-jobs      # Show jobs from the last 24 hours
+pixi run stats          # Show job statistics
+```
+
+See [SETUP.md](SETUP.md) for all options and environment variables.
+
+---
+## Configuration & Logging
+
+- All configuration is loaded from `.env` and `data/roles.json`, `data/company_blocklist.json`.
+- Logging is set up to both file and console (`logs/` directory).
+- See `config/config.py` for all available settings and validation logic.
+
+---
+## Testing
+
+- Tests are in the `tests/` directory and use `pytest`.
+- Run all tests:
+    ```powershell
+    pixi run test
+    ```
+- Run with coverage:
+    ```powershell
+    pixi run test-cov
+    ```
+
+---
+## Troubleshooting
+
+- Check logs in the `logs/` directory for errors.
+- Ensure all environment variables are set in `.env`.
+- For LLM errors, check your OpenAI API key and prompt files.
+
+---
+
+For full setup, configuration, and advanced usage, see [SETUP.md](SETUP.md).
 
 
 ## Project Structure & File Explanations

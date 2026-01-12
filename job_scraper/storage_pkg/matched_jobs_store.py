@@ -19,10 +19,10 @@ JOBS_HEADERS = [
 
 CONNECTION_HEADERS = [
     "Name",
-    "Title",
     "URL",
     "Company",
     "Searched Job Title",
+    "Message Button",
 ]
 
 
@@ -89,10 +89,10 @@ class MatchedJobsStore:
             rows.append(
                 {
                     "Name": profile.get("name", ""),
-                    "Title": profile.get("title", ""),
                     "URL": profile.get("profile_url", ""),
                     "Company": profile.get("company", ""),
                     "Searched Job Title": searched_job_title,
+                    "Message Button": profile.get("message_button_available", "FALSE"),
                 }
             )
         return self._write_connections_csv(rows)

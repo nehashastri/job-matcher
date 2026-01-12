@@ -413,30 +413,32 @@ class LinkedInScraper(BaseScraper):
                     if self._is_viewed(job_card):
                         self.logger.info("    ⏭️  Skipped: Already viewed job card")
                         continue
+
+                    # Track previous job card URL
+                    previous_job_card_url = getattr(
+                        self, "_previous_job_card_url", None
+                    )
+                    current_job_card_url = None
                     try:
-                        self.driver.execute_script(
-                            "arguments[0].scrollIntoView(true);", job_card
+                        link = job_card.find_element(
+                            By.CSS_SELECTOR,
+                            "a.job-card-list__title, a.app-aware-link",
                         )
-                        self.logger.info("=" * 60)
-                        job_cards = self._get_job_cards()
-                        if idx >= len(job_cards):
-                            break
-                        job_card = job_cards[idx]
-                        traversed_jobs += 1
-                        self.logger.info(
-                            f"  ▶️ Job card {idx + 1}/{len(job_cards)} on page {current_page}"
-                        )
-                        self.logger.debug(
-                            f"  Processing job {idx + 1}/{len(job_cards)} on page {current_page}"
-                        )
-                        if self._is_viewed(job_card):
-                            self.logger.info("    ⏭️  Skipped: Already viewed job card")
-                            continue
+                        url = link.get_attribute("href")
+                        if url:
+                            current_job_card_url = str(url)
+                    except Exception:
+                        pass
+
+                    self.driver.execute_script(
+                        "arguments[0].scrollIntoView(true);", job_card
+                    )
+                    time.sleep(0.5)
+                    load_success = False
+                    details_ready = False  # Always define before use, outside the loop
+                    for attempt in range(2):
+                        start_time = time.time()
                         try:
-                            self.driver.execute_script(
-                                "arguments[0].scrollIntoView(true);", job_card
-                            )
-                            time.sleep(0.5)
                             try:
                                 link = job_card.find_element(
                                     By.CSS_SELECTOR,
@@ -451,10 +453,8 @@ class LinkedInScraper(BaseScraper):
                             time.sleep(1)
                             time.sleep(2)
                             # Wait for right-pane container and a title element (anchor or h1)
-                            details_ready = False
                             for _ in range(6):
                                 try:
-                                    # Try both anchor and non-anchor selectors
                                     title_elem = None
                                     try:
                                         title_elem = self.driver.find_element(
@@ -469,43 +469,83 @@ class LinkedInScraper(BaseScraper):
                                 except Exception:
                                     pass
                                 time.sleep(0.5)
-                            if not details_ready:
+                            elapsed = time.time() - start_time
+                            if details_ready:
+                                load_success = True
+                                break
+                            elif (
+                                elapsed > 10
+                                and attempt == 0
+                                and previous_job_card_url
+                                and current_job_card_url
+                            ):
                                 self.logger.warning(
-                                    "    ⚠️ Job details pane not ready after click; skipping this card."
+                                    "    ⏳ Loading job card took >10s, retrying via previous job card URL..."
                                 )
-                                self._close_extra_tabs()
-                                self._safe_back_to_results(search_url)
+                                self.driver.get(previous_job_card_url)
+                                time.sleep(2)
+                                self.driver.get(current_job_card_url)
+                                time.sleep(2)
                                 continue
-                            # Extract job details after confirming details_ready
-                            job = self._extract_job_details()
-                            if not job:
-                                self.logger.info(
-                                    "    ❌ Skipped: Could not extract job details from card"
-                                )
-                                self._close_extra_tabs()
-                                self._safe_back_to_results(search_url)
-                                continue
-                            # Log all job details every time we scrape it
-                            job_details_str = "\n".join(
-                                [f"        {k}: {v}" for k, v in job.items()]
-                            )
-                            self.logger.info(
-                                f"    📄 Scraped job details:\n{job_details_str}"
-                            )
-                            description = job.get("description", "")
-                        except Exception as job_exc:
+                        except Exception as exc:
                             self.logger.warning(
-                                f"Failed to process job card {idx + 1}: {job_exc}"
+                                f"    ⚠️ Exception during job card load: {exc}"
                             )
-                            self._close_extra_tabs()
-                            self._safe_back_to_results(search_url)
-                            continue
-                    except StaleElementReferenceException:
-                        self.logger.debug("    Stale element, continuing...")
+                            if (
+                                attempt == 0
+                                and previous_job_card_url
+                                and current_job_card_url
+                            ):
+                                self.driver.get(previous_job_card_url)
+                                time.sleep(2)
+                                self.driver.get(current_job_card_url)
+                                time.sleep(2)
+                                continue
+                    # Save current job card URL for next iteration
+                    if current_job_card_url:
+                        self._previous_job_card_url = current_job_card_url
+                    else:
+                        self._previous_job_card_url = self.driver.current_url
+                    if not load_success:
+                        self.logger.warning(
+                            "    ⚠️ Job details pane not ready after click; skipping this card."
+                        )
                         self._close_extra_tabs()
                         self._safe_back_to_results(search_url)
                         continue
-                    # Only one except block for Exception is needed
+                    # details_ready is always defined here
+                    if not details_ready:
+                        self.logger.warning(
+                            "    ⚠️ Job details pane not ready after click; skipping this card."
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+                    # Extract job details after confirming details_ready
+                    job = self._extract_job_details()
+                    if not job:
+                        self.logger.info(
+                            "    ❌ Skipped: Could not extract job details from card"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+                    # Applicant count filter
+                    applicant_count = job.get("applicant_count", 0)
+                    if applicant_count > max_applicants:
+                        self.logger.info(
+                            f"    ❌ Skipped: Applicant count {applicant_count} exceeds max allowed ({max_applicants})"
+                        )
+                        self._close_extra_tabs()
+                        self._safe_back_to_results(search_url)
+                        continue
+                    # Log all job details every time we scrape it
+                    job_details_str = "\n".join(
+                        [f"        {k}: {v}" for k, v in job.items()]
+                    )
+                    self.logger.info(f"    📄 Scraped job details:\n{job_details_str}")
+                    description = job.get("description", "")
+                    company_name = job.get("company", "")
                     normalized_company = (
                         company_name.strip().lower() if company_name else ""
                     )

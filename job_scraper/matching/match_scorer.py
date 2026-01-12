@@ -56,7 +56,7 @@ class MatchScorer:
             {
                 "role": "user",
                 "content": (
-                    f"Resume: {resume_text[:4000]}\n"
+                    f"Resume: {resume_text}\n"
                     f"Job Title: {job_details.get('title', '')}\n"
                     f"Company: {job_details.get('company', '')}\n"
                     f"Location: {job_details.get('location', '')}\n"

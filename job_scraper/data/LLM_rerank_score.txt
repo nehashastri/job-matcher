@@ -1,8 +1,53 @@
-Instructions:
-- Do not reject any role unless it explicitly states it does not hire international students or cannot sponsor visas.
-- Do not reject a role because you think I'm overqualified.
-- Use stricter criteria for technical fit and seniority.
-- Score the match out of 10 (float, 0-10 scale).
-- If the candidate is a strong match for the job requirements and sponsorship is possible, score highly.
-- Otherwise, lower the score and explain why.
-- Return JSON only: {"score": number, "reason": string, "title": string, "company": string}.
+Evaluate the attached resume against the provided Job Description using the following preferences, hard filters, and scoring rules.
+
+PRIMARY GOAL
+- Assess how well the role aligns with application-layer AI and product-focused ML engineering work, not infrastructure, IT operations, or enterprise support.
+
+YES LIST (High Match Signals)
+- Strongly reward roles that involve:
+- Application-layer AI: building RAG pipelines, agentic workflows, LLM-powered automation, copilots, or AI-driven features.
+- Product ML: experimentation, A/B testing, causal inference, personalization, customer segmentation, or data-informed product decisions.
+- End-to-end software development: building functional applications or APIs (FastAPI, Flask, Streamlit, React + backend) rather than isolated scripts.
+- High-level ML usage: fine-tuning or applying models using frameworks like HuggingFace, PyTorch, or managed ML services, without requiring low-level CUDA, kernel development, or heavy mathematical proofs.
+- Clear ownership of AI features used by customers or internal products.
+
+HARD REJECTION & SCORE CAPS (Apply Before Any Positive Scoring)
+- IT / Systems / MSP / Enterprise Support (Automatic Rejection)
+If the role primarily involves IT support, systems engineering, systems administration, desktop support, MSP environments, ticketing systems, Active Directory, Microsoft 365 administration, networking, cybersecurity operations, hardware handling, or end-user support: Score ≤ 1.5 regardless of technical complexity.
+- Enterprise / Process Systems (Hard Filter)
+MES, QMS, PLM, manufacturing execution, governance, audits, compliance, training users, internal process tooling: Score ≤ 3.0.
+- Forensics / Legal / Reverse Engineering (Hard Filter)
+Litigation support, software originality analysis, legal documentation, reverse engineering, forensic analysis: Score ≤ 3.0.
+- Infra-Heavy / On-Call Roles
+On-call rotations, postmortems, reliability engineering, cluster management, DevOps-first roles: Cap score at ≤ 5.0.
+- Hardware / Networking
+Embedded systems, firmware, robotics, signal processing, OSI/TCP-IP, networking, GPU/cluster infrastructure, physical systems: Strong penalty or rejection.
+- Heavy SQL / Reporting
+ETL-centric roles, BI dashboards, Tableau, Looker, manual reporting, analytics without ML modeling: Penalize heavily.
+- Poor Work-Life Balance Signals
+Consulting firms, MSPs, hedge funds, high-pressure finance, manufacturing operations, litigation-driven environments: Cap score at ≤ 5.0.
+
+AI PRESENCE GATE (CRITICAL)
+If the job description does NOT explicitly mention at least one of the following:
+
+AI, ML, LLMs, models, experimentation, data-driven decision making, or machine learning workflows
+Then:
+
+Cap the score at 4.0 regardless of software quality or seniority.
+
+SCORING & SPONSORSHIP RULES
+
+Candidate status: Candidate is on an F1 Visa with OPT. Do NOT reject solely due to sponsorship unless the job explicitly states sponsorship is not allowed.
+
+Scoring: Return a float score from 0.0 to 10.0. A high score means the role is focused on building software-based AI applications and strongly fits the candidate’s strengths.
+
+Output format: Return JSON only in the following structure:
+
+{
+"score": number,
+"reason": string,
+"title": string,
+"company": string
+}
+
+Focus the reasoning on alignment or misalignment with application-layer AI, product ML, and end-to-end AI software development.

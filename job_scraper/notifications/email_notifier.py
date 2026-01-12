@@ -176,10 +176,19 @@ class EmailNotifier:
             else "#ffc107"
         )
 
+        sorted_profiles = []
+        if match_profiles:
+            sorted_profiles = sorted(
+                match_profiles,
+                key=lambda p: p.get(
+                    "message_button_available", p.get("Message Button", "FALSE")
+                )
+                != "TRUE",
+            )
         profiles_html = "".join(
             [
-                f"<tr><td>{p.get('name', 'Unknown')}</td><td>{p.get('title', '')}</td><td><a href='{p.get('profile_url', p.get('url', ''))}'>Profile</a></td></tr>"
-                for p in (match_profiles or [])
+                f"<tr><td>{p.get('name', 'Unknown')}</td><td><a href='{p.get('profile_url', p.get('url', ''))}'>Profile</a></td></tr>"
+                for p in (sorted_profiles or [])
             ]
         )
         html = f"""
@@ -255,8 +264,7 @@ class EmailNotifier:
         <table>
             <tr>
                 <th>Name</th>
-                <th>Title</th>
-                <th>URL</th>
+                <th>Profile</th>
             </tr>
             {profiles_html}
         </table>
