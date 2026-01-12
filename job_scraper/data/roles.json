@@ -7,7 +7,7 @@
                 "Entry level",
                 "Associate"
             ],
-            "date_posted": "r3600",
+            "date_posted": "r86400",
             "enabled": true
         },
         {
@@ -17,7 +17,7 @@
                 "Entry level",
                 "Associate"
             ],
-            "date_posted": "r3600",
+            "date_posted": "r86400",
             "enabled": true
         }
     ]
