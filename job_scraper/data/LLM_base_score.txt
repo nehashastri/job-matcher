@@ -20,7 +20,7 @@ If the score is 0 because the COMPANY falls into a blocked category, set:
 reason = "Add to blocklist"
 (no other explanation)
 
-Blocked company categories (ONLY if clearly stated or unambiguous):
+Blocked company categories (ONLY if clearly stated):
 1) Staffing, recruiting, placement, or consulting firms whose core business is hiring contractors for other companies
 2) Job boards or job aggregation platforms
 3) Government, defense, national security, or intelligence agencies
