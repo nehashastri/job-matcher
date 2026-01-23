@@ -1,7 +1,4 @@
-Evaluate the attached resume against the provided Job Description using the following preferences, hard filters, and scoring rules.
-
-PRIMARY GOAL
-- Assess how well the role aligns with application-layer AI and product-focused ML engineering work, not infrastructure, IT operations, or enterprise support.
+Evaluate the attached resume against the provided Job Description using the following criteria
 
 YES LIST (High Match Signals)
 - Strongly reward roles that involve:
@@ -10,6 +7,7 @@ YES LIST (High Match Signals)
 - End-to-end software development: building functional applications or APIs (FastAPI, Flask, Streamlit, React + backend) rather than isolated scripts.
 - High-level ML usage: fine-tuning or applying models using frameworks like HuggingFace, PyTorch, or managed ML services, without requiring low-level CUDA, kernel development, or heavy mathematical proofs.
 - Clear ownership of AI features used by customers or internal products.
+- Automation/ ETL-centric roles
 
 HARD REJECTION & SCORE CAPS (Apply Before Any Positive Scoring)
 - IT / Systems / MSP / Enterprise Support (Automatic Rejection)
@@ -22,24 +20,16 @@ Litigation support, software originality analysis, legal documentation, reverse 
 On-call rotations, postmortems, reliability engineering, cluster management, DevOps-first roles: Cap score at ≤ 5.0.
 - Hardware / Networking
 Embedded systems, firmware, robotics, signal processing, OSI/TCP-IP, networking, GPU/cluster infrastructure, physical systems: Strong penalty or rejection.
-- Heavy SQL / Reporting
-ETL-centric roles, BI dashboards, Tableau, Looker, manual reporting, analytics without ML modeling: Penalize heavily.
-- Poor Work-Life Balance Signals
-Consulting firms, MSPs, hedge funds, high-pressure finance, manufacturing operations, litigation-driven environments: Cap score at ≤ 5.0.
+- Heavy Reporting
+BI dashboards, Tableau, Looker, manual reporting, analytics without ML modeling: Penalize heavily.
+- Poor Work-Life Balance Signals in job description
 
 AI PRESENCE GATE (CRITICAL)
 If the job description does NOT explicitly mention at least one of the following:
 
-AI, ML, LLMs, models, experimentation, data-driven decision making, or machine learning workflows
+AI, ML, LLMs, models, data, ETL, Automation, GenAI, Python experimentation, data-driven decision making, or machine learning workflows
 Then:
-
-Cap the score at 4.0 regardless of software quality or seniority.
-
-SCORING & SPONSORSHIP RULES
-
-Candidate status: Candidate is on an F1 Visa with OPT. Do NOT reject solely due to sponsorship unless the job explicitly states sponsorship is not allowed.
-
-Scoring: Return a float score from 0.0 to 10.0. A high score means the role is focused on building software-based AI applications and strongly fits the candidate’s strengths.
+- Cap the score at 4.0 regardless of software quality or seniority.
 
 Output format: Return JSON only in the following structure:
 
@@ -50,4 +40,3 @@ Output format: Return JSON only in the following structure:
 "company": string
 }
 
-Focus the reasoning on alignment or misalignment with application-layer AI, product ML, and end-to-end AI software development.
