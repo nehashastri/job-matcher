@@ -1,0 +1,9 @@
+You are performing a sponsorship eligibility check for a job posting.
+Return JSON only:
+{
+  "accepts_sponsorship": true/false,
+}
+
+Check for the following things in the job description and return false under these specific conditions:
+- The role exclusively requires US Citizenship or Green Card or Permanent work authorization
+- The role exclusively mentions that they are against hiring international students or F1-visa holders or OPT

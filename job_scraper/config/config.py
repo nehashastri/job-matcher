@@ -128,7 +128,7 @@ class Config:
         # Default to headless unless HEADLESS is explicitly set to false
         headless_env = os.getenv("HEADLESS")
         if headless_env is None:
-            self.headless = True
+            self.headless = False  # Changed to False so browser is visible by default
         else:
             self.headless = headless_env.lower() == "true"
 

@@ -135,20 +135,19 @@ class LinkedInScraper(BaseScraper):
             login_button.click()
             time.sleep(4)
 
-            try:
-                self.wait.until(
-                    expected_conditions.presence_of_element_located(
-                        (By.CLASS_NAME, "global-nav")
-                    )
-                )
-                self.authenticated = True
-                self.logger.info(
-                    f"✅ Successfully logged in to LinkedIn as {self.user_email}"
-                )
-                return True
-            except TimeoutException:
-                self.logger.error("❌ Login failed")
-                return False
+            # Wait for either the old or new LinkedIn top nav bar after login
+            self.wait.until(
+                lambda driver: driver.find_elements(By.CLASS_NAME, "global-nav")
+                or driver.find_elements(By.CSS_SELECTOR, '[data-testid="primary-nav"]')
+            )
+            self.authenticated = True
+            self.logger.info(
+                f"✅ Successfully logged in to LinkedIn as {self.user_email}"
+            )
+            return True
+        except TimeoutException:
+            self.logger.error("❌ Login failed")
+            return False
         except Exception as exc:
             self.logger.error(f"❌ Login error: {exc}")
             return False
