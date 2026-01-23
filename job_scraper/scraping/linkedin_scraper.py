@@ -607,9 +607,9 @@ class LinkedInScraper(BaseScraper):
                         reason = self._short_reason(job.get("match_reason", ""))
                         # If LLM says to add to blocklist, add company
                         if reason == "Add to blocklist":
-                            self.blocklist.add(company_name or "")
+                            # Blocklist addition disabled
                             self.logger.info(
-                                f"    🚫 Added {company_name} to blocklist via LLM match_reason."
+                                f"    🚫 Would add {company_name} to blocklist via LLM match_reason, but this is currently disabled."
                             )
                             rejected_blocklist_hr_count += 1
                         if job.get("reranked"):

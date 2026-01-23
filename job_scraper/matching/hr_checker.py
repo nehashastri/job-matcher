@@ -136,15 +136,10 @@ class HRChecker:
                 }
 
         if result["is_hr_company"]:
-            added = self.blocklist.add(company_name)
-            if added:
-                self.logger.info(
-                    f"Rejected {company_name} as HR/staffing; added to blocklist. Reason: {short_reason(result['reason'])}"
-                )
-            else:
-                self.logger.info(
-                    f"Rejected {company_name} as HR/staffing (already blocked). Reason: {short_reason(result['reason'])}"
-                )
+            # Blocklist addition disabled
+            self.logger.info(
+                f"Rejected {company_name} as HR/staffing; would add to blocklist, but this is currently disabled. Reason: {short_reason(result['reason'])}"
+            )
         else:
             self.logger.info(
                 f"Accepted {company_name}; HR check clear. Reason: {short_reason(result['reason'])}"
