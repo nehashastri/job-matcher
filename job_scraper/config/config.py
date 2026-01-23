@@ -126,11 +126,8 @@ class Config:
         self.request_delay_max = float(os.getenv("REQUEST_DELAY_MAX", "5"))
         self.max_jobs_per_role = int(os.getenv("MAX_JOBS_PER_ROLE", "50"))
         # Default to headless unless HEADLESS is explicitly set to false
-        headless_env = os.getenv("HEADLESS")
-        if headless_env is None:
-            self.headless = False  # Changed to False so browser is visible by default
-        else:
-            self.headless = headless_env.lower() == "true"
+        # Force headless True for all runs
+        self.headless = True
 
         # Filtering settings
         self.max_applicants = int(os.getenv("MAX_APPLICANTS", "100"))
