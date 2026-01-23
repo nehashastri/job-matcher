@@ -56,14 +56,12 @@ class LinkedInScraper(BaseScraper):
         self.wait = cast(WebDriverWait, None)
         from config.config import get_config
         from filtering.blocklist import Blocklist
-        from matching.hr_checker import HRChecker
+
+        # from matching.hr_checker import HRChecker
         from matching.sponsorship_filter import SponsorshipFilter
 
         self.config = get_config()
         self.blocklist = Blocklist(config=self.config, logger=self.logger)
-        self.hr_checker = HRChecker(
-            config=self.config, blocklist=self.blocklist, logger=self.logger
-        )
         self.sponsorship_filter = SponsorshipFilter(
             config=self.config, logger=self.logger
         )
@@ -560,17 +558,7 @@ class LinkedInScraper(BaseScraper):
                         self._safe_back_to_results(search_url)
                         continue
 
-                    hr_result = self.hr_checker.check(
-                        company_name or "", description=description
-                    )
-                    if hr_result.get("is_hr_company"):
-                        self.logger.info(
-                            f"    ❌ Rejected: {company_name} flagged as HR/staffing. Reason: {hr_result.get('reason', '')}"
-                        )
-                        rejected_blocklist_hr_count += 1
-                        self._close_extra_tabs()
-                        self._safe_back_to_results(search_url)
-                        continue
+                    # HR company check removed from workflow
 
                     sponsor = self.sponsorship_filter.check(description)
                     if not sponsor.get("accepts_sponsorship", True):
