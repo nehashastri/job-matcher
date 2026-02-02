@@ -2,7 +2,14 @@
     "blocklist": [
         "Accenture Federal Services",
         "Aditi Consulting",
+        "ByteDance",
+        "DataAnnotation",
+        "ExecutivePlacements.com",
+        "Jerry",
+        "Jobs via Dice",
+        "micro1",
         "Lensa",
+        "Turing",
         "Y-12 National Security Complex"
     ],
     "patterns": [],

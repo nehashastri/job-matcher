@@ -1,4 +1,5 @@
-Evaluate the attached resume against the provided Job Description using the following criteria
+Evaluate the attached resume against the provided Job Description using the following criteria.
+Do not penalise if the resume does not have all the technologies mentioned in the job description.
 
 YES LIST (High Match Signals)
 - Strongly reward roles that involve:
@@ -23,13 +24,6 @@ Embedded systems, firmware, robotics, signal processing, OSI/TCP-IP, networking,
 - Heavy Reporting
 BI dashboards, Tableau, Looker, manual reporting, analytics without ML modeling: Penalize heavily.
 - Poor Work-Life Balance Signals in job description
-
-AI PRESENCE GATE (CRITICAL)
-If the job description does NOT explicitly mention at least one of the following:
-
-AI, ML, LLMs, models, data, ETL, Automation, GenAI, Python experimentation, data-driven decision making, or machine learning workflows
-Then:
-- Cap the score at 4.0 regardless of software quality or seniority.
 
 Output format: Return JSON only in the following structure:
 

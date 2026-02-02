@@ -151,7 +151,7 @@ class LinkedInScraper(BaseScraper):
 
     def scrape(
         self,
-        max_applicants: int = 100,
+        max_applicants: int = 150,
         scorer=None,
         match_threshold: float = 0.0,
         storage=None,
