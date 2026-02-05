@@ -111,8 +111,9 @@ class SponsorshipFilter:
                 "reason": "No sponsorship info present; assumed accept",
             }
 
+        # Always use single-turn prompt and GPT-5-nano for sponsorship check
         try:
-            with open("data/LLM_sponsorship_check.txt", "r", encoding="utf-8") as f:
+            with open("data/sponsorship_prompt.txt", "r", encoding="utf-8") as f:
                 prompt = f.read().strip()
         except Exception:
             prompt = (
@@ -127,14 +128,13 @@ class SponsorshipFilter:
                 "accepts_sponsorship=true (default accept). If the description is positive about sponsorship "
                 "(e.g., we sponsor H-1B/TN/O-1) or is open to international/OPT, return accepts_sponsorship=true."
             )
+
         messages = [
             {"role": "system", "content": prompt},
-            {"role": "user", "content": job_description[:4000]},
+            {"role": "user", "content": job_description},
         ]
 
-        self.logger.info(
-            "Sponsorship check: consulting LLM (sponsorship signals detected, no strong negatives)"
-        )
+        self.logger.info("Sponsorship check: consulting LLM (single-turn, GPT-5-nano)")
 
         result = {"accepts_sponsorship": True, "reason": "LLM unavailable"}
 
@@ -145,7 +145,8 @@ class SponsorshipFilter:
             return result
 
         try:
-            data = self._call_llm(messages)
+            # Explicitly use GPT-5-nano for sponsorship check
+            data = self._call_llm(messages, model="gpt-5-nano")
             accepts = bool(data.get("accepts_sponsorship", True))
             reason = data.get("reason", "No reason provided")
             result = {"accepts_sponsorship": accepts, "reason": reason}
@@ -349,11 +350,11 @@ class SponsorshipFilter:
             self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
             return None
 
-    def _call_llm(self, messages: list[dict[str, str]]) -> dict[str, Any]:
+    def _call_llm(
+        self, messages: list[dict[str, str]], model: str = "gpt-3.5-turbo"
+    ) -> dict[str, Any]:
         self.logger.info(f"[ENTER] {__file__}::{self.__class__.__name__}._call_llm")
         """Call OpenAI using chat.completions or responses for JSON output."""
-
-        model = self.config.openai_model or "gpt-3.5-turbo"
 
         if self.client is None:
             raise RuntimeError("OpenAI client not initialized")
@@ -362,22 +363,37 @@ class SponsorshipFilter:
         typed_messages = cast(list[Any], messages)
 
         if hasattr(client, "chat") and hasattr(client.chat, "completions"):
-            resp = client.chat.completions.create(
+            kwargs = dict(
                 model=model,
                 messages=typed_messages,
-                temperature=0,
                 response_format={"type": "json_object"},
             )
+            if (
+                model.startswith("gpt-5")
+                or model.startswith("gpt-4.1")
+                or model.startswith("gpt-4-turbo")
+            ):
+                kwargs["max_completion_tokens"] = 512
+            else:
+                kwargs["max_tokens"] = 512
+                kwargs["temperature"] = 0
+            resp = client.chat.completions.create(**kwargs)
             content = resp.choices[0].message.content if resp.choices else "{}"
             return json.loads(content or "{}")
 
         if hasattr(client, "responses"):
-            response = client.responses.create(
+            kwargs = dict(
                 model=model,
                 messages=typed_messages,
                 response_format={"type": "json_object"},
-                temperature=0,
             )
+            if not (
+                model.startswith("gpt-5")
+                or model.startswith("gpt-4.1")
+                or model.startswith("gpt-4-turbo")
+            ):
+                kwargs["temperature"] = "0"
+            response = client.responses.create(**kwargs)
 
             content = ""
             output = getattr(response, "output", None)

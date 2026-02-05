@@ -181,9 +181,10 @@ class MatchScorer:
             except Exception:
                 rerank_prompt = base_prompt
 
+        # Always use single-turn prompt and GPT-3.5 for base rank
         messages = self._build_messages(resume_text, job_details, prompt=base_prompt)
-        base_model = self.config.openai_model or "gpt-4.1-mini"
-        rerank_model = self.config.openai_model_rerank or "gpt-4.1"
+        base_model = "gpt-5-nano"
+        rerank_model = self.config.openai_model_rerank or "gpt-5-mini"
         # Level-1 (base) settings
         base_temperature = getattr(self.config, "openai_base_temperature", 0.15)
         base_top_p = getattr(self.config, "openai_base_top_p", 0.9)
@@ -236,12 +237,13 @@ class MatchScorer:
                 )
                 reranked = True
                 model_used_rerank = rerank_model
+                # Always use single-turn prompt and latest GPT-4 for rerank
                 rerank_messages = self._build_messages(
                     resume_text, job_details, prompt=rerank_prompt
                 )
                 rerank_score, reason_rerank, _, _ = self._call_llm(
                     rerank_messages,
-                    rerank_model,
+                    rerank_model,  # Use gpt-5-mini for rerank
                     rerank_temperature,
                     rerank_top_p,
                     rerank_max_tokens,
@@ -321,16 +323,25 @@ class MatchScorer:
 
         # Prefer chat.completions
         if hasattr(client, "chat") and hasattr(client.chat, "completions"):
-            resp = client.chat.completions.create(
+            completion_kwargs = dict(
                 model=model,
                 messages=typed_messages,
-                temperature=temperature,
-                top_p=top_p,
-                max_tokens=max_tokens,
                 presence_penalty=presence_penalty,
                 frequency_penalty=frequency_penalty,
                 response_format={"type": "json_object"},
             )
+            # Use correct token parameter for gpt-5/gpt-4.1/gpt-4-turbo
+            if (
+                model.startswith("gpt-5")
+                or model.startswith("gpt-4.1")
+                or model.startswith("gpt-4-turbo")
+            ):
+                completion_kwargs["max_completion_tokens"] = max_tokens
+            else:
+                completion_kwargs["max_tokens"] = max_tokens
+                completion_kwargs["temperature"] = temperature
+                completion_kwargs["top_p"] = top_p
+            resp = client.chat.completions.create(**completion_kwargs)
             content = resp.choices[0].message.content if resp.choices else "{}"
             data = json.loads(content or "{}")
             return (
@@ -342,16 +353,31 @@ class MatchScorer:
 
         # Fallback to responses API (matches mocks/tests style)
         if hasattr(client, "responses"):
-            response = client.responses.create(
+            # Use correct token parameter for gpt-5-nano and similar models
+            response_kwargs = dict(
                 model=model,
                 messages=typed_messages,
                 response_format={"type": "json_object"},
-                temperature=temperature,
-                top_p=top_p,
-                max_tokens=max_tokens,
                 presence_penalty=presence_penalty,
                 frequency_penalty=frequency_penalty,
             )
+            if not (
+                model.startswith("gpt-5")
+                or model.startswith("gpt-4.1")
+                or model.startswith("gpt-4-turbo")
+            ):
+                response_kwargs["top_p"] = top_p
+            if (
+                model.startswith("gpt-5")
+                or model.startswith("gpt-4.1")
+                or model.startswith("gpt-4-turbo")
+            ):
+                response_kwargs["max_completion_tokens"] = max_tokens
+                # Omit temperature and top_p for gpt-5/gpt-4.1/gpt-4-turbo
+            else:
+                response_kwargs["max_tokens"] = max_tokens
+                response_kwargs["temperature"] = temperature
+            response = client.responses.create(**response_kwargs)
 
             content = ""
             output = getattr(response, "output", None)

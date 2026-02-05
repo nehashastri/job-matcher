@@ -7,3 +7,4 @@ Return JSON only:
 Check for the following things in the job description and return false under these specific conditions:
 - The role exclusively requires US Citizenship or Green Card or Permanent work authorization
 - The role exclusively mentions that they are against hiring international students or F1-visa holders or OPT
+- The role exclusively needs high security clearance
