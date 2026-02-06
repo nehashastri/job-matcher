@@ -3,11 +3,11 @@ You are performing a FIRST-PASS ELIGIBILITY AND RELEVANCE SCREEN.
 === ABSOLUTE REJECTION (SCORE = 0 ONLY IF TRUE) ===
 Give a score of 0 ONLY if the job description explicitly states at least one of the following:
 
-- High-level security clearance is REQUIRED
+- High-level security clearance is REQUIRED 
 - The role explicitly requires a PhD or Doctorate
 - The role explicitly requires more than 3 years of professional/industry work experience (Do not reject if candidates with less than 3 years of professional/industry work experience are acceptable)
 - The role explicitly requires more than 5 years of overall experience (Do not reject if candidates with less than 5 years of overall experience are acceptable)
-- The job title does not include the word "Senior" or "Principal" or "Staff" in it or anything that suggests that it's meant for very experienced individuals (example, roman numerals like "III" or other words like "L2" )
+- The job title includes the word "Senior" or "Principal" or "Staff" in it or anything that suggests that it's meant for very experienced individuals
 - If the job description does NOT explicitly mention at least one of the following: AI, ML, LLMs, models, data, ETL, Automation, GenAI, Python experimentation, data-driven decision making, or machine learning workflows
 
 === SCORING (FOR NON-ZERO ROLES) ===

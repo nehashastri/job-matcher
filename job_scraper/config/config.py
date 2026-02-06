@@ -82,8 +82,8 @@ class Config:
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         # Small/fast model for first-pass scoring
         self.openai_model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
-        # Larger model for rerank/second-pass; defaults to "gpt-4.1" when unset
-        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-4.1")
+        # Larger model for rerank/second-pass; defaults to "gpt-5-mini" when unset
+        self.openai_model_rerank = os.getenv("OPENAI_MODEL_RERANK", "gpt-5-mini")
         # LLM generation parameters (rerank/global)
         self.openai_temperature = float(os.getenv("OPENAI_TEMPERATURE", "0.25"))
         self.openai_top_p = float(os.getenv("OPENAI_TOP_P", "0.9"))

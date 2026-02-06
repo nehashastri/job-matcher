@@ -29,7 +29,7 @@ class MatchScorer:
         resume_text: str,
         job_details: dict,
         prompt: "str | None" = None,
-    ) -> list[dict[str, str]]:
+    ) -> list:
         """
         Build messages for LLM prompt for job/resume matching.
         Args:
@@ -51,18 +51,29 @@ class MatchScorer:
                 '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
                 "supply concise inferred values."
             )
+        from openai.types.chat import (
+            ChatCompletionSystemMessageParam,
+            ChatCompletionUserMessageParam,
+        )
+
+        # Strict message order for prompt caching:
+        # 0: system message with prompt
+        # 1: user message starting with Resume: ...
         return [
-            {"role": "system", "content": prompt},
-            {
-                "role": "user",
-                "content": (
+            ChatCompletionSystemMessageParam(
+                role="system",
+                content=prompt,
+            ),
+            ChatCompletionUserMessageParam(
+                role="user",
+                content=(
                     f"Resume: {resume_text}\n"
                     f"Job Title: {job_details.get('title', '')}\n"
                     f"Company: {job_details.get('company', '')}\n"
                     f"Location: {job_details.get('location', '')}\n"
                     f"Description: {description[:4000]}"
                 ),
-            },
+            ),
         ]
 
     def _maybe_create_client(self) -> Any:
@@ -96,6 +107,7 @@ class MatchScorer:
         Args:
             profiles (list[dict]): List of profile dicts
             llm_results (dict): LLM result dict with company/title
+                self.logger.info(f"[LLM RESPONSE KWARGS] {response_kwargs}")
         Returns:
             list[dict]: Updated profiles
         """
@@ -162,17 +174,12 @@ class MatchScorer:
 
         # Load prompts from file if not provided
         if base_prompt is None:
-            try:
-                with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
-                    base_prompt = f.read().strip()
-            except Exception:
-                base_prompt = (
-                    "You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. "
-                    "Consider resume and preferences. If the job title or company is missing/blank, infer them "
-                    'from the description and return them. Return JSON only: {"score": number, "reason": string, '
-                    '"title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, '
-                    "supply concise inferred values."
-                )
+            # TEMPORARY: Use a simple debug prompt for screening
+            # try:
+            #     with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
+            #         base_prompt = f.read().strip()
+            # except Exception:
+            base_prompt = 'You are a job match scorer. Given a job description and a resume, return a JSON object with the following fields: score (float, 0-10), reason (string), title (string), company (string). Example: {\n  "score": 8.5,\n  "reason": "Strong match on skills and experience.",\n  "title": "Data Scientist",\n  "company": "Acme Corp"\n}\n'
 
         if rerank_prompt is None:
             try:
@@ -188,7 +195,11 @@ class MatchScorer:
         # Level-1 (base) settings
         base_temperature = getattr(self.config, "openai_base_temperature", 0.15)
         base_top_p = getattr(self.config, "openai_base_top_p", 0.9)
-        base_max_tokens = getattr(self.config, "openai_base_max_tokens", 350)
+        # Use higher token limit for gpt-5-nano
+        if base_model == "gpt-5-nano":
+            base_max_tokens = 2048
+        else:
+            base_max_tokens = getattr(self.config, "openai_base_max_tokens", 350)
         base_presence_penalty = getattr(self.config, "openai_base_presence_penalty", 0)
         base_frequency_penalty = getattr(
             self.config, "openai_base_frequency_penalty", 0
@@ -196,7 +207,11 @@ class MatchScorer:
         # Rerank settings (fallback to global if not set)
         rerank_temperature = getattr(self.config, "openai_temperature", 0.25)
         rerank_top_p = getattr(self.config, "openai_top_p", 0.9)
-        rerank_max_tokens = getattr(self.config, "openai_max_tokens", 1200)
+        # Use higher token limit for gpt-5-nano rerank
+        if rerank_model == "gpt-5-nano":
+            rerank_max_tokens = 2048
+        else:
+            rerank_max_tokens = getattr(self.config, "openai_max_tokens", 1200)
         trigger = getattr(self.config, "job_match_rerank_trigger", 8)
 
         try:
@@ -209,6 +224,7 @@ class MatchScorer:
                     base_max_tokens,
                     base_presence_penalty,
                     base_frequency_penalty,
+                    effort="minimal",
                 )
             )
             inferred_title = inferred_title or job_details.get("title", "")
@@ -241,6 +257,7 @@ class MatchScorer:
                 rerank_messages = self._build_messages(
                     resume_text, job_details, prompt=rerank_prompt
                 )
+                self.logger.info(f"[RERANK] Using model for rerank: {rerank_model}")
                 rerank_score, reason_rerank, _, _ = self._call_llm(
                     rerank_messages,
                     rerank_model,  # Use gpt-5-mini for rerank
@@ -249,6 +266,7 @@ class MatchScorer:
                     rerank_max_tokens,
                     0,
                     0,
+                    effort="low",
                 )
                 self.logger.info(
                     f"LLM rerank score {rerank_score:.1f} ({rerank_model}): {short_reason(reason_rerank)}",
@@ -296,8 +314,6 @@ class MatchScorer:
                 "first_score": fallback_score,
                 "reason_first": f"LLM error (accepted): {exc}",
             }
-            self.logger.warning(f"Failed to initialize OpenAI client: {exc}")
-            return None
 
     def _call_llm(
         self,
@@ -308,6 +324,7 @@ class MatchScorer:
         max_tokens: int = 1200,
         presence_penalty: float = 0,
         frequency_penalty: float = 0,
+        effort: str = "minimal",
     ) -> tuple:
         """
         Call OpenAI using chat.completions or responses for JSON output.
@@ -328,21 +345,25 @@ class MatchScorer:
                 messages=typed_messages,
                 presence_penalty=presence_penalty,
                 frequency_penalty=frequency_penalty,
-                response_format={"type": "json_object"},
             )
-            # Use correct token parameter for gpt-5/gpt-4.1/gpt-4-turbo
-            if (
-                model.startswith("gpt-5")
-                or model.startswith("gpt-4.1")
-                or model.startswith("gpt-4-turbo")
-            ):
+            # Only set response_format if model is not gpt-5-nano
+            if not model.startswith("gpt-5-nano"):
+                completion_kwargs["response_format"] = {"type": "json_object"}
+            # Reasoning Models (gpt-5, gpt-4.1): Use max_completion_tokens AND reasoning_effort.
+            # Modern Standard Models (gpt-4-turbo): Use max_completion_tokens ONLY.
+            # Legacy Models: Use max_tokens and temperature/top_p.
+            if model.startswith("gpt-5") or model.startswith("gpt-4.1"):
                 completion_kwargs["max_completion_tokens"] = max_tokens
+                completion_kwargs["reasoning_effort"] = effort
+            elif model.startswith("gpt-4-turbo"):
+                completion_kwargs["max_completion_tokens"] = max_tokens
+                completion_kwargs["temperature"] = temperature
             else:
                 completion_kwargs["max_tokens"] = max_tokens
                 completion_kwargs["temperature"] = temperature
-                completion_kwargs["top_p"] = top_p
             resp = client.chat.completions.create(**completion_kwargs)
             content = resp.choices[0].message.content if resp.choices else "{}"
+            self.logger.info(f"[LLM RAW RESPONSE] {content}")
             data = json.loads(content or "{}")
             return (
                 float(data.get("score", 0)),
@@ -353,7 +374,6 @@ class MatchScorer:
 
         # Fallback to responses API (matches mocks/tests style)
         if hasattr(client, "responses"):
-            # Use correct token parameter for gpt-5-nano and similar models
             response_kwargs = dict(
                 model=model,
                 messages=typed_messages,
@@ -367,17 +387,38 @@ class MatchScorer:
                 or model.startswith("gpt-4-turbo")
             ):
                 response_kwargs["top_p"] = top_p
-            if (
-                model.startswith("gpt-5")
-                or model.startswith("gpt-4.1")
-                or model.startswith("gpt-4-turbo")
-            ):
+            if model.startswith("gpt-5") or model.startswith("gpt-4.1"):
                 response_kwargs["max_completion_tokens"] = max_tokens
-                # Omit temperature and top_p for gpt-5/gpt-4.1/gpt-4-turbo
+                response_kwargs["reasoning"] = {"effort": effort}
+                # Omit temperature and top_p for gpt-5/gpt-4.1
+            elif model.startswith("gpt-4-turbo"):
+                response_kwargs["max_completion_tokens"] = max_tokens
+                # Do NOT add reasoning for gpt-4-turbo
             else:
                 response_kwargs["max_tokens"] = max_tokens
                 response_kwargs["temperature"] = temperature
             response = client.responses.create(**response_kwargs)
+
+            # Capture the usage object
+            usage = getattr(response, "usage", None)
+            if usage:
+                # Safely access prompt_tokens_details (it might be None for some models)
+                prompt_details = getattr(usage, "prompt_tokens_details", None)
+                cached_tokens = (
+                    getattr(prompt_details, "cached_tokens", 0) if prompt_details else 0
+                )
+                self.logger.info(
+                    f"LLM Usage Stats - Model: {model} | "
+                    f"Total: {getattr(usage, 'total_tokens', '?')} | "
+                    f"Prompt: {getattr(usage, 'prompt_tokens', '?')} | "
+                    f"Cached: {cached_tokens} | "
+                    f"Completion: {getattr(usage, 'completion_tokens', '?')}"
+                )
+                if cached_tokens > 0:
+                    savings = (cached_tokens / getattr(usage, "prompt_tokens", 1)) * 100
+                    self.logger.info(
+                        f"✨ Prompt Caching saved {savings:.1f}% of input tokens!"
+                    )
 
             content = ""
             output = getattr(response, "output", None)
