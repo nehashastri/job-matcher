@@ -71,7 +71,7 @@ class MatchScorer:
                     f"Job Title: {job_details.get('title', '')}\n"
                     f"Company: {job_details.get('company', '')}\n"
                     f"Location: {job_details.get('location', '')}\n"
-                    f"Description: {description[:4000]}"
+                    f"Description: {description}"
                 ),
             ),
         ]
@@ -175,18 +175,30 @@ class MatchScorer:
         # Load prompts from file if not provided
         if base_prompt is None:
             # TEMPORARY: Use a simple debug prompt for screening
-            # try:
-            #     with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
-            #         base_prompt = f.read().strip()
-            # except Exception:
-            base_prompt = 'You are a job match scorer. Given a job description and a resume, return a JSON object with the following fields: score (float, 0-10), reason (string), title (string), company (string). Example: {\n  "score": 8.5,\n  "reason": "Strong match on skills and experience.",\n  "title": "Data Scientist",\n  "company": "Acme Corp"\n}\n'
+            try:
+                with open("data/LLM_base_score_2.txt", "r", encoding="utf-8") as f:
+                    base_prompt = f.read().strip()
+                self.logger.info(
+                    "✅ Successfully loaded base prompt from data/LLM_base_score_2.txt"
+                )
+            except Exception:
+                base_prompt = 'You are a job match scorer. Given a job description and a resume, return a JSON object with the following fields: score (float, 0-10), reason (string), title (string), company (string). Example: {\n  "score": 8.5,\n  "reason": "Strong match on skills and experience.",\n  "title": "Data Scientist",\n  "company": "Acme Corp"\n}\n'
+                self.logger.warning(
+                    "⚠️ Failed to load base prompt from file, using default"
+                )
 
         if rerank_prompt is None:
             try:
                 with open("data/LLM_rerank_score.txt", "r", encoding="utf-8") as f:
                     rerank_prompt = f.read().strip()
+                self.logger.info(
+                    "✅ Successfully loaded rerank prompt from data/LLM_rerank_score.txt"
+                )
             except Exception:
                 rerank_prompt = base_prompt
+                self.logger.warning(
+                    "⚠️ Failed to load rerank prompt from file, using base prompt"
+                )
 
         # Always use single-turn prompt and GPT-3.5 for base rank
         messages = self._build_messages(resume_text, job_details, prompt=base_prompt)
@@ -224,7 +236,7 @@ class MatchScorer:
                     base_max_tokens,
                     base_presence_penalty,
                     base_frequency_penalty,
-                    effort="minimal",
+                    effort="low",
                 )
             )
             inferred_title = inferred_title or job_details.get("title", "")
@@ -324,7 +336,7 @@ class MatchScorer:
         max_tokens: int = 1200,
         presence_penalty: float = 0,
         frequency_penalty: float = 0,
-        effort: str = "minimal",
+        effort: str = "low",
     ) -> tuple:
         """
         Call OpenAI using chat.completions or responses for JSON output.
@@ -340,7 +352,7 @@ class MatchScorer:
 
         # Prefer chat.completions
         if hasattr(client, "chat") and hasattr(client.chat, "completions"):
-            completion_kwargs = dict(
+            completion_kwargs: dict[str, Any] = dict(
                 model=model,
                 messages=typed_messages,
                 presence_penalty=presence_penalty,
@@ -374,13 +386,15 @@ class MatchScorer:
 
         # Fallback to responses API (matches mocks/tests style)
         if hasattr(client, "responses"):
-            response_kwargs = dict(
+            response_kwargs: dict[str, Any] = dict(
                 model=model,
                 messages=typed_messages,
-                response_format={"type": "json_object"},
                 presence_penalty=presence_penalty,
                 frequency_penalty=frequency_penalty,
             )
+            # Only set response_format if model is not gpt-5-nano
+            if not model.startswith("gpt-5-nano"):
+                response_kwargs["response_format"] = {"type": "json_object"}
             if not (
                 model.startswith("gpt-5")
                 or model.startswith("gpt-4.1")

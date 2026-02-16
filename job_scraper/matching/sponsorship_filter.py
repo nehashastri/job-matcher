@@ -363,11 +363,13 @@ class SponsorshipFilter:
         typed_messages = cast(list[Any], messages)
 
         if hasattr(client, "chat") and hasattr(client.chat, "completions"):
-            kwargs = dict(
+            kwargs: dict[str, Any] = dict(
                 model=model,
                 messages=typed_messages,
-                response_format={"type": "json_object"},
             )
+            # Only set response_format if model is not gpt-5-nano
+            if not model.startswith("gpt-5-nano"):
+                kwargs["response_format"] = {"type": "json_object"}
             if (
                 model.startswith("gpt-5")
                 or model.startswith("gpt-4.1")
@@ -379,14 +381,17 @@ class SponsorshipFilter:
                 kwargs["temperature"] = 0
             resp = client.chat.completions.create(**kwargs)
             content = resp.choices[0].message.content if resp.choices else "{}"
+            self.logger.info(f"[SPONSORSHIP LLM RAW RESPONSE] {content}")
             return json.loads(content or "{}")
 
         if hasattr(client, "responses"):
-            kwargs = dict(
+            kwargs: dict[str, Any] = dict(
                 model=model,
                 messages=typed_messages,
-                response_format={"type": "json_object"},
             )
+            # Only set response_format if model is not gpt-5-nano
+            if not model.startswith("gpt-5-nano"):
+                kwargs["response_format"] = {"type": "json_object"}
             if not (
                 model.startswith("gpt-5")
                 or model.startswith("gpt-4.1")
@@ -409,6 +414,7 @@ class SponsorshipFilter:
                     )
             elif hasattr(response, "content"):
                 content = getattr(response, "content")
+            self.logger.info(f"[SPONSORSHIP LLM RAW RESPONSE] {content}")
             return json.loads(content or "{}")
 
         # Always return a dict on all code paths

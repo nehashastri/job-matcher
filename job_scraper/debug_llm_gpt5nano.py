@@ -84,7 +84,7 @@ def build_messages(resume_text, job_details, prompt):
         ChatCompletionUserMessageParam(
             role="user",
             content=(
-                f"{prompt}\nResume: {resume_text}\nJob Title: {job_details.get('title', '')}\nCompany: {job_details.get('company', '')}\nLocation: {job_details.get('location', '')}\nDescription: {description[:4000]}"
+                f"{prompt}\nResume: {resume_text}\nJob Title: {job_details.get('title', '')}\nCompany: {job_details.get('company', '')}\nLocation: {job_details.get('location', '')}\nDescription: {description}"
             ),
         ),
     ]

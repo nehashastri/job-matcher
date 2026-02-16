@@ -106,7 +106,7 @@ class HRChecker:
             {"role": "system", "content": prompt},
             {
                 "role": "user",
-                "content": f"Company: {company_name}\nContext: {description[:4000] if description else 'No additional context provided.'}",
+                "content": f"Company: {company_name}\nContext: {description if description else 'No additional context provided.'}",
             },
         ]
 
