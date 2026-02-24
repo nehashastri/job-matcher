@@ -19,7 +19,11 @@
         "TalentAlly",
         "Tata Consultancy Services",
         "Turing",
-        "Y-12 National Security Complex"
+        "Y-12 National Security Complex",
+        "FetchJobs.co",
+        "Jobright.ai",
+        "Wiraa",
+        "Programmers.io"
     ],
     "patterns": [],
     "notes": "This list contains known HR/staffing firms and recruiting companies. Additional companies may be added automatically via LLM detection."

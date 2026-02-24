@@ -137,24 +137,17 @@ class JobFinder:
         Use OpenAI to score job vs resume on 0-10 scale.
         Args:
             job (dict): Job details to score.
-            prompt (str): Optional prompt for LLM scoring.
+            prompt (str): Optional prompt for LLM scoring (unused - prompts loaded by MatchScorer).
         Returns:
             float: Score from 0.0 to 10.0 indicating match quality.
         """
         if not self.openai_client:
             logger.warning("OPENAI_API_KEY not set; defaulting match score to 0")
             return 0.0
-        if not prompt:
-            try:
-                with open("data/LLM_base_score.txt", "r", encoding="utf-8") as f:
-                    prompt = f.read().strip()
-            except Exception:
-                prompt = 'You are a concise matcher. Score 0-10 (float) how well the candidate fits the job. Consider resume and preferences. If the job title or company is missing/blank, infer them from the description and return them. Return JSON only: {"score": number, "reason": string, "title": string, "company": string}. Keep title/company unchanged if already provided; otherwise, supply concise inferred values.'
         try:
             result = self.match_scorer.score(
                 resume_text=self.resume_text,
                 job_details=job,
-                base_prompt=prompt,
             )
             # Attach LLM scoring details to job dict
             job["match_reason"] = result.get("reason", "")

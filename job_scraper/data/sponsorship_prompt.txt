@@ -1,10 +1,24 @@
-You are performing a sponsorship eligibility check for a job posting.
-Return JSON only:
+You are evaluating sponsorship for a candidate on F-1 STEM OPT who will need continued work authorization
+(e.g., H-1B or similar). From the job description, decide if the employer supports work visas.
+
+Return JSON only in this exact form:
 {
-  "accepts_sponsorship": true/false,
+    "accepts_sponsorship": true|false,
+    "reason": "brief explanation"
 }
 
-Check for the following things in the job description and return false under these specific conditions:
-- The role exclusively requires US Citizenship or Green Card or Permanent work authorization
-- The role exclusively mentions that they are against hiring international students or F1-visa holders or OPT
-- The role exclusively needs high security clearance
+Reject ONLY when the description explicitly denies sponsorship or requires unrestricted work authorization.
+Treat any of the following as NOT sponsoring:
+- no visa sponsorship
+- cannot hire international candidates
+- US citizens only
+- must have permanent work authorization / green card / USC
+- no OPT / CPT
+- must already be authorized without sponsorship
+
+If the description is unclear or does not mention sponsorship, return accepts_sponsorship=true (default accept).
+If the description is positive about sponsorship (e.g., "we sponsor H-1B/TN/O-1") or is open to international/OPT,
+return accepts_sponsorship=true.
+
+Keep the "reason" field concise (one short sentence) that explains the rationale when accepts_sponsorship is false,
+or a brief statement when true (e.g., "No mention of sponsorship; assumed acceptable").

@@ -199,7 +199,6 @@ class SponsorshipFilter:
                 f"[ENTER] {__file__}::{self.__class__.__name__}._check_unpaid_or_volunteer"
             )
             unpaid_keywords = [
-                "unpaid",
                 "no pay",
                 "without pay",
                 "no compensation",
@@ -211,8 +210,8 @@ class SponsorshipFilter:
 
         if getattr(self.config, "reject_volunteer_roles", True):
             volunteer_keywords = [
-                "volunteer",
                 "voluntary position",
+                "volunteer position",
                 "voluntary role",
             ]
             if any(k in lowered_text for k in volunteer_keywords):
@@ -375,9 +374,9 @@ class SponsorshipFilter:
                 or model.startswith("gpt-4.1")
                 or model.startswith("gpt-4-turbo")
             ):
-                kwargs["max_completion_tokens"] = 512
+                kwargs["max_completion_tokens"] = 2000
             else:
-                kwargs["max_tokens"] = 512
+                kwargs["max_tokens"] = 2000
                 kwargs["temperature"] = 0
             resp = client.chat.completions.create(**kwargs)
             content = resp.choices[0].message.content if resp.choices else "{}"
@@ -392,12 +391,18 @@ class SponsorshipFilter:
             # Only set response_format if model is not gpt-5-nano
             if not model.startswith("gpt-5-nano"):
                 kwargs["response_format"] = {"type": "json_object"}
-            if not (
-                model.startswith("gpt-5")
-                or model.startswith("gpt-4.1")
-                or model.startswith("gpt-4-turbo")
-            ):
-                kwargs["temperature"] = "0"
+
+            # For modern reasoning-capable models (gpt-5 / gpt-4.1), request minimal reasoning
+            if model.startswith("gpt-5") or model.startswith("gpt-4.1"):
+                kwargs["max_completion_tokens"] = 2000
+                kwargs["reasoning"] = {"effort": "minimal"}
+            elif model.startswith("gpt-4-turbo"):
+                kwargs["max_completion_tokens"] = 512
+            else:
+                # Legacy models: keep using max_tokens + numeric temperature
+                kwargs["max_tokens"] = 512
+                kwargs["temperature"] = 0
+
             response = client.responses.create(**kwargs)
 
             content = ""

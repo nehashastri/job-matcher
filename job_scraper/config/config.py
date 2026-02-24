@@ -106,7 +106,8 @@ class Config:
         )
         # Score band around threshold that triggers rerank with larger model
         self.job_match_rerank_band = float(os.getenv("JOB_MATCH_RERANK_BAND", "1"))
-        self.job_match_threshold = float(os.getenv("JOB_MATCH_THRESHOLD", "8"))
+        # Default job match threshold set to 7.0 (was 8)
+        self.job_match_threshold = float(os.getenv("JOB_MATCH_THRESHOLD", "7"))
 
         # LinkedIn
         self.linkedin_email = os.getenv("LINKEDIN_EMAIL", "")

@@ -174,12 +174,11 @@ class MatchScorer:
 
         # Load prompts from file if not provided
         if base_prompt is None:
-            # TEMPORARY: Use a simple debug prompt for screening
             try:
-                with open("data/LLM_base_score_2.txt", "r", encoding="utf-8") as f:
+                with open("data/LLM_Base_Score_2.txt", "r", encoding="utf-8") as f:
                     base_prompt = f.read().strip()
                 self.logger.info(
-                    "✅ Successfully loaded base prompt from data/LLM_base_score_2.txt"
+                    "✅ Successfully loaded base prompt from data/LLM_Base_Score_2.txt"
                 )
             except Exception:
                 base_prompt = 'You are a job match scorer. Given a job description and a resume, return a JSON object with the following fields: score (float, 0-10), reason (string), title (string), company (string). Example: {\n  "score": 8.5,\n  "reason": "Strong match on skills and experience.",\n  "title": "Data Scientist",\n  "company": "Acme Corp"\n}\n'
