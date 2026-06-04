@@ -24,6 +24,11 @@ data/*.pdf
 
 # Logs
 logs/
+*.log
+*.log.*
+
+# Generated HTML dumps
+people_page_*.html
 
 # Byte-compiled / optimized / DLL files
 *.pyc
